@@ -14,31 +14,37 @@ import {
   MdTextButton,
 } from '@/components/material';
 
-const baseLinks = [
+type PlatformLink = {
+  href: string;
+  label: string;
+  icon: string;
+};
+
+const baseLinks: PlatformLink[] = [
   { href: '/discover', label: 'Discover Agents', icon: 'explore' },
   { href: '/dashboard', label: 'Investor Dashboard', icon: 'account_balance_wallet' },
   { href: '/deploy', label: 'Deployer Dashboard', icon: 'rocket_launch' },
   { href: '/apply', label: 'Apply To Launch', icon: 'edit_note' },
-] as const;
+];
 
-const adminLink = {
+const adminLink: PlatformLink = {
   href: '/admin',
   label: 'Admin',
   icon: 'admin_panel_settings',
-} as const;
+};
 
-const loginLink = {
+const loginLink: PlatformLink = {
   href: '/login',
   label: 'Log In',
   icon: 'login',
-} as const;
+};
 
 export function SiteFooter() {
   const { isAdmin, isAuthenticated } = useAuth();
   const router = useRouter();
 
   const platformLinks = useMemo(() => {
-    const links = [...baseLinks];
+    const links: PlatformLink[] = [...baseLinks];
     if (isAdmin) links.push(adminLink);
     if (!isAuthenticated) links.push(loginLink);
     return links;
