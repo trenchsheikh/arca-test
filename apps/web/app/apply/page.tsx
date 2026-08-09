@@ -292,28 +292,34 @@ function ApplyWizard() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
         >
-          <h1 className="arca-section-title mb-4">Apply to Launch on Arca</h1>
-          <p className="text-chalk-dim text-lg">
+          <h1 className="arca-section-title mb-4">Apply To Launch On arca</h1>
+          <p className="arca-page-lead">
             Submit your AI agent for review. Admin approval required before ICO launch.
           </p>
         </motion.div>
 
         <div className="mb-10 space-y-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-chalk-dim">
+            <span className="text-white/75">
               Step {currentStepIndex + 1} of {steps.length}
             </span>
-            <span className="text-chalk font-semibold">
+            <span className="text-white font-semibold">
               {Math.round(progressValue * 100)}%
             </span>
           </div>
-          <MdLinearProgress value={progressValue} max={1} style={{ width: '100%' }} />
+          <MdLinearProgress
+            className="on-brand-progress"
+            value={progressValue}
+            max={1}
+            style={{ width: '100%' }}
+          />
           <MdChipSet>
             {steps.map((step, index) => (
               <MdFilterChip
                 key={step.id}
                 label={step.label}
                 selected={index === currentStepIndex}
+                className="on-brand-filter-chip"
                 onClick={() => {
                   if (index <= currentStepIndex) {
                     setCurrentStep(step.id);
@@ -505,7 +511,7 @@ function ApplyWizard() {
                   {['Revenue', 'Volume', 'Win Rate', 'Wallet Age'].map((label) => (
                     <div key={label} className="bg-ink rounded-lg p-3 border border-black/5">
                       <p className="text-chalk-dim text-xs mb-1">{label}</p>
-                      <p className="text-chalk-dim font-mono text-sm">—</p>
+                      <p className="text-chalk-dim font-mono text-sm">n/a</p>
                     </div>
                   ))}
                 </div>
@@ -692,7 +698,7 @@ function ApplyWizard() {
                   </div>
                 </div>
                 <p className="text-chalk-dim text-xs mt-3">
-                  Buyback 90/10 is immutable and cannot be modified post-launch
+                  Buyback 90/10 is immutable and cannot be modified post launch
                 </p>
               </div>
             </div>
@@ -745,7 +751,7 @@ function ApplyWizard() {
                 />
                 <span className="text-chalk-dim text-sm">
                   I understand that tier assignment, tokenomics, and buyback split are
-                  determined by Arca and cannot be modified post-launch. I agree to the
+                  determined by Arca and cannot be modified post launch. I agree to the
                   platform terms.
                 </span>
               </label>
@@ -800,7 +806,7 @@ function ApplyWizard() {
 
 export default function ApplyPage() {
   return (
-    <RequireAuth title="Sign in to apply as a deployer">
+    <RequireAuth title="Sign In To Apply As A Deployer">
       <ApplyWizard />
     </RequireAuth>
   );

@@ -31,12 +31,12 @@ function DeployerDashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
               <h1 className="arca-section-title mb-2">Deployer Dashboard</h1>
-              <p className="text-chalk-dim text-lg">
+              <p className="arca-page-lead">
                 Monitor your agent&apos;s capital, revenue, and buyback performance
               </p>
             </div>
             <Link href="/apply">
-              <MdFilledButton>
+              <MdFilledButton className="hero-cta-filled">
                 <MdIcon slot="icon">add</MdIcon>
                 Apply New Agent
               </MdFilledButton>
@@ -101,7 +101,7 @@ function DeployerDashboard() {
               <MdIcon slot="start">payments</MdIcon>
               <div slot="overline">Revenue Generated</div>
               <div slot="headline">{formatCurrency(myAgent.totalRevenue)}</div>
-              <div slot="supporting-text">All-time</div>
+              <div slot="supporting-text">All time</div>
             </MdListItem>
             <MdDivider />
             <MdListItem>
@@ -225,8 +225,8 @@ function DeployerDashboard() {
             </MdList>
             <p className="text-chalk-dim text-sm mt-4">
               <strong className="text-chalk">Immutable split:</strong> 90% agent token
-              buyback + 10% platform token buyback. You cannot modify this post-launch.
-              All buybacks are recorded on-chain.
+              buyback + 10% platform token buyback. You cannot modify this post launch.
+              All buybacks are recorded on chain.
             </p>
           </div>
         </div>
@@ -237,7 +237,7 @@ function DeployerDashboard() {
 
 export default function DeployPage() {
   return (
-    <RequireAuth title="Sign in to access Deployer Dashboard">
+    <RequireAuth title="Sign In To Access Deployer Dashboard">
       <DeployerDashboard />
     </RequireAuth>
   );

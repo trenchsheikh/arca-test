@@ -5,7 +5,7 @@ export default function LoginRoute() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-ink flex items-center justify-center text-chalk-dim">
+        <div className="min-h-screen flex items-center justify-center text-white/80">
           Loading…
         </div>
       }

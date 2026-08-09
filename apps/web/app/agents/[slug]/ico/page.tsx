@@ -92,7 +92,7 @@ export default function IcoPage() {
   if (loading) {
     return (
       <div className="arca-page flex items-center justify-center">
-        <LoadingState label="Loading ICO…" className="min-h-[50vh]" />
+        <LoadingState label="Loading ICO…" className="min-h-[50vh]" onBrand />
       </div>
     );
   }
@@ -210,14 +210,14 @@ export default function IcoPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <Link href={`/agents/${agent.slug}`} className="inline-block mb-6">
-            <MdTextButton>
+            <MdTextButton className="hero-cta-outlined">
               <MdIcon slot="icon">arrow_back</MdIcon>
-              Back to {agent.name}
+              Back To {agent.name}
             </MdTextButton>
           </Link>
 
-          <h1 className="arca-section-title mb-2">Participate in ICO</h1>
-          <p className="text-chalk-dim text-xl mb-8">
+          <h1 className="arca-section-title mb-2">Participate In ICO</h1>
+          <p className="arca-page-lead text-xl mb-8">
             {agent.name} · {agent.category} · {agent.status}
           </p>
         </motion.div>
@@ -229,7 +229,7 @@ export default function IcoPage() {
             className="mb-6 arca-surface-muted p-4 border-brand/30"
           >
             <p className="text-brand text-sm font-semibold">
-              Priority access for Arca platform token holders (FR-TIER-03)
+              Priority access for Arca platform token holders
             </p>
           </motion.div>
         )}

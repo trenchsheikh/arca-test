@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand guidelines — surfaces (mapped from previous ink tokens)
+        // Brand guidelines: surfaces (mapped from previous ink tokens)
         ink: {
           DEFAULT: '#F5F6FA',
           light: '#FFFFFF',

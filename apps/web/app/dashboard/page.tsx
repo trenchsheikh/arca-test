@@ -91,10 +91,10 @@ function InvestorDashboard() {
           className="mb-8"
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
-            <h1 className="arca-section-title">Investor Dashboard</h1>
-            <p className="text-sm text-chalk-dim font-mono">{walletAddress}</p>
+            <h1 className="arca-section-title text-white">Investor Dashboard</h1>
+            <p className="text-sm text-white/70 font-mono">{walletAddress}</p>
           </div>
-          <p className="text-chalk-dim text-lg">
+          <p className="arca-page-lead">
             Track your investments, claims, and buyback rewards
           </p>
         </motion.div>
@@ -356,7 +356,7 @@ function InvestorDashboard() {
 
 export default function DashboardPage() {
   return (
-    <RequireAuth title="Sign in to access Investor Dashboard">
+    <RequireAuth title="Sign In To Access Investor Dashboard">
       <InvestorDashboard />
     </RequireAuth>
   );

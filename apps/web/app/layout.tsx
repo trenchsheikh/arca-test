@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'arca — Verified AI Agent Capital Markets',
+  title: 'arca. Verified AI Agent Capital Markets',
   description:
-    'AI agents that raise capital, generate revenue, and automatically return value through on-chain buybacks.',
+    'AI agents that raise capital, generate revenue, and automatically return value through on chain buybacks.',
   keywords: ['AI agents', 'crypto', 'ICO', 'buyback', 'Solana', 'Robinhood Chain'],
 };
 
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-body">
         <Providers>
           <SiteHeader />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen bg-brand">{children}</main>
           <SiteFooter />
         </Providers>
       </body>

@@ -68,12 +68,52 @@
   }
 
   body {
-    @apply bg-ink text-chalk font-body antialiased;
+    @apply bg-brand text-chalk font-body antialiased;
     font-feature-settings: 'rlig' 1, 'calt' 1;
-    background-image:
-      radial-gradient(ellipse 60% 40% at 85% 10%, rgba(93, 116, 229, 0.14), transparent 55%),
-      radial-gradient(ellipse 45% 35% at 10% 80%, rgba(93, 116, 229, 0.08), transparent 50%);
-    background-attachment: fixed;
+  }
+
+  /* Themed scrollbar + native smooth scroll fallback */
+  html {
+    scroll-behavior: smooth;
+    scrollbar-color: rgba(255, 255, 255, 0.55) #5d74e5;
+    scrollbar-width: thin;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #5d74e5;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: 999px;
+    border: 2px solid #5d74e5;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  /* White surfaces get a subtler scrollbar */
+  .arca-surface::-webkit-scrollbar-track,
+  md-list::-webkit-scrollbar-track {
+    background: #eef0f8;
+  }
+
+  .arca-surface::-webkit-scrollbar-thumb,
+  md-list::-webkit-scrollbar-thumb {
+    background: #5d74e5;
+    border-color: #eef0f8;
   }
 
   h1,
@@ -214,6 +254,10 @@
     --md-circular-progress-active-indicator-color: #5d74e5;
   }
 
+  md-circular-progress.on-brand-spinner {
+    --md-circular-progress-active-indicator-color: #ffffff;
+  }
+
   md-chip-set {
     display: flex;
     flex-wrap: wrap;
@@ -232,6 +276,162 @@
     --md-sys-color-on-surface: #ffffff;
     color: #ffffff;
   }
+
+  md-icon.arca-icon-lg {
+    --md-icon-size: 28px;
+  }
+
+  md-icon.arca-icon-sm {
+    --md-icon-size: 20px;
+  }
+
+  md-chip-set.justify-center {
+    justify-content: center;
+  }
+
+  /* Chips / progress sitting directly on brand blue */
+  md-assist-chip.on-brand-chip {
+    --md-sys-color-outline: rgba(255, 255, 255, 0.45);
+    --md-sys-color-on-surface: #ffffff;
+    --md-sys-color-on-surface-variant: rgba(255, 255, 255, 0.85);
+    --md-assist-chip-label-text-color: #ffffff;
+    --md-assist-chip-outline-color: rgba(255, 255, 255, 0.45);
+    --md-assist-chip-leading-icon-color: #ffffff;
+    color: #ffffff;
+  }
+
+  md-filter-chip.on-brand-filter-chip {
+    --md-sys-color-outline: rgba(255, 255, 255, 0.45);
+    --md-sys-color-on-surface: #ffffff;
+    --md-sys-color-on-surface-variant: rgba(255, 255, 255, 0.85);
+    --md-filter-chip-label-text-color: #ffffff;
+    --md-filter-chip-outline-color: rgba(255, 255, 255, 0.45);
+    --md-filter-chip-selected-container-color: #ffffff;
+    --md-filter-chip-selected-label-text-color: #5d74e5;
+    --md-filter-chip-selected-leading-icon-color: #5d74e5;
+    color: #ffffff;
+  }
+
+  md-linear-progress.on-brand-progress {
+    --md-linear-progress-active-indicator-color: #ffffff;
+    --md-linear-progress-track-color: rgba(255, 255, 255, 0.25);
+  }
+
+  md-text-button.hero-cta-outlined {
+    --md-sys-color-primary: #ffffff;
+    --md-sys-color-on-surface: #ffffff;
+    color: #ffffff;
+  }
+
+  /* Typography hero: Material text link on white */
+  md-text-button.hero-text-link {
+    --md-sys-color-primary: #5d74e5;
+    --md-text-button-label-text-size: 1rem;
+    --md-text-button-label-text-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  @media (min-width: 640px) {
+    md-text-button.hero-text-link {
+      --md-text-button-label-text-size: 1.125rem;
+    }
+  }
+
+  .hero-scroll-cue {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .hero-scroll-cue:focus-visible {
+    outline: 2px solid #5d74e5;
+    outline-offset: 4px;
+    border-radius: 999px;
+  }
+
+  md-icon.hero-scroll-icon {
+    --md-icon-size: 28px;
+    color: #5d74e5;
+  }
+
+  /* Audience tabs: no horizontal scrollbar */
+  md-tabs.audience-tabs {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  md-tabs.audience-tabs::part(tabs),
+  md-tabs.audience-tabs .tabs {
+    overflow-x: hidden !important;
+    scrollbar-width: none;
+  }
+
+  md-tabs.audience-tabs::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  md-fab.mosaic-fab-rose {
+    --md-fab-container-color: #c43b4e;
+    --md-fab-icon-color: #ffffff;
+    --md-sys-color-primary-container: #c43b4e;
+    --md-sys-color-on-primary-container: #ffffff;
+  }
+
+  md-fab.mosaic-fab-sand {
+    --md-fab-container-color: #c47a2b;
+    --md-fab-icon-color: #ffffff;
+    --md-sys-color-primary-container: #c47a2b;
+    --md-sys-color-on-primary-container: #ffffff;
+  }
+
+  md-fab.mosaic-fab-mint {
+    --md-fab-container-color: #2f8a5b;
+    --md-fab-icon-color: #ffffff;
+    --md-sys-color-primary-container: #2f8a5b;
+    --md-sys-color-on-primary-container: #ffffff;
+  }
+
+  md-fab.mosaic-fab-sky {
+    --md-fab-container-color: #5d74e5;
+    --md-fab-icon-color: #ffffff;
+    --md-sys-color-primary-container: #5d74e5;
+    --md-sys-color-on-primary-container: #ffffff;
+  }
+
+  md-filled-icon-button.faq-plus {
+    --md-filled-icon-button-container-color: #5d74e5;
+    --md-filled-icon-button-icon-color: #ffffff;
+    --md-sys-color-primary: #5d74e5;
+    --md-sys-color-on-primary: #ffffff;
+  }
+
+  /* Waitlist / early access on brand blue hero */
+  md-outlined-text-field.waitlist-field-brand {
+    --md-sys-color-primary: #ffffff;
+    --md-sys-color-on-surface: #ffffff;
+    --md-sys-color-on-surface-variant: rgba(255, 255, 255, 0.85);
+    --md-sys-color-outline: rgba(255, 255, 255, 0.55);
+    --md-sys-color-outline-variant: rgba(255, 255, 255, 0.35);
+    --md-outlined-text-field-input-text-color: #ffffff;
+    --md-outlined-text-field-label-text-color: rgba(255, 255, 255, 0.85);
+    --md-outlined-text-field-hover-label-text-color: #ffffff;
+    --md-outlined-text-field-focus-label-text-color: #ffffff;
+    --md-outlined-text-field-outline-color: rgba(255, 255, 255, 0.55);
+    --md-outlined-text-field-hover-outline-color: rgba(255, 255, 255, 0.8);
+    --md-outlined-text-field-focus-outline-color: #ffffff;
+    --md-outlined-text-field-leading-icon-color: rgba(255, 255, 255, 0.9);
+    --md-outlined-text-field-focus-leading-icon-color: #ffffff;
+    --md-outlined-text-field-caret-color: #ffffff;
+    --md-outlined-text-field-input-text-placeholder-color: rgba(255, 255, 255, 0.55);
+  }
+
+  md-circular-progress.waitlist-spinner-brand {
+    --md-circular-progress-active-indicator-color: #5d74e5;
+  }
 }
 
 @layer components {
@@ -244,11 +444,51 @@
   }
 
   .arca-page {
-    @apply min-h-screen bg-ink py-12;
+    @apply min-h-screen py-12;
   }
 
   .arca-section-title {
-    @apply font-display font-bold text-chalk text-4xl sm:text-5xl;
+    @apply font-display font-bold text-white text-4xl sm:text-5xl;
+  }
+
+  .arca-page-lead {
+    @apply text-white/90 text-base sm:text-lg;
+  }
+
+  .arca-page-muted {
+    @apply text-white/85;
+  }
+
+  /* Page chrome text on brand blue (outside white surfaces) */
+  .arca-on-brand {
+    @apply text-white;
+  }
+
+  .arca-on-brand-muted {
+    @apply text-white/90;
+  }
+
+  /* Compact auth control next to hamburger on small screens */
+  .header-auth-btn {
+    --md-filled-button-container-height: 36px;
+    --md-outlined-button-container-height: 36px;
+    --md-filled-button-label-text-size: 0.8125rem;
+    --md-outlined-button-label-text-size: 0.8125rem;
+  }
+
+  .header-mobile-menu {
+    animation: header-menu-in 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@keyframes header-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

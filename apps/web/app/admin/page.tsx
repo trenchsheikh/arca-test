@@ -159,11 +159,11 @@ function AdminDashboard() {
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="arca-section-title mb-2">Admin Dashboard</h1>
-            <p className="text-chalk-dim">
+            <p className="arca-page-lead">
               Review applications, manage ICOs, monitor buybacks
             </p>
           </div>
-          <MdOutlinedButton onClick={load}>
+          <MdOutlinedButton className="hero-cta-outlined" onClick={load}>
             <MdIcon slot="icon">refresh</MdIcon>
             Refresh
           </MdOutlinedButton>
@@ -413,7 +413,7 @@ function AdminDashboard() {
                       ? new Date(
                           analytics.buybackHealth.lastSuccessAt,
                         ).toLocaleString()
-                      : '—'}
+                      : 'n/a'}
                   </div>
                 </MdListItem>
                 <MdDivider />
@@ -466,10 +466,10 @@ function AdminDashboard() {
               <MdListItem>
                 <MdIcon slot="start">group</MdIcon>
                 <div slot="headline">
-                  Investors: {analytics?.activeInvestors ?? '—'}
+                  Investors: {analytics?.activeInvestors ?? 'n/a'}
                 </div>
                 <div slot="supporting-text">
-                  Deployers: {analytics?.activeDeployers ?? '—'}
+                  Deployers: {analytics?.activeDeployers ?? 'n/a'}
                 </div>
               </MdListItem>
             </MdList>
@@ -482,7 +482,7 @@ function AdminDashboard() {
 
 export default function AdminPage() {
   return (
-    <RequireAuth title="Sign in to access Admin">
+    <RequireAuth title="Sign In To Access Admin">
       <AdminDashboard />
     </RequireAuth>
   );

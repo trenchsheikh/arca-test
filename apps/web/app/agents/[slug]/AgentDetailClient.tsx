@@ -35,9 +35,8 @@ export function AgentDetailClient({ agent, buybacks }: AgentDetailClientProps) {
   const isIcoLive = agent.status === 'ICO Live';
 
   return (
-    <div className="min-h-screen bg-ink">
-      {/* Hero Section */}
-      <section className="gradient-mesh border-b border-chalk/10">
+    <div className="min-h-screen">
+      <section>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -46,9 +45,9 @@ export function AgentDetailClient({ agent, buybacks }: AgentDetailClientProps) {
           >
             <div className="flex items-start gap-6 mb-8">
               {agent.logoUrl ? (
-                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-800 flex-shrink-0">
-                  <Image 
-                    src={agent.logoUrl} 
+                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/15 flex-shrink-0">
+                  <Image
+                    src={agent.logoUrl}
                     alt={agent.name}
                     width={80}
                     height={80}
@@ -56,43 +55,40 @@ export function AgentDetailClient({ agent, buybacks }: AgentDetailClientProps) {
                   />
                 </div>
               ) : (
-                <div className="w-20 h-20 bg-gradient-to-br from-mint/20 to-gold/20 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl font-bold text-chalk">
+                <div className="w-20 h-20 bg-white/15 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <span className="text-3xl font-bold text-white">
                     {agent.name.charAt(0)}
                   </span>
                 </div>
               )}
-              
+
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <h1 className="font-display font-bold text-chalk text-4xl sm:text-5xl">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <h1 className="font-display font-bold text-white text-4xl sm:text-5xl">
                     {agent.name}
                   </h1>
                   <TierBadge tier={agent.tier} showTooltip />
                 </div>
-                
-                <div className="flex items-center gap-4 mb-4">
+
+                <div className="flex flex-wrap items-center gap-3 mb-4">
                   <StatusPill status={agent.status} />
-                  <span className="text-chalk-dim">·</span>
-                  <span className="text-chalk-dim">{agent.category}</span>
-                  <span className="text-chalk-dim">·</span>
-                  <span className="text-chalk-dim capitalize">{agent.chain}</span>
+                  <span className="text-white/70">{agent.category}</span>
+                  <span className="text-white/40">·</span>
+                  <span className="text-white/70 capitalize">{agent.chain}</span>
                 </div>
 
-                <p className="text-chalk-dim text-lg mb-6">
-                  {agent.oneLiner}
-                </p>
+                <p className="text-white/80 text-lg mb-6">{agent.oneLiner}</p>
 
                 <div className="flex flex-wrap gap-3">
                   {isTrading && (
-                    <MdFilledButton>
+                    <MdFilledButton className="hero-cta-filled">
                       <MdIcon slot="icon">candlestick_chart</MdIcon>
                       Trade on DEX
                     </MdFilledButton>
                   )}
                   {isIcoLive && (
                     <Link href={`/agents/${agent.slug}/ico`}>
-                      <MdFilledButton>
+                      <MdFilledButton className="hero-cta-filled">
                         <MdIcon slot="icon">payments</MdIcon>
                         Participate in ICO
                       </MdFilledButton>
@@ -100,7 +96,7 @@ export function AgentDetailClient({ agent, buybacks }: AgentDetailClientProps) {
                   )}
                   {agent.website && (
                     <a href={agent.website} target="_blank" rel="noopener noreferrer">
-                      <MdOutlinedButton>
+                      <MdOutlinedButton className="hero-cta-outlined">
                         <MdIcon slot="icon">language</MdIcon>
                         Website
                       </MdOutlinedButton>
@@ -108,7 +104,7 @@ export function AgentDetailClient({ agent, buybacks }: AgentDetailClientProps) {
                   )}
                   {agent.docs && (
                     <a href={agent.docs} target="_blank" rel="noopener noreferrer">
-                      <MdOutlinedButton>
+                      <MdOutlinedButton className="hero-cta-outlined">
                         <MdIcon slot="icon">description</MdIcon>
                         Documentation
                       </MdOutlinedButton>

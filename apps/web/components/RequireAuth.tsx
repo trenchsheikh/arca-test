@@ -15,7 +15,7 @@ import {
 
 export function RequireAuth({
   children,
-  title = 'Sign in to continue',
+  title = 'Sign In To Continue',
 }: {
   children: React.ReactNode;
   title?: string;
@@ -27,14 +27,14 @@ export function RequireAuth({
   if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingState label="Checking session…" />
+        <LoadingState label="Checking session…" onBrand />
       </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 gradient-mesh">
+      <div className="min-h-screen flex items-center justify-center px-4">
         <div className="arca-surface p-8 max-w-md w-full shadow-soft">
           <h1 className="text-2xl font-bold text-black mb-2">{title}</h1>
           <p className="text-chalk-dim text-sm mb-4">Demo credentials</p>
@@ -57,11 +57,11 @@ export function RequireAuth({
             style={{ width: '100%' }}
           >
             <MdIcon slot="icon">login</MdIcon>
-            Go to Login
+            Go To Login
           </MdFilledButton>
           <div className="mt-3 text-center">
             <Link href="/">
-              <MdTextButton>Back to home</MdTextButton>
+              <MdTextButton>Back To Home</MdTextButton>
             </Link>
           </div>
         </div>

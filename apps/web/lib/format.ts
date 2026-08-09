@@ -28,7 +28,7 @@ export function toDate(value: Date | string | number): Date {
 
 export function formatRelativeTime(date: Date | string | number): string {
   const parsed = toDate(date);
-  if (Number.isNaN(parsed.getTime())) return '—';
+  if (Number.isNaN(parsed.getTime())) return 'n/a';
 
   const now = new Date();
   const diffMs = now.getTime() - parsed.getTime();

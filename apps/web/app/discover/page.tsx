@@ -108,9 +108,11 @@ function DiscoverContent() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-10"
         >
-          <h1 className="arca-section-title mb-4">Discover AI Agents</h1>
-          <p className="text-chalk-dim text-xl">
-            Browse verified agents with on-chain performance and automatic buybacks
+          <h1 className="font-display font-bold text-white text-3xl sm:text-5xl mb-3 sm:mb-4">
+            Discover AI Agents
+          </h1>
+          <p className="text-white/85 text-base sm:text-xl">
+            Browse verified agents with on chain performance and automatic buybacks
           </p>
         </motion.div>
 
@@ -125,7 +127,7 @@ function DiscoverContent() {
           </MdOutlinedTextField>
 
           <div>
-            <p className="text-xs uppercase tracking-wide text-chalk-dim mb-2">Category</p>
+            <p className="text-xs uppercase tracking-wide text-chalk-dim mb-2 font-medium">Category</p>
             <MdChipSet>
               {CATEGORIES.map((c) => (
                 <MdFilterChip
@@ -194,7 +196,7 @@ function DiscoverContent() {
         </div>
 
         <div className="mb-6 flex items-center justify-between">
-          <p className="text-chalk-dim">
+          <p className="text-white/80">
             {loading
               ? 'Loading…'
               : `${agents.length} agent${agents.length !== 1 ? 's' : ''} found`}
@@ -202,13 +204,13 @@ function DiscoverContent() {
         </div>
 
         {loading ? (
-          <LoadingState label="Loading agents…" />
+          <LoadingState label="Loading agents…" onBrand />
         ) : agents.length === 0 ? (
           <div className="arca-surface">
             <MdList>
               <MdListItem>
                 <MdIcon slot="start">search_off</MdIcon>
-                <div slot="headline">No agents match your filters</div>
+                <div slot="headline">No Agents Match Your Filters</div>
                 <div slot="supporting-text">Try clearing a filter chip or changing sort</div>
               </MdListItem>
             </MdList>
@@ -257,7 +259,13 @@ function formatQuick(agent: Agent) {
 
 export default function DiscoverPage() {
   return (
-    <Suspense fallback={<LoadingState label="Loading discover…" className="min-h-screen" />}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <LoadingState label="Loading discover…" onBrand />
+        </div>
+      }
+    >
       <DiscoverContent />
     </Suspense>
   );

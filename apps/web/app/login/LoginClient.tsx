@@ -48,11 +48,13 @@ export default function LoginClient() {
   };
 
   if (!ready) {
-    return <LoadingState label="Preparing login…" className="min-h-[80vh]" />;
+    return (
+      <LoadingState label="Preparing login…" className="min-h-[80vh]" onBrand />
+    );
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 gradient-mesh">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -64,7 +66,7 @@ export default function LoginClient() {
         <p className="text-xs uppercase tracking-[0.2em] text-brand font-semibold mb-2">
           Welcome
         </p>
-        <h1 className="text-3xl font-bold text-black mb-2">Sign in</h1>
+        <h1 className="text-3xl font-bold text-black mb-2">Sign In</h1>
         <p className="text-chalk-dim text-sm mb-6">
           Demo access for all dashboards. Username{' '}
           <code className="text-brand">admin</code>, password{' '}
@@ -96,7 +98,7 @@ export default function LoginClient() {
             ) : (
               <MdIcon slot="icon">login</MdIcon>
             )}
-            Sign in
+            Sign In
           </MdFilledButton>
         </form>
 

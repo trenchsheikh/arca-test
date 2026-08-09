@@ -14,6 +14,7 @@ import {
   getSession,
   login as doLogin,
   type AuthSession,
+  DEMO_CREDENTIALS,
   DEMO_WALLET,
 } from '@/lib/auth';
 
@@ -21,6 +22,7 @@ type AuthContextValue = {
   session: AuthSession | null;
   ready: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   wallet: string;
   login: (username: string, password: string) => boolean;
   logout: () => void;
@@ -53,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       ready,
       isAuthenticated: !!session,
+      isAdmin: !!session && session.username === DEMO_CREDENTIALS.username,
       wallet: DEMO_WALLET,
       login: (username, password) => {
         const next = doLogin(username, password);

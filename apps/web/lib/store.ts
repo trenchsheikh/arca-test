@@ -175,7 +175,7 @@ if (!store.icoSessions.size) {
   }
 }
 
-// Mock positions for Trading agents (claimable) — only once
+// Mock positions for Trading agents (claimable), only once
 if (!store.investorPositions.some((p) => p.agentId === 'quantum-flux')) {
   const quantumFlux = store.agents.find((a) => a.slug === 'quantum-flux');
   if (quantumFlux) {

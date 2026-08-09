@@ -24,7 +24,12 @@ export function ScrollProgress() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-[60] pointer-events-none">
-      <MdLinearProgress value={value} max={1} style={{ width: '100%', height: 3 }} />
+      <MdLinearProgress
+        className="on-brand-progress"
+        value={value}
+        max={1}
+        style={{ width: '100%', height: 3 }}
+      />
     </div>
   );
 }

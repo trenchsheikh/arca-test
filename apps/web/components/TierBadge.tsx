@@ -22,7 +22,7 @@ const tierMeta: Record<
   },
   Pro: {
     icon: 'workspace_premium',
-    tooltip: 'Institutional-grade, sustained high-volume revenue, priority access',
+    tooltip: 'Institutional grade, sustained high volume revenue, priority access',
   },
 };
 

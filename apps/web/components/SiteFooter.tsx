@@ -1,7 +1,11 @@
 'use client';
 
+import { useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArcaLogo } from '@/components/ArcaLogo';
+import { useAuth } from '@/components/AuthProvider';
+import { ScrollReveal } from '@/components/ScrollReveal';
 import {
   MdList,
   MdListItem,
@@ -10,29 +14,49 @@ import {
   MdTextButton,
 } from '@/components/material';
 
-const platformLinks = [
+const baseLinks = [
   { href: '/discover', label: 'Discover Agents', icon: 'explore' },
   { href: '/dashboard', label: 'Investor Dashboard', icon: 'account_balance_wallet' },
   { href: '/deploy', label: 'Deployer Dashboard', icon: 'rocket_launch' },
-  { href: '/apply', label: 'Apply to Launch', icon: 'edit_note' },
-  { href: '/admin', label: 'Admin', icon: 'admin_panel_settings' },
-  { href: '/login', label: 'Login', icon: 'login' },
-];
+  { href: '/apply', label: 'Apply To Launch', icon: 'edit_note' },
+] as const;
+
+const adminLink = {
+  href: '/admin',
+  label: 'Admin',
+  icon: 'admin_panel_settings',
+} as const;
+
+const loginLink = {
+  href: '/login',
+  label: 'Log In',
+  icon: 'login',
+} as const;
 
 export function SiteFooter() {
+  const { isAdmin, isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  const platformLinks = useMemo(() => {
+    const links = [...baseLinks];
+    if (isAdmin) links.push(adminLink);
+    if (!isAuthenticated) links.push(loginLink);
+    return links;
+  }, [isAdmin, isAuthenticated]);
+
   return (
-    <footer className="border-t border-black/5 bg-white mt-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="border-t border-black/5 bg-white mt-0">
+      <ScrollReveal className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <ArcaLogo size={28} className="mb-4" />
+            <ArcaLogo size={36} className="mb-4" />
             <p className="text-chalk-dim text-sm leading-relaxed mb-4">
-              Verified AI agent capital markets with automatic on-chain buybacks.
+              Verified AI agent capital markets with automatic on chain buybacks.
             </p>
             <Link href="/discover">
               <MdTextButton>
                 <MdIcon slot="icon">arrow_forward</MdIcon>
-                Explore agents
+                Explore Agents
               </MdTextButton>
             </Link>
           </div>
@@ -43,7 +67,11 @@ export function SiteFooter() {
             </p>
             <MdList style={{ background: 'transparent', border: 'none' }}>
               {platformLinks.map((item) => (
-                <MdListItem key={item.href} type="link" href={item.href}>
+                <MdListItem
+                  key={item.href}
+                  type="button"
+                  onClick={() => router.push(item.href)}
+                >
                   <MdIcon slot="start">{item.icon}</MdIcon>
                   <div slot="headline">{item.label}</div>
                   <MdIcon slot="end">chevron_right</MdIcon>
@@ -63,7 +91,7 @@ export function SiteFooter() {
             <MdTextButton>Risk Disclaimer</MdTextButton>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </footer>
   );
 }
