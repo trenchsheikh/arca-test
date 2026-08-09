@@ -1,0 +1,26 @@
+node_modules
+.turbo
+.next
+dist
+build
+coverage
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.tsbuildinfo
+drizzle/meta
+.vercel
+
+# Foundry / Anchor (do not ignore apps/web/lib)
+packages/contracts-evm/cache
+packages/contracts-evm/out
+packages/contracts-evm/broadcast
+packages/contracts-evm/lib
+packages/programs-solana/.anchor
+packages/programs-solana/target
+packages/programs-solana/test-ledger

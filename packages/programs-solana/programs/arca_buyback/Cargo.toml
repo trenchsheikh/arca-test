@@ -1,0 +1,19 @@
+[package]
+name = "arca-buyback"
+version = "0.1.0"
+description = "Arca buyback program with immutable 90/10 split"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "arca_buyback"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+
+[dependencies]
+anchor-lang = "0.30.1"
+anchor-spl = "0.30.1"

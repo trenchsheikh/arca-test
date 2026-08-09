@@ -1,0 +1,25 @@
+{
+  "name": "arca",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "pnpm --filter @arca/web dev",
+    "dev:web": "pnpm --filter @arca/web dev",
+    "dev:workers": "pnpm --filter @arca/workers dev",
+    "dev:ws": "pnpm --filter @arca/ws dev",
+    "build": "pnpm --filter @arca/web build",
+    "build:all": "pnpm -r --filter=./packages/* build && pnpm --filter @arca/web build",
+    "build:web": "pnpm --filter @arca/web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "db:generate": "pnpm --filter @arca/db generate",
+    "db:migrate": "pnpm --filter @arca/db migrate",
+    "test": "pnpm -r test",
+    "test:tokenomics": "node --experimental-strip-types scripts/test-tokenomics.mjs",
+    "test:e2e": "node scripts/e2e.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

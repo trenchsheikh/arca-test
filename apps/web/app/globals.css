@@ -1,0 +1,289 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Arca brand → Material Design 3 system tokens */
+  --md-sys-color-primary: #5d74e5;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #dde3ff;
+  --md-sys-color-on-primary-container: #00174b;
+  --md-sys-color-secondary: #5d74e5;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #dde3ff;
+  --md-sys-color-on-secondary-container: #00174b;
+  --md-sys-color-tertiary: #000000;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-on-surface: #000000;
+  --md-sys-color-surface-variant: #e8ebf8;
+  --md-sys-color-on-surface-variant: #5c6370;
+  --md-sys-color-surface-container: #f5f6fa;
+  --md-sys-color-surface-container-high: #eef0f8;
+  --md-sys-color-surface-container-highest: #e8ebf8;
+  --md-sys-color-outline: #c5c9d6;
+  --md-sys-color-outline-variant: #e0e3ee;
+  --md-sys-color-error: #d93025;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-background: #f5f6fa;
+  --md-sys-color-on-background: #000000;
+
+  --md-ref-typeface-brand: var(--font-inter), Inter, system-ui, sans-serif;
+  --md-ref-typeface-plain: var(--font-inter), Inter, system-ui, sans-serif;
+
+  --md-filled-button-container-shape: 999px;
+  --md-outlined-button-container-shape: 999px;
+  --md-text-button-container-shape: 999px;
+  --md-filled-tonal-button-container-shape: 999px;
+  --md-outlined-text-field-container-shape: 16px;
+  --md-filled-text-field-container-shape: 16px;
+  --md-outlined-select-text-field-container-shape: 16px;
+  --md-filter-chip-container-shape: 999px;
+  --md-assist-chip-container-shape: 999px;
+  --md-suggestion-chip-container-shape: 999px;
+  --md-fab-container-shape: 16px;
+
+  --color-ink: #f5f6fa;
+  --color-ink-light: #ffffff;
+  --color-ink-lighter: #eef0f8;
+  --color-mint: #5d74e5;
+  --color-mint-light: #7b8deb;
+  --color-mint-dark: #4559c7;
+  --color-chalk: #000000;
+  --color-chalk-muted: #2a2a2a;
+  --color-chalk-dim: #5c6370;
+  --color-gold: #5d74e5;
+  --color-success: #2e7d32;
+  --color-warning: #e6a700;
+  --color-error: #d93025;
+
+  --font-display: var(--font-inter);
+  --font-body: var(--font-inter);
+  --brand-gradient: linear-gradient(180deg, #ffffff 0%, #5d74e5 52%, #000000 100%);
+}
+
+@layer base {
+  * {
+    @apply border-chalk/10;
+  }
+
+  body {
+    @apply bg-ink text-chalk font-body antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 85% 10%, rgba(93, 116, 229, 0.14), transparent 55%),
+      radial-gradient(ellipse 45% 35% at 10% 80%, rgba(93, 116, 229, 0.08), transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  /*
+   * Material Symbols: never set font-size on md-icon.
+   * Size must come only from --md-icon-size so width/height/font-size stay equal.
+   * Forcing font-size: 24px while buttons set --md-icon-size: 18px clips glyphs.
+   */
+  md-icon {
+    --md-icon-font: 'Material Symbols Outlined';
+    font-family: 'Material Symbols Outlined', sans-serif;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+  }
+
+  md-filled-button,
+  md-outlined-button,
+  md-text-button,
+  md-filled-tonal-button {
+    --md-sys-color-primary: #5d74e5;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #dde3ff;
+    --md-sys-color-on-primary-container: #00174b;
+    --md-sys-color-secondary: #5d74e5;
+    --md-sys-color-on-surface: #000000;
+    --md-sys-color-on-surface-variant: #5c6370;
+    --md-sys-color-outline: #c5c9d6;
+    --md-filled-button-icon-size: 18px;
+    --md-outlined-button-icon-size: 18px;
+    --md-text-button-icon-size: 18px;
+    --md-filled-tonal-button-icon-size: 18px;
+    font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  }
+
+  md-filter-chip,
+  md-assist-chip,
+  md-suggestion-chip {
+    --md-sys-color-primary: #5d74e5;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #dde3ff;
+    --md-sys-color-on-primary-container: #00174b;
+    --md-sys-color-on-surface: #000000;
+    --md-sys-color-on-surface-variant: #5c6370;
+    --md-sys-color-outline: #c5c9d6;
+    --md-filter-chip-icon-size: 18px;
+    --md-assist-chip-icon-size: 18px;
+    --md-suggestion-chip-icon-size: 18px;
+    font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  }
+
+  md-icon-button,
+  md-filled-icon-button,
+  md-outlined-icon-button,
+  md-fab,
+  md-tabs,
+  md-primary-tab,
+  md-secondary-tab,
+  md-list,
+  md-list-item,
+  md-outlined-select,
+  md-select-option,
+  md-switch,
+  md-checkbox,
+  md-radio,
+  md-slider,
+  md-dialog,
+  md-linear-progress,
+  md-circular-progress,
+  md-divider {
+    --md-sys-color-primary: #5d74e5;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #dde3ff;
+    --md-sys-color-on-primary-container: #00174b;
+    --md-sys-color-secondary: #5d74e5;
+    --md-sys-color-on-surface: #000000;
+    --md-sys-color-on-surface-variant: #5c6370;
+    --md-sys-color-outline: #c5c9d6;
+    --md-sys-color-surface: #ffffff;
+    --md-sys-color-surface-container: #f5f6fa;
+    --md-sys-color-surface-container-high: #eef0f8;
+    font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  }
+
+  /* Keep icons on Material Symbols even when parents use Inter */
+  md-filled-button md-icon,
+  md-outlined-button md-icon,
+  md-text-button md-icon,
+  md-filled-tonal-button md-icon,
+  md-filter-chip md-icon,
+  md-assist-chip md-icon,
+  md-suggestion-chip md-icon,
+  md-icon-button md-icon,
+  md-filled-icon-button md-icon,
+  md-outlined-icon-button md-icon,
+  md-list-item md-icon,
+  md-primary-tab md-icon,
+  md-secondary-tab md-icon,
+  md-fab md-icon,
+  md-outlined-text-field md-icon,
+  md-filled-text-field md-icon {
+    font-family: 'Material Symbols Outlined', sans-serif;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  md-outlined-text-field,
+  md-filled-text-field,
+  md-outlined-select {
+    width: 100%;
+    --md-sys-color-primary: #5d74e5;
+    --md-sys-color-on-surface: #000000;
+    font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  }
+
+  md-list {
+    --md-list-container-color: #ffffff;
+    background: #ffffff;
+    border-radius: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    padding: 0.25rem 0;
+  }
+
+  md-linear-progress {
+    --md-linear-progress-active-indicator-color: #5d74e5;
+    --md-linear-progress-track-color: #dde3ff;
+  }
+
+  md-circular-progress {
+    --md-circular-progress-active-indicator-color: #5d74e5;
+  }
+
+  md-chip-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Hero CTAs on brand gradient */
+  md-filled-button.hero-cta-filled {
+    --md-sys-color-primary: #ffffff;
+    --md-sys-color-on-primary: #5d74e5;
+  }
+
+  md-outlined-button.hero-cta-outlined {
+    --md-sys-color-primary: #ffffff;
+    --md-sys-color-outline: rgba(255, 255, 255, 0.55);
+    --md-sys-color-on-surface: #ffffff;
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  .arca-surface {
+    @apply bg-ink-light rounded-2xl border border-black/5 shadow-card;
+  }
+
+  .arca-surface-muted {
+    @apply bg-ink-lighter rounded-2xl border border-black/5;
+  }
+
+  .arca-page {
+    @apply min-h-screen bg-ink py-12;
+  }
+
+  .arca-section-title {
+    @apply font-display font-bold text-chalk text-4xl sm:text-5xl;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-mesh {
+    background:
+      radial-gradient(ellipse 70% 50% at 80% 0%, rgba(93, 116, 229, 0.22), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 15% 90%, rgba(93, 116, 229, 0.12), transparent 50%),
+      linear-gradient(180deg, #ffffff 0%, #f5f6fa 45%, #e8ebf8 100%);
+  }
+
+  .brand-gradient {
+    background: var(--brand-gradient);
+  }
+
+  .buyback-glow {
+    box-shadow: 0 0 0 1px rgba(93, 116, 229, 0.25), 0 8px 28px rgba(93, 116, 229, 0.18);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-soft;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
