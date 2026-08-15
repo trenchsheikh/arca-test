@@ -12,8 +12,6 @@ import {
   MdSelectOption,
   MdCheckbox,
   MdLinearProgress,
-  MdChipSet,
-  MdFilterChip,
   MdList,
   MdListItem,
   MdIcon,
@@ -289,15 +287,15 @@ function ApplyWizard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-8 sm:mb-12"
         >
-          <h1 className="arca-section-title mb-4">Apply To Launch On arca</h1>
+          <h1 className="arca-section-title mb-3 sm:mb-4">Apply To Launch On arca</h1>
           <p className="arca-page-lead">
             Submit your AI agent for review. Admin approval required before ICO launch.
           </p>
         </motion.div>
 
-        <div className="mb-10 space-y-4">
+        <div className="mb-8 sm:mb-10 space-y-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-white/75">
               Step {currentStepIndex + 1} of {steps.length}
@@ -312,28 +310,33 @@ function ApplyWizard() {
             max={1}
             style={{ width: '100%' }}
           />
-          <MdChipSet>
+          <div className="apply-step-pills" role="list" aria-label="Application steps">
             {steps.map((step, index) => (
-              <MdFilterChip
+              <span
                 key={step.id}
-                label={step.label}
-                selected={index === currentStepIndex}
-                className="on-brand-filter-chip"
-                onClick={() => {
-                  if (index <= currentStepIndex) {
-                    setCurrentStep(step.id);
-                  }
-                }}
-              />
+                role="listitem"
+                className={`apply-step-pill${
+                  index === currentStepIndex
+                    ? ' is-current'
+                    : index < currentStepIndex
+                      ? ' is-done'
+                      : ''
+                }`}
+                aria-current={index === currentStepIndex ? 'step' : undefined}
+              >
+                {step.label}
+              </span>
             ))}
-          </MdChipSet>
+          </div>
         </div>
 
-        <div className="arca-surface p-8">
-          <h2 className="font-display font-bold text-chalk text-2xl mb-2">
+        <div className="arca-surface p-4 sm:p-6 lg:p-8">
+          <h2 className="font-display font-bold text-chalk text-xl sm:text-2xl mb-2">
             {steps[currentStepIndex].label}
           </h2>
-          <p className="text-chalk-dim mb-8">{steps[currentStepIndex].description}</p>
+          <p className="text-chalk-dim mb-6 sm:mb-8 text-sm sm:text-base">
+            {steps[currentStepIndex].description}
+          </p>
 
           {currentStep === 'profile' && (
             <div className="space-y-6">
@@ -765,7 +768,7 @@ function ApplyWizard() {
 
           <MdDivider style={{ marginTop: 32, marginBottom: 24 }} />
 
-          <div className="flex items-center justify-between">
+          <div className="apply-wizard-nav">
             <MdOutlinedButton
               onClick={handlePrev}
               disabled={currentStepIndex === 0}

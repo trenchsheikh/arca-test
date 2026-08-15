@@ -92,6 +92,8 @@
     background-color: #000000;
     background-image: none;
     position: relative;
+    overflow-x: clip;
+    min-width: 0;
   }
 
   body::before {
@@ -115,6 +117,7 @@
     color-scheme: dark;
     scrollbar-color: rgba(255, 255, 255, 0.35) #000000;
     scrollbar-width: thin;
+    overflow-x: clip;
   }
 
   html.lenis,
@@ -436,15 +439,18 @@
     color: #5d74e5;
   }
 
-  /* Audience tabs: no horizontal scrollbar */
+  /* Audience tabs: horizontal scroll on small screens, no visible scrollbar */
   md-tabs.audience-tabs {
     max-width: 100%;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
   md-tabs.audience-tabs::part(tabs),
   md-tabs.audience-tabs .tabs {
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
     scrollbar-width: none;
   }
 
@@ -698,8 +704,79 @@
     font-weight: 600;
   }
 
+  @media (max-width: 479px) {
+    .hero-agents-btn {
+      width: 100%;
+      max-width: 18rem;
+    }
+  }
+
+  .apply-step-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .apply-step-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    color: #8b91a0;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 640px) {
+    .apply-step-pill {
+      font-size: 0.75rem;
+    }
+  }
+
+  .apply-wizard-nav {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+  }
+
+  .apply-wizard-nav md-filled-button,
+  .apply-wizard-nav md-outlined-button {
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .apply-wizard-nav {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .apply-wizard-nav md-filled-button,
+    .apply-wizard-nav md-outlined-button {
+      width: auto;
+    }
+  }
+
+  .apply-step-pill.is-done {
+    color: #c8ccd6;
+    border-color: rgba(93, 116, 229, 0.35);
+    background: rgba(93, 116, 229, 0.1);
+  }
+
+  .apply-step-pill.is-current {
+    color: #f5f6fa;
+    border-color: rgba(93, 116, 229, 0.55);
+    background: rgba(93, 116, 229, 0.2);
+  }
+
   .arca-page {
-    @apply min-h-screen py-12;
+    @apply min-h-screen py-8 sm:py-12;
   }
 
   .arca-section-title {
@@ -707,7 +784,7 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.15;
-    @apply text-white text-4xl sm:text-5xl;
+    @apply text-white text-3xl sm:text-4xl lg:text-5xl;
   }
 
   .arca-page-lead {
@@ -736,6 +813,19 @@
     --md-outlined-button-container-height: 36px;
     --md-filled-button-label-text-size: 0.8125rem;
     --md-outlined-button-label-text-size: 0.8125rem;
+  }
+
+  @media (max-width: 379px) {
+    .header-auth-btn {
+      --md-filled-button-trailing-space: 10px;
+      --md-filled-button-leading-space: 10px;
+      --md-outlined-button-trailing-space: 10px;
+      --md-outlined-button-leading-space: 10px;
+    }
+
+    .header-auth-label {
+      display: none;
+    }
   }
 
   /* Header nav links (no Material tab underline) */
@@ -1068,12 +1158,19 @@
 
   .discover-tier-blurb {
     margin: 0;
-    padding-left: 2.15rem;
+    padding-left: 0;
     color: #8b91a0;
     font-family: var(--font-body);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 400;
     line-height: 1.35;
+  }
+
+  @media (min-width: 640px) {
+    .discover-tier-blurb {
+      padding-left: 2.15rem;
+      font-size: 0.8rem;
+    }
   }
 
   .discover-tier-scroller {

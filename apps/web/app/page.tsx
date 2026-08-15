@@ -23,8 +23,8 @@ export default function HomePage() {
     <div className="relative">
       <ScrollProgress />
 
-      <section className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden text-center px-5 sm:px-8">
-        <div className="relative container mx-auto w-full flex flex-1 flex-col items-center justify-center py-20 sm:py-24">
+      <section className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden text-center px-4 sm:px-8">
+        <div className="relative container mx-auto w-full flex flex-1 flex-col items-center justify-center py-16 sm:py-24">
           <motion.div
             variants={staggerContainer}
             initial={reduceMotion ? false : 'hidden'}
@@ -33,21 +33,21 @@ export default function HomePage() {
           >
             <motion.p
               variants={fadeUp}
-              className="font-display font-medium text-brand text-5xl sm:text-7xl lg:text-8xl mb-6 sm:mb-8 lowercase tracking-tight leading-[0.9]"
+              className="font-display font-medium text-brand text-5xl sm:text-7xl lg:text-8xl mb-5 sm:mb-8 lowercase tracking-tight leading-[0.9]"
             >
               arca
             </motion.p>
 
             <motion.h1
               variants={fadeUp}
-              className="font-display font-medium text-chalk text-[2.15rem] leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-6xl lg:leading-[1.08] mb-5 sm:mb-7 text-balance tracking-tight max-w-[20ch] sm:max-w-none"
+              className="font-display font-medium text-chalk text-[1.85rem] leading-[1.15] sm:text-5xl sm:leading-[1.1] lg:text-6xl lg:leading-[1.08] mb-4 sm:mb-7 text-balance tracking-tight max-w-[20ch] sm:max-w-none"
             >
               Agents that earn <em className="italic font-normal">trust</em>
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
-              className="text-chalk-dim text-base sm:text-xl leading-relaxed mb-8 sm:mb-10 max-w-xl text-balance"
+              className="text-chalk-dim text-[0.95rem] sm:text-xl leading-relaxed mb-7 sm:mb-10 max-w-xl text-balance px-1"
             >
               They raise, they work, and they give value back in the{' '}
               <em className="italic text-chalk">open</em> so anyone can see.

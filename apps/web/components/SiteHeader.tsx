@@ -139,14 +139,14 @@ export function SiteHeader() {
                 </span>
                 <MdOutlinedButton className="header-auth-btn" onClick={logout}>
                   <MdIcon slot="icon">logout</MdIcon>
-                  Log out
+                  <span className="header-auth-label">Log out</span>
                 </MdOutlinedButton>
               </>
             ) : (
               <Link href="/login" className="shrink-0">
                 <MdFilledButton className="header-auth-btn">
                   <MdIcon slot="icon">login</MdIcon>
-                  Login
+                  <span className="header-auth-label">Login</span>
                 </MdFilledButton>
               </Link>
             )}
