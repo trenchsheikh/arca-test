@@ -66,7 +66,7 @@ export default function LoginClient() {
         <p className="text-xs uppercase tracking-[0.2em] text-brand font-semibold mb-2">
           Welcome
         </p>
-        <h1 className="text-3xl font-bold text-black mb-2">Sign In</h1>
+        <h1 className="text-3xl font-bold text-chalk mb-2">Sign In</h1>
         <p className="text-chalk-dim text-sm mb-6">
           Demo access for all dashboards. Username{' '}
           <code className="text-brand">admin</code>, password{' '}

@@ -11,7 +11,7 @@ import {
 export function WaitlistForm({
   variant = 'brand',
 }: {
-  /** `brand` = on blue page background; `surface` = on white cards */
+  /** `brand` = on dark page chrome; `surface` = on elevated cards */
   variant?: 'brand' | 'surface';
 }) {
   const [email, setEmail] = useState('');

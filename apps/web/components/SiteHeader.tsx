@@ -8,8 +8,6 @@ import { ArcaLogo } from '@/components/ArcaLogo';
 import {
   MdFilledButton,
   MdOutlinedButton,
-  MdTabs,
-  MdPrimaryTab,
   MdIcon,
   MdIconButton,
   MdList,
@@ -17,18 +15,28 @@ import {
   MdDivider,
 } from '@/components/material';
 
-const baseNav = [
+const DOCS_URL = 'https://docs.arca.markets/';
+
+type NavItem = {
+  href: string;
+  label: string;
+  icon: string;
+  external?: boolean;
+};
+
+const baseNav: NavItem[] = [
   { href: '/discover', label: 'Discover', icon: 'explore' },
   { href: '/dashboard', label: 'Investor', icon: 'account_balance_wallet' },
   { href: '/deploy', label: 'Deployer', icon: 'rocket_launch' },
   { href: '/apply', label: 'Apply', icon: 'edit_note' },
-] as const;
+  { href: DOCS_URL, label: 'Docs', icon: 'menu_book', external: true },
+];
 
-const adminNav = {
+const adminNav: NavItem = {
   href: '/admin',
   label: 'Admin',
   icon: 'admin_panel_settings',
-} as const;
+};
 
 export function SiteHeader() {
   const { isAuthenticated, isAdmin, ready, logout, session } = useAuth();
@@ -41,11 +49,6 @@ export function SiteHeader() {
     () => (isAdmin ? [...baseNav, adminNav] : [...baseNav]),
     [isAdmin],
   );
-
-  const activeIndex = nav.findIndex(
-    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
-  );
-  const hasMatch = activeIndex >= 0;
 
   useEffect(() => {
     setMenuOpen(false);
@@ -73,14 +76,22 @@ export function SiteHeader() {
     };
   }, [menuOpen]);
 
-  const go = (href: string) => {
+  const go = (item: NavItem) => {
     setMenuOpen(false);
-    router.push(href);
+    if (item.external) {
+      window.open(item.href, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    router.push(item.href);
   };
 
+  const isActive = (item: NavItem) =>
+    !item.external &&
+    (pathname === item.href || pathname.startsWith(`${item.href}/`));
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full glass-panel glass-header">
+      <div className="container mx-auto">
         <div className="relative flex h-16 items-center justify-between gap-2">
           <div className="min-w-0 shrink-0">
             <ArcaLogo size={36} />
@@ -90,24 +101,33 @@ export function SiteHeader() {
             className="pointer-events-none absolute inset-y-0 left-1/2 hidden -translate-x-1/2 items-center lg:flex"
             aria-label="Primary"
           >
-            <div className="pointer-events-auto">
-              <MdTabs
-                key={nav.map((item) => item.href).join('|')}
-                activeTabIndex={hasMatch ? activeIndex : -1}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(e: any) => {
-                  const idx = Number(e.target?.activeTabIndex ?? -1);
-                  const item = nav[idx];
-                  if (item) go(item.href);
-                }}
-              >
-                {nav.map((item) => (
-                  <MdPrimaryTab key={item.href} onClick={() => go(item.href)}>
-                    <MdIcon slot="icon">{item.icon}</MdIcon>
-                    {item.label}
-                  </MdPrimaryTab>
-                ))}
-              </MdTabs>
+            <div className="pointer-events-auto header-nav-links">
+              {nav.map((item) => {
+                const active = isActive(item);
+                const className = `header-nav-link${active ? ' is-active' : ''}`;
+
+                if (item.external) {
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={className}
+                    >
+                      <MdIcon>{item.icon}</MdIcon>
+                      <span>{item.label}</span>
+                    </a>
+                  );
+                }
+
+                return (
+                  <Link key={item.href} href={item.href} className={className}>
+                    <MdIcon>{item.icon}</MdIcon>
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
             </div>
           </nav>
 
@@ -145,22 +165,24 @@ export function SiteHeader() {
                 <div
                   role="menu"
                   aria-label="Navigation"
-                  className="header-mobile-menu absolute top-full right-0 z-[60] w-[min(100vw-2rem,18rem)] origin-top-right rounded-2xl border border-black/10 bg-white py-2 shadow-soft"
+                  className="header-mobile-menu absolute top-full right-0 z-[60] w-[min(100vw-2rem,18rem)] origin-top-right rounded-2xl py-2 shadow-soft"
                 >
                   <MdList style={{ border: 'none', background: 'transparent' }}>
                     {nav.map((item) => {
-                      const active =
-                        pathname === item.href ||
-                        pathname.startsWith(`${item.href}/`);
+                      const active = isActive(item);
                       return (
                         <MdListItem
                           key={item.href}
                           type="button"
-                          onClick={() => go(item.href)}
+                          onClick={() => go(item)}
                         >
                           <MdIcon slot="start">{item.icon}</MdIcon>
                           <div slot="headline">{item.label}</div>
-                          {active ? <MdIcon slot="end">check</MdIcon> : null}
+                          {item.external ? (
+                            <MdIcon slot="end">open_in_new</MdIcon>
+                          ) : active ? (
+                            <MdIcon slot="end">check</MdIcon>
+                          ) : null}
                         </MdListItem>
                       );
                     })}

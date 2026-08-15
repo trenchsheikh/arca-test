@@ -35,7 +35,7 @@ export function TierBadge({ tier, showTooltip = false }: TierBadgeProps) {
         <MdIcon slot="icon">{meta.icon}</MdIcon>
       </MdSuggestionChip>
       {showTooltip && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-white border border-black/10 rounded-lg text-xs text-chalk w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-card z-10">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-ink-lighter border border-white/10 rounded-lg text-xs text-chalk w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-card z-10">
           {meta.tooltip}
         </div>
       )}

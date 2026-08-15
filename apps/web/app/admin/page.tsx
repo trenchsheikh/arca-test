@@ -155,7 +155,7 @@ function AdminDashboard() {
 
   return (
     <div className="arca-page">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="arca-section-title mb-2">Admin Dashboard</h1>

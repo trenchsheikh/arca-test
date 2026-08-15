@@ -13,15 +13,15 @@ export function ArcaLogo({
   return (
     <Link href="/" className={`inline-flex items-center gap-2.5 ${className}`}>
       <Image
-        src="/logos/arca.png"
+        src="/logos/arca-logo.png"
         alt="arca"
         width={size}
         height={size}
-        className="rounded-full object-cover shrink-0"
+        className="object-contain shrink-0 drop-shadow-[0_0_12px_rgba(160,170,255,0.35)]"
         priority
       />
       {showWordmark && (
-        <span className="font-display text-[1.35rem] font-semibold lowercase tracking-tight text-black">
+        <span className="font-display text-[1.35rem] font-semibold lowercase tracking-tight text-chalk">
           arca
         </span>
       )}

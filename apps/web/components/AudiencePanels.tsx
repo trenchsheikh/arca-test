@@ -91,10 +91,10 @@ export function AudiencePanels() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="bg-white">
+    <div className="bg-ink">
       {/* Tabbed audience panel */}
       <section className="py-14 sm:py-20 lg:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+        <div className="container mx-auto max-w-5xl">
           <motion.div
             variants={staggerContainer}
             initial={reduceMotion ? false : 'hidden'}
@@ -103,7 +103,7 @@ export function AudiencePanels() {
           >
             <motion.h2
               variants={fadeUp}
-              className="font-display font-bold text-black text-2xl sm:text-4xl lg:text-5xl text-center mb-6 sm:mb-10 text-balance tracking-tight px-1"
+              className="font-display font-bold text-chalk text-2xl sm:text-4xl lg:text-5xl text-center mb-6 sm:mb-10 text-balance tracking-tight px-1"
             >
               Built For Every Side Of The Market
             </motion.h2>
@@ -138,7 +138,7 @@ export function AudiencePanels() {
                 variants={slideInLeft}
                 className="order-2 md:order-1 text-left"
               >
-                <h3 className="font-display font-bold text-black text-xl sm:text-3xl mb-3 sm:mb-4 text-balance">
+                <h3 className="font-display font-bold text-chalk text-xl sm:text-3xl mb-3 sm:mb-4 text-balance">
                   {active.title}
                 </h3>
                 <p className="text-chalk-dim text-sm sm:text-lg leading-relaxed mb-5 sm:mb-6">
@@ -154,10 +154,10 @@ export function AudiencePanels() {
 
               <motion.div
                 variants={slideInRight}
-                className="order-1 md:order-2 aspect-[4/3] sm:aspect-square max-h-[280px] md:max-h-none mx-auto w-full rounded-[1.75rem] sm:rounded-[2rem] bg-gradient-to-br from-[#5D74E5] via-[#7B8DEB] to-[#DDE3FF] flex items-center justify-center shadow-soft"
+                className="order-1 md:order-2 aspect-[4/3] sm:aspect-square max-h-[280px] md:max-h-none mx-auto w-full rounded-[1.75rem] sm:rounded-[2rem] bg-gradient-to-br from-[#5D74E5] via-[#4559C7] to-[#1F2740] flex items-center justify-center shadow-soft"
               >
-                <div className="w-[72%] h-[72%] rounded-3xl bg-white/95 flex flex-col items-center justify-center gap-3 border border-white/60">
-                  <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+                <div className="w-[72%] h-[72%] rounded-3xl bg-ink-light/95 flex flex-col items-center justify-center gap-3 border border-white/15">
+                  <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-brand/15 text-brand">
                     <MdIcon className="arca-icon-lg">{active.visual}</MdIcon>
                   </span>
                   <span className="text-sm font-semibold text-chalk lowercase tracking-tight">
@@ -172,7 +172,7 @@ export function AudiencePanels() {
 
       {/* Rounded CTA banner */}
       <section className="pb-14 sm:pb-20 lg:pb-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+        <div className="container mx-auto max-w-5xl">
           <motion.div
             variants={scaleIn}
             initial={reduceMotion ? false : 'hidden'}
@@ -210,19 +210,19 @@ export function AudiencePanels() {
 
       {/* FAQ accordion */}
       <section className="pb-16 sm:pb-24 lg:pb-28">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+        <div className="container mx-auto max-w-3xl">
           <motion.h2
             variants={fadeUp}
             initial={reduceMotion ? false : 'hidden'}
             whileInView="show"
             viewport={homeViewport}
-            className="font-display font-bold text-black text-2xl sm:text-4xl lg:text-5xl text-center mb-8 sm:mb-12 text-balance tracking-tight px-1"
+            className="font-display font-bold text-chalk text-2xl sm:text-4xl lg:text-5xl text-center mb-8 sm:mb-12 text-balance tracking-tight px-1"
           >
             Have Questions? We&apos;ve Got Answers
           </motion.h2>
 
           <motion.div
-            className="border-t border-black/10"
+            className="border-t border-white/10"
             variants={staggerFast}
             initial={reduceMotion ? false : 'hidden'}
             whileInView="show"
@@ -234,12 +234,12 @@ export function AudiencePanels() {
                 <motion.div
                   key={item.q}
                   variants={fadeUp}
-                  className="border-b border-black/10"
+                  className="border-b border-white/10"
                 >
                   <div className="w-full flex items-start sm:items-center justify-between gap-3 py-5 sm:py-6">
                     <button
                       type="button"
-                      className="flex-1 text-left font-display font-bold text-black text-base sm:text-xl pr-2"
+                      className="flex-1 text-left font-display font-bold text-chalk text-base sm:text-xl pr-2"
                       onClick={() => setOpenFaq(open ? null : i)}
                       aria-expanded={open}
                     >

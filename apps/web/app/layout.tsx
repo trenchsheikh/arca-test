@@ -9,6 +9,7 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -18,28 +19,27 @@ export const metadata: Metadata = {
   keywords: ['AI agents', 'crypto', 'ICO', 'buyback', 'Solana', 'Robinhood Chain'],
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: '32x32', type: 'image/png' },
+      { url: '/logos/arca-logo.png', type: 'image/png' },
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/logos/arca.png', type: 'image/png' },
     ],
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
-    shortcut: '/favicon.ico',
+    shortcut: '/logos/arca-logo.png',
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`dark ${inter.variable}`}>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
           rel="stylesheet"
         />
       </head>
-      <body className="font-body">
+      <body className={`${inter.className} font-body`}>
         <Providers>
           <SiteHeader />
-          <main className="min-h-screen bg-brand">{children}</main>
+          <main className="min-h-screen">{children}</main>
           <SiteFooter />
         </Providers>
       </body>

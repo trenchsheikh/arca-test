@@ -23,7 +23,7 @@ export default function HomePage() {
     <div className="relative">
       <ScrollProgress />
 
-      <section className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden text-center bg-white px-5 sm:px-8">
+      <section className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden text-center px-5 sm:px-8">
         <div className="relative container mx-auto w-full flex flex-1 flex-col items-center justify-center py-20 sm:py-24">
           <motion.div
             variants={staggerContainer}
@@ -33,11 +33,11 @@ export default function HomePage() {
           >
             <motion.div variants={fadeUp} className="mb-5 sm:mb-6">
               <Image
-                src="/logos/arca.png"
+                src="/logos/arca-logo.png"
                 alt="arca"
                 width={72}
                 height={72}
-                className="rounded-full object-cover w-16 h-16 sm:w-14 sm:h-14 lg:w-12 lg:h-12"
+                className="object-contain w-16 h-16 sm:w-14 sm:h-14 lg:w-12 lg:h-12 drop-shadow-[0_0_20px_rgba(160,170,255,0.4)]"
                 priority
               />
             </motion.div>
@@ -51,7 +51,7 @@ export default function HomePage() {
 
             <motion.h1
               variants={fadeUp}
-              className="font-display font-bold text-black text-[2.15rem] leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-6xl lg:leading-[1.08] mb-5 sm:mb-7 text-balance tracking-tight max-w-[16ch] sm:max-w-none"
+              className="font-display font-bold text-chalk text-[2.15rem] leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-6xl lg:leading-[1.08] mb-5 sm:mb-7 text-balance tracking-tight max-w-[16ch] sm:max-w-none"
             >
               Raising Capital.
               <br />
@@ -82,16 +82,16 @@ export default function HomePage() {
               <p className="text-xs uppercase tracking-[0.18em] text-chalk-dim font-semibold">
                 Built On
               </p>
-              <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-8 opacity-70">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-8 opacity-80">
                 <Image
                   src="/logos/robinhood.png?v=3"
                   alt="Robinhood"
                   width={200}
                   height={44}
-                  className="h-9 md:h-7 w-auto object-contain"
+                  className="h-9 md:h-7 w-auto object-contain brightness-0 invert"
                 />
                 <Image
-                  src="/logos/solana.png?v=3"
+                  src="/logos/solana.svg"
                   alt="Solana"
                   width={160}
                   height={30}

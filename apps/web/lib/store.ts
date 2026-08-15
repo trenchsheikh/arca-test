@@ -126,6 +126,28 @@ function createInitialStore(): StoreShape {
 const store: StoreShape = globalStore.__arcaStore ?? createInitialStore();
 globalStore.__arcaStore = store;
 
+/** Keep catalog agents in sync with mock-data across HMR (preserve app-created agents). */
+function syncCatalogAgents() {
+  const mockIds = new Set(mockAgents.map((a) => a.id));
+  const extras = store.agents.filter(
+    (a) => !mockIds.has(a.id) && a.id.startsWith('agent-'),
+  );
+  const fingerprint = mockAgents.map((a) => `${a.id}:${a.name}`).join('|');
+  const currentFingerprint = store.agents
+    .filter((a) => mockIds.has(a.id))
+    .map((a) => `${a.id}:${a.name}`)
+    .join('|');
+
+  if (
+    fingerprint !== currentFingerprint ||
+    store.agents.length !== mockAgents.length + extras.length
+  ) {
+    store.agents = [...mockAgents, ...extras];
+  }
+}
+
+syncCatalogAgents();
+
 // Initialize demo ICO session once
 if (!store.icoSessions.size) {
   const predictionNexusAgent = store.agents.find((a) => a.slug === 'prediction-nexus');
@@ -292,6 +314,8 @@ export function approveApplication(
     id: `agent-${Date.now()}-${Math.random().toString(36).substring(7)}`,
     slug: app.name.toLowerCase().replace(/\s+/g, '-'),
     name: app.name,
+    ticker: app.name.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase() || 'AGENT',
+    deployer: `@${(app.team[0]?.name || app.name).toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12) || 'deployer'}`,
     oneLiner: app.oneLiner,
     description: app.description,
     logoUrl: app.logoUrl || '',
@@ -339,14 +363,17 @@ export function approveApplication(
 
 // Agents API
 export function getAgents(): Agent[] {
+  syncCatalogAgents();
   return store.agents;
 }
 
 export function getAgentBySlug(slug: string): Agent | undefined {
+  syncCatalogAgents();
   return store.agents.find(a => a.slug === slug);
 }
 
 export function getAgentById(id: string): Agent | undefined {
+  syncCatalogAgents();
   return store.agents.find(a => a.id === id);
 }
 

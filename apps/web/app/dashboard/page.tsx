@@ -84,7 +84,7 @@ function InvestorDashboard() {
 
   return (
     <div className="arca-page">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -142,7 +142,7 @@ function InvestorDashboard() {
         </div>
 
         <div className="arca-surface overflow-hidden">
-          <div className="px-2 pt-2 border-b border-black/5 overflow-x-auto">
+          <div className="px-2 pt-2 border-b border-white/10 overflow-x-auto">
             <MdTabs
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e: any) => {

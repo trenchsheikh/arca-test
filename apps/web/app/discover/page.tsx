@@ -1,41 +1,29 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { AgentCard } from '@/components/AgentCard';
+import { DiscoverTierRail } from '@/components/DiscoverTierRail';
 import { LoadingState } from '@/components/LoadingState';
-import type { Agent, AgentCategory, AgentTier, AgentStatus } from '@/lib/mock-data';
-import {
-  MdOutlinedTextField,
-  MdOutlinedSelect,
-  MdSelectOption,
-  MdChipSet,
-  MdFilterChip,
-  MdIcon,
-  MdIconButton,
-  MdList,
-  MdListItem,
-  MdDivider,
-  MdOutlinedButton,
-} from '@/components/material';
+import type { Agent, AgentCategory, AgentStatus, AgentTier } from '@/lib/mock-data';
+import { MdIcon } from '@/components/material';
+
+const TIERS: AgentTier[] = ['Seed', 'Core', 'Pro'];
+
+const STATUSES: Array<AgentStatus | 'All'> = [
+  'All',
+  'ICO Live',
+  'Trading',
+  'ICO Upcoming',
+];
 
 const CATEGORIES: Array<AgentCategory | 'All'> = [
   'All',
   'Trading',
   'Prediction',
   'Arbitrage',
-  'Yield',
   'Research',
   'Other',
-];
-
-const TIERS: Array<AgentTier | 'All'> = ['All', 'Seed', 'Core', 'Pro'];
-const STATUSES: Array<AgentStatus | 'All'> = [
-  'All',
-  'ICO Upcoming',
-  'ICO Live',
-  'Trading',
 ];
 
 function DiscoverContent() {
@@ -44,21 +32,12 @@ function DiscoverContent() {
 
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<'grid' | 'list'>('list');
-
   const [search, setSearch] = useState(searchParams.get('search') || '');
-  const [categoryFilter, setCategoryFilter] = useState<AgentCategory | 'All'>(
-    (searchParams.get('category') as AgentCategory) || 'All',
-  );
-  const [tierFilter, setTierFilter] = useState<AgentTier | 'All'>(
-    (searchParams.get('tier') as AgentTier) || 'All',
-  );
   const [statusFilter, setStatusFilter] = useState<AgentStatus | 'All'>(
     (searchParams.get('status') as AgentStatus) || 'All',
   );
-  const [sort, setSort] = useState(searchParams.get('sort') || 'revenue');
-  const [order, setOrder] = useState<'asc' | 'desc'>(
-    (searchParams.get('order') as 'asc' | 'desc') || 'desc',
+  const [categoryFilter, setCategoryFilter] = useState<AgentCategory | 'All'>(
+    (searchParams.get('category') as AgentCategory) || 'All',
   );
 
   const fetchAgents = useCallback(async () => {
@@ -67,10 +46,9 @@ function DiscoverContent() {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
       if (categoryFilter !== 'All') params.set('category', categoryFilter);
-      if (tierFilter !== 'All') params.set('tier', tierFilter);
       if (statusFilter !== 'All') params.set('status', statusFilter);
-      if (sort) params.set('sort', sort);
-      if (order) params.set('order', order);
+      params.set('sort', 'raiseProgress');
+      params.set('order', 'desc');
 
       const response = await fetch(`/api/agents?${params.toString()}`);
       const data = await response.json();
@@ -80,12 +58,12 @@ function DiscoverContent() {
     } finally {
       setLoading(false);
     }
-  }, [search, categoryFilter, tierFilter, statusFilter, sort, order]);
+  }, [search, categoryFilter, statusFilter]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchAgents();
-    }, 300);
+    }, 250);
     return () => clearTimeout(timer);
   }, [fetchAgents]);
 
@@ -93,168 +71,108 @@ function DiscoverContent() {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
     if (categoryFilter !== 'All') params.set('category', categoryFilter);
-    if (tierFilter !== 'All') params.set('tier', tierFilter);
     if (statusFilter !== 'All') params.set('status', statusFilter);
-    if (sort) params.set('sort', sort);
-    if (order) params.set('order', order);
-    router.push(`/discover?${params.toString()}`, { scroll: false });
-  }, [search, categoryFilter, tierFilter, statusFilter, sort, order, router]);
+    const qs = params.toString();
+    router.push(qs ? `/discover?${qs}` : '/discover', { scroll: false });
+  }, [search, categoryFilter, statusFilter, router]);
+
+  const byTier = useMemo(() => {
+    const map: Record<AgentTier, Agent[]> = { Seed: [], Core: [], Pro: [] };
+    for (const agent of agents) {
+      map[agent.tier]?.push(agent);
+    }
+    return map;
+  }, [agents]);
+
+  const hasResults = agents.length > 0;
 
   return (
-    <div className="arca-page">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="arca-page discover-page">
+      <div className="container mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
+          className="mb-5 max-w-2xl"
         >
-          <h1 className="font-display font-bold text-white text-3xl sm:text-5xl mb-3 sm:mb-4">
-            Discover AI Agents
+          <h1 className="font-display font-bold text-chalk text-2xl sm:text-4xl mb-1.5 tracking-tight">
+            Discover
           </h1>
-          <p className="text-white/85 text-base sm:text-xl">
-            Browse verified agents with on chain performance and automatic buybacks
+          <p className="text-chalk-dim text-sm sm:text-base">
+            Find agents people shared. Peek through Seed, Core, and Pro.
           </p>
         </motion.div>
 
-        <div className="arca-surface p-4 sm:p-6 mb-8 space-y-5">
-          <MdOutlinedTextField
-            label="Search agents"
-            value={search}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onInput={(e: any) => setSearch(e.target.value)}
-          >
-            <MdIcon slot="leading-icon">search</MdIcon>
-          </MdOutlinedTextField>
-
-          <div>
-            <p className="text-xs uppercase tracking-wide text-chalk-dim mb-2 font-medium">Category</p>
-            <MdChipSet>
-              {CATEGORIES.map((c) => (
-                <MdFilterChip
-                  key={c}
-                  label={c === 'All' ? 'All categories' : c}
-                  selected={categoryFilter === c}
-                  onClick={() => setCategoryFilter(c)}
-                />
-              ))}
-            </MdChipSet>
-          </div>
-
-          <div>
-            <p className="text-xs uppercase tracking-wide text-chalk-dim mb-2">Tier</p>
-            <MdChipSet>
-              {TIERS.map((t) => (
-                <MdFilterChip
-                  key={t}
-                  label={t === 'All' ? 'All tiers' : t}
-                  selected={tierFilter === t}
-                  onClick={() => setTierFilter(t)}
-                />
-              ))}
-            </MdChipSet>
-          </div>
-
-          <div>
-            <p className="text-xs uppercase tracking-wide text-chalk-dim mb-2">Status</p>
-            <MdChipSet>
-              {STATUSES.map((s) => (
-                <MdFilterChip
-                  key={s}
-                  label={s === 'All' ? 'All status' : s}
-                  selected={statusFilter === s}
-                  onClick={() => setStatusFilter(s)}
-                />
-              ))}
-            </MdChipSet>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
-            <div className="flex-1">
-              <MdOutlinedSelect
-                label="Sort by"
-                value={sort}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(e: any) => setSort(e.target.value)}
+        <div className="discover-filters mb-5 sm:mb-6">
+          <label className="discover-search">
+            <MdIcon className="discover-search-icon">search</MdIcon>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search agents or deployers"
+              className="discover-search-input"
+              aria-label="Search agents"
+            />
+            {search ? (
+              <button
+                type="button"
+                className="discover-search-clear"
+                aria-label="Clear search"
+                onClick={() => setSearch('')}
               >
-                <MdSelectOption value="revenue"><div slot="headline">Revenue</div></MdSelectOption>
-                <MdSelectOption value="winRate"><div slot="headline">Win Rate</div></MdSelectOption>
-                <MdSelectOption value="age"><div slot="headline">Age</div></MdSelectOption>
-                <MdSelectOption value="raiseProgress"><div slot="headline">Raise Progress</div></MdSelectOption>
-              </MdOutlinedSelect>
-            </div>
-            <MdIconButton
-              onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
-              aria-label={order === 'asc' ? 'Ascending' : 'Descending'}
-            >
-              <MdIcon>{order === 'asc' ? 'arrow_upward' : 'arrow_downward'}</MdIcon>
-            </MdIconButton>
-            <MdOutlinedButton onClick={() => setView(view === 'list' ? 'grid' : 'list')}>
-              <MdIcon slot="icon">{view === 'list' ? 'grid_view' : 'view_list'}</MdIcon>
-              {view === 'list' ? 'Grid' : 'List'}
-            </MdOutlinedButton>
-          </div>
-        </div>
+                <MdIcon>close</MdIcon>
+              </button>
+            ) : null}
+          </label>
 
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-white/80">
-            {loading
-              ? 'Loading…'
-              : `${agents.length} agent${agents.length !== 1 ? 's' : ''} found`}
-          </p>
+          <div className="discover-filter-row" role="group" aria-label="Status">
+            {STATUSES.map((s) => (
+              <button
+                key={s}
+                type="button"
+                className={`discover-filter-chip ${statusFilter === s ? 'is-active' : ''}`}
+                onClick={() => setStatusFilter(s)}
+              >
+                {s === 'All' ? 'All' : s.replace('ICO ', '')}
+              </button>
+            ))}
+          </div>
+
+          <div className="discover-filter-row" role="group" aria-label="Category">
+            {CATEGORIES.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={`discover-filter-chip ${categoryFilter === c ? 'is-active' : ''}`}
+                onClick={() => setCategoryFilter(c)}
+              >
+                {c === 'All' ? 'All categories' : c}
+              </button>
+            ))}
+          </div>
         </div>
 
         {loading ? (
           <LoadingState label="Loading agents…" onBrand />
-        ) : agents.length === 0 ? (
-          <div className="arca-surface">
-            <MdList>
-              <MdListItem>
-                <MdIcon slot="start">search_off</MdIcon>
-                <div slot="headline">No Agents Match Your Filters</div>
-                <div slot="supporting-text">Try clearing a filter chip or changing sort</div>
-              </MdListItem>
-            </MdList>
+        ) : !hasResults ? (
+          <div className="rounded-xl border border-dashed border-white/15 px-5 py-10 text-center">
+            <p className="font-display text-lg font-bold text-chalk mb-1">
+              No Agents Match
+            </p>
+            <p className="text-chalk-dim text-sm">
+              Clear search or filters to see Seed, Core, and Pro carousels.
+            </p>
           </div>
-        ) : view === 'list' ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <MdList>
-              {agents.map((agent, index) => (
-                <div key={agent.id}>
-                  {index > 0 && <MdDivider />}
-                  <MdListItem type="link" href={`/agents/${agent.slug}`}>
-                    <MdIcon slot="start">smart_toy</MdIcon>
-                    <div slot="overline">
-                      {agent.tier} · {agent.status}
-                    </div>
-                    <div slot="headline">{agent.name}</div>
-                    <div slot="supporting-text">
-                      {agent.oneLiner} · {formatQuick(agent)}
-                    </div>
-                    <div slot="trailing-supporting-text">{agent.category}</div>
-                    <MdIcon slot="end">chevron_right</MdIcon>
-                  </MdListItem>
-                </div>
-              ))}
-            </MdList>
-          </motion.div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {agents.map((agent) => (
-              <AgentCard key={agent.id} agent={agent} />
+          <div className="discover-tier-stack">
+            {TIERS.map((tier) => (
+              <DiscoverTierRail key={tier} tier={tier} agents={byTier[tier]} />
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
     </div>
   );
-}
-
-function formatQuick(agent: Agent) {
-  return `${agent.totalRevenue.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })} rev · ${(agent.winRate * 100).toFixed(0)}% win`;
 }
 
 export default function DiscoverPage() {

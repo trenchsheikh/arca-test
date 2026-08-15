@@ -7,414 +7,410 @@ import type { Agent, BuybackEvent } from '@/lib/mock-data';
 import { TierBadge } from '@/components/TierBadge';
 import { StatusPill } from '@/components/StatusPill';
 import { LiveBuybackFeed } from '@/components/LiveBuybackFeed';
-import { RaiseProgress } from '@/components/RaiseProgress';
-import { TokenomicsChart } from '@/components/TokenomicsChart';
-import { BuybackFlowDiagram } from '@/components/BuybackFlowDiagram';
-import { DrawdownChart } from '@/components/DrawdownChart';
 import { Countdown } from '@/components/Countdown';
-import { CirculatingSupplySchedule } from '@/components/CirculatingSupplySchedule';
-import { formatCurrency, formatPercent, formatNumber, formatRelativeTime, getExplorerUrl } from '@/lib/format';
 import {
-  MdFilledButton,
-  MdOutlinedButton,
-  MdIcon,
-  MdList,
-  MdListItem,
-  MdDivider,
-  MdAssistChip,
-  MdChipSet,
-} from '@/components/material';
+  apeMeterScore,
+  buildContributors,
+  contributorCount,
+} from '@/lib/contributors';
+import {
+  formatCurrency,
+  formatPercent,
+  formatNumber,
+  formatRelativeTime,
+  getExplorerUrl,
+} from '@/lib/format';
+import { MdFilledButton, MdIcon } from '@/components/material';
 
 interface AgentDetailClientProps {
   agent: Agent;
   buybacks: BuybackEvent[];
 }
 
+function launchStatusCopy(agent: Agent): { title: string; detail: string } {
+  switch (agent.status) {
+    case 'ICO Live':
+      return {
+        title: 'Raise is live',
+        detail: agent.icoEndsAt
+          ? `Closes ${new Date(agent.icoEndsAt).toLocaleString()}`
+          : 'Open for contributions now',
+      };
+    case 'ICO Upcoming':
+      return {
+        title: 'Raise upcoming',
+        detail: 'Waiting on admin go live',
+      };
+    case 'Trading':
+      return {
+        title: 'Raise completed',
+        detail: 'Agent is live with buybacks on chain',
+      };
+    case 'Successful':
+      return {
+        title: 'Raise succeeded',
+        detail: 'Target hit and tokens are live',
+      };
+    case 'Failed':
+      return {
+        title: 'Raise failed',
+        detail: 'Below threshold. Refunds available',
+      };
+  }
+}
+
 export function AgentDetailClient({ agent, buybacks }: AgentDetailClientProps) {
   const isTrading = agent.status === 'Trading';
   const isIcoLive = agent.status === 'ICO Live';
+  const progress = Math.min(
+    agent.raiseTarget > 0 ? agent.amountRaised / agent.raiseTarget : 0,
+    1,
+  );
+  const filled = progress >= 0.999;
+  const contributors = buildContributors(agent);
+  const totalContributors = contributorCount(agent);
+  const heat = apeMeterScore(agent);
+  const launch = launchStatusCopy(agent);
+  const unit = agent.chain === 'solana' ? 'SOL' : 'ETH';
 
   return (
-    <div className="min-h-screen">
-      <section>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-5xl"
-          >
-            <div className="flex items-start gap-6 mb-8">
-              {agent.logoUrl ? (
-                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/15 flex-shrink-0">
-                  <Image
-                    src={agent.logoUrl}
-                    alt={agent.name}
-                    width={80}
-                    height={80}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="w-20 h-20 bg-white/15 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl font-bold text-white">
-                    {agent.name.charAt(0)}
+    <div className="agent-detail-page">
+      <div className="container mx-auto py-6 sm:py-8">
+        <Link href="/discover" className="agent-back-link">
+          <MdIcon>arrow_back</MdIcon>
+          Discover
+        </Link>
+
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="agent-detail-hero"
+        >
+          <div className="agent-detail-hero-copy">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <TierBadge tier={agent.tier} showTooltip />
+              <StatusPill status={agent.status} />
+              <span className="text-xs uppercase tracking-wide text-chalk-dim font-semibold">
+                {agent.category} · {agent.chain}
+              </span>
+            </div>
+
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <h1 className="font-display font-bold text-chalk text-3xl sm:text-5xl tracking-tight leading-none">
+                {agent.name}
+              </h1>
+              <div className="flex shrink-0 gap-2">
+                {agent.website && (
+                  <a
+                    href={agent.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="agent-icon-btn"
+                    aria-label="Website"
+                  >
+                    <MdIcon>language</MdIcon>
+                  </a>
+                )}
+                {agent.twitter && (
+                  <a
+                    href={agent.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="agent-icon-btn"
+                    aria-label="X"
+                  >
+                    <MdIcon>alternate_email</MdIcon>
+                  </a>
+                )}
+                {agent.docs && (
+                  <a
+                    href={agent.docs}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="agent-icon-btn"
+                    aria-label="Docs"
+                  >
+                    <MdIcon>description</MdIcon>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <p className="text-chalk-dim text-base sm:text-lg mb-6 max-w-xl leading-relaxed">
+              {agent.oneLiner}
+            </p>
+
+            <p className="font-display font-bold text-chalk text-2xl sm:text-4xl tracking-tight mb-3">
+              {formatCurrency(agent.amountRaised)}{' '}
+              <span className="text-chalk-dim text-lg sm:text-2xl font-semibold">
+                raised
+              </span>
+            </p>
+
+            <div className="agent-raise-track mb-2">
+              <div
+                className={`agent-raise-fill ${filled ? 'is-complete' : ''}`}
+                style={{ width: `${Math.max(progress * 100, progress > 0 ? 3 : 0)}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-sm mb-5">
+              <span className={`font-semibold ${filled ? 'text-emerald-400' : 'text-brand'}`}>
+                {filled ? 'Complete' : formatPercent(progress)}
+              </span>
+              <span className="text-chalk-dim">
+                Goal {formatCurrency(agent.raiseTarget)}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="agent-avatar-stack" aria-hidden>
+                {contributors.slice(0, 5).map((c) => (
+                  <span
+                    key={c.handle}
+                    className="agent-avatar"
+                    style={{
+                      background: `hsl(${(c.handle.length * 37) % 360} 42% 38%)`,
+                    }}
+                    title={c.handle}
+                  >
+                    {c.handle.replace('@', '').charAt(0).toUpperCase()}
                   </span>
-                </div>
+                ))}
+              </div>
+              <p className="text-sm text-chalk-dim">
+                <span className="text-chalk font-semibold">+{totalContributors}</span>{' '}
+                contributors
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {isIcoLive && (
+                <Link href={`/agents/${agent.slug}/ico`}>
+                  <MdFilledButton>
+                    <MdIcon slot="icon">payments</MdIcon>
+                    Join Raise
+                  </MdFilledButton>
+                </Link>
               )}
+              {isTrading && (
+                <MdFilledButton>
+                  <MdIcon slot="icon">candlestick_chart</MdIcon>
+                  Trade {agent.ticker}
+                </MdFilledButton>
+              )}
+            </div>
+          </div>
 
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-3 mb-3">
-                  <h1 className="font-display font-bold text-white text-4xl sm:text-5xl">
-                    {agent.name}
-                  </h1>
-                  <TierBadge tier={agent.tier} showTooltip />
-                </div>
+          <div className="agent-detail-hero-visual">
+            <div className="agent-hero-mark">
+              {agent.logoUrl ? (
+                <Image
+                  src={agent.logoUrl}
+                  alt={agent.name}
+                  width={280}
+                  height={280}
+                  className="w-full h-full object-cover"
+                  priority
+                />
+              ) : (
+                <span className="font-display text-7xl font-bold text-brand">
+                  {agent.name.charAt(0)}
+                </span>
+              )}
+            </div>
+            <p className="text-center text-xs text-chalk-dim mt-3 font-mono">
+              ${agent.ticker}
+            </p>
+          </div>
+        </motion.div>
 
-                <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <StatusPill status={agent.status} />
-                  <span className="text-white/70">{agent.category}</span>
-                  <span className="text-white/40">·</span>
-                  <span className="text-white/70 capitalize">{agent.chain}</span>
-                </div>
+        <div className="agent-detail-grid">
+          <div className="agent-detail-main space-y-8">
+            <section>
+              <h2 className="agent-section-title">About</h2>
+              <p className="text-chalk-muted leading-relaxed">{agent.description}</p>
+            </section>
 
-                <p className="text-white/80 text-lg mb-6">{agent.oneLiner}</p>
-
-                <div className="flex flex-wrap gap-3">
-                  {isTrading && (
-                    <MdFilledButton className="hero-cta-filled">
-                      <MdIcon slot="icon">candlestick_chart</MdIcon>
-                      Trade on DEX
-                    </MdFilledButton>
+            <section>
+              <h2 className="agent-section-title">Deployer</h2>
+              <div className="agent-deployer-card">
+                <span
+                  className="agent-avatar agent-avatar-lg"
+                  style={{
+                    background: `hsl(${(agent.deployer.length * 41) % 360} 48% 40%)`,
+                  }}
+                >
+                  {agent.deployer.replace('@', '').charAt(0).toUpperCase()}
+                </span>
+                <div>
+                  <p className="text-chalk font-semibold text-lg">{agent.deployer}</p>
+                  <p className="text-chalk-dim text-sm">
+                    Deployed {agent.name} on {agent.chain}. Tier {agent.tier}.
+                  </p>
+                  {agent.team[0]?.role && (
+                    <p className="text-chalk-dim text-sm mt-1">{agent.team[0].role}</p>
                   )}
-                  {isIcoLive && (
-                    <Link href={`/agents/${agent.slug}/ico`}>
-                      <MdFilledButton className="hero-cta-filled">
-                        <MdIcon slot="icon">payments</MdIcon>
-                        Participate in ICO
-                      </MdFilledButton>
-                    </Link>
-                  )}
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="agent-section-title">How Capital Is Used</h2>
+              <ul className="agent-bullet-list">
+                <li>Run the live trading or research loop on {agent.chain}</li>
+                <li>Route revenue into the locked 90/10 buyback split</li>
+                <li>Cover infra, data, and risk rails for the agent</li>
+                <li>Keep a reserve for inventory and drawdown control</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="agent-section-title">Deal Terms</h2>
+              <dl className="agent-terms-list">
+                <div>
+                  <dt>Ticker</dt>
+                  <dd>${agent.ticker}</dd>
+                </div>
+                <div>
+                  <dt>Launch FDV</dt>
+                  <dd>{formatCurrency(agent.launchFdv)}</dd>
+                </div>
+                <div>
+                  <dt>Raise Target</dt>
+                  <dd>{formatCurrency(agent.raiseTarget)} (10% FDV)</dd>
+                </div>
+                <div>
+                  <dt>Token Price</dt>
+                  <dd>${agent.tokenPrice}</dd>
+                </div>
+                <div>
+                  <dt>Min Ticket</dt>
+                  <dd>
+                    {agent.minTicket} {unit}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Threshold</dt>
+                  <dd>{formatPercent(agent.raiseThreshold)} of target</dd>
+                </div>
+                <div>
+                  <dt>Vesting Cliff</dt>
+                  <dd>{agent.vestingCliffDays} days</dd>
+                </div>
+                <div>
+                  <dt>Vesting Duration</dt>
+                  <dd>{agent.vestingDurationDays} days linear</dd>
+                </div>
+                <div>
+                  <dt>Buyback Split</dt>
+                  <dd>90% agent / 10% platform</dd>
+                </div>
+                <div>
+                  <dt>Risk</dt>
+                  <dd>{agent.riskRating}</dd>
+                </div>
+              </dl>
+            </section>
+
+            {(agent.website || agent.docs || agent.twitter) && (
+              <section>
+                <h2 className="agent-section-title">Links</h2>
+                <div className="flex flex-wrap gap-x-5 gap-y-2">
                   {agent.website && (
-                    <a href={agent.website} target="_blank" rel="noopener noreferrer">
-                      <MdOutlinedButton className="hero-cta-outlined">
-                        <MdIcon slot="icon">language</MdIcon>
-                        Website
-                      </MdOutlinedButton>
+                    <a
+                      href={agent.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="agent-text-link"
+                    >
+                      Website
                     </a>
                   )}
                   {agent.docs && (
-                    <a href={agent.docs} target="_blank" rel="noopener noreferrer">
-                      <MdOutlinedButton className="hero-cta-outlined">
-                        <MdIcon slot="icon">description</MdIcon>
-                        Documentation
-                      </MdOutlinedButton>
+                    <a
+                      href={agent.docs}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="agent-text-link"
+                    >
+                      Docs
+                    </a>
+                  )}
+                  {agent.twitter && (
+                    <a
+                      href={agent.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="agent-text-link"
+                    >
+                      X
                     </a>
                   )}
                 </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Live Buyback Feed - ALWAYS shown */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <LiveBuybackFeed events={buybacks} agentId={agent.id} limit={5} />
-            </motion.div>
-
-            {/* Countdown for Live ICOs */}
-            {isIcoLive && agent.icoEndsAt && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="arca-surface p-6 border-mint/20"
-              >
-                <h3 className="text-chalk font-semibold mb-4">ICO Ends In</h3>
-                <Countdown endsAt={agent.icoEndsAt} className="justify-center" />
-              </motion.div>
+              </section>
             )}
 
-            {/* Performance Metrics */}
             {isTrading && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="arca-surface p-6"
-              >
-                <h2 className="font-display font-bold text-chalk text-2xl mb-6">
-                  Verified Performance
-                </h2>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Total Revenue</p>
-                    <p className="text-chalk font-bold text-xl">
-                      {formatCurrency(agent.totalRevenue)}
-                    </p>
+              <section>
+                <h2 className="agent-section-title">Verified Performance</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="agent-stat-cell">
+                    <p className="label">Revenue</p>
+                    <p className="value">{formatCurrency(agent.totalRevenue)}</p>
                   </div>
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Trading Volume</p>
-                    <p className="text-chalk font-bold text-xl">
-                      {formatCurrency(agent.tradingVolume)}
-                    </p>
+                  <div className="agent-stat-cell">
+                    <p className="label">Volume</p>
+                    <p className="value">{formatCurrency(agent.tradingVolume)}</p>
                   </div>
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Win Rate</p>
-                    <p className="text-mint font-bold text-xl">
-                      {formatPercent(agent.winRate)}
-                    </p>
+                  <div className="agent-stat-cell">
+                    <p className="label">Win Rate</p>
+                    <p className="value text-brand">{formatPercent(agent.winRate)}</p>
                   </div>
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Avg Monthly Return</p>
-                    <p className="text-mint font-bold text-xl">
+                  <div className="agent-stat-cell">
+                    <p className="label">Monthly</p>
+                    <p className="value text-brand">
                       {formatPercent(agent.avgMonthlyReturn)}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Capital Deployed</p>
-                    <p className="text-chalk font-bold text-xl">
-                      {formatCurrency(agent.capitalDeployed)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Wallet Age</p>
-                    <p className="text-chalk font-bold text-xl">
-                      {agent.walletAge} days
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Positions</p>
-                    <p className="text-chalk font-bold text-xl">
-                      {formatNumber(agent.numPositions)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Risk Rating</p>
-                    <p className={`font-bold text-xl ${
-                      agent.riskRating === 'Low' ? 'text-mint' :
-                      agent.riskRating === 'Medium' ? 'text-warning' :
-                      'text-error'
-                    }`}>
-                      {agent.riskRating}
-                    </p>
-                  </div>
                 </div>
-                
-                {/* Drawdown Chart */}
-                {agent.drawdownHistory && agent.drawdownHistory.length > 0 && (
-                  <DrawdownChart data={agent.drawdownHistory} />
-                )}
-              </motion.div>
+              </section>
             )}
 
-            {/* Raise Details */}
-            {(isIcoLive || agent.status === 'ICO Upcoming') && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <h2 className="font-display font-bold text-chalk text-2xl mb-4">
-                  ICO Details
-                </h2>
-                <RaiseProgress
-                  raised={agent.amountRaised}
-                  target={agent.raiseTarget}
-                  threshold={agent.raiseThreshold}
-                />
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                  <div className="arca-surface p-4">
-                    <p className="text-chalk-dim text-xs mb-1">Launch FDV</p>
-                    <p className="text-chalk font-semibold">
-                      {formatCurrency(agent.launchFdv)}
-                    </p>
-                  </div>
-                  <div className="arca-surface p-4">
-                    <p className="text-chalk-dim text-xs mb-1">Token Price</p>
-                    <p className="text-chalk font-semibold">
-                      ${agent.tokenPrice}
-                    </p>
-                  </div>
-                  <div className="arca-surface p-4">
-                    <p className="text-chalk-dim text-xs mb-1">Min Ticket</p>
-                    <p className="text-chalk font-semibold">
-                      {agent.minTicket} {agent.chain === 'solana' ? 'SOL' : 'ETH'}
-                    </p>
-                  </div>
-                  <div className="arca-surface p-4">
-                    <p className="text-chalk-dim text-xs mb-1">Raise = 10% FDV</p>
-                    <p className="text-chalk font-semibold">
-                      {formatCurrency(agent.raiseTarget)}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+            {buybacks.length > 0 && (
+              <section>
+                <LiveBuybackFeed events={buybacks} agentId={agent.id} limit={5} />
+              </section>
             )}
 
-            {/* Vesting Terms */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-              className="arca-surface p-6"
-            >
-              <h3 className="font-semibold text-chalk text-lg mb-4">Vesting Terms</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-chalk-dim text-sm mb-1">Vesting Cliff</p>
-                  <p className="text-chalk font-semibold">{agent.vestingCliffDays} days</p>
-                </div>
-                <div>
-                  <p className="text-chalk-dim text-sm mb-1">Vesting Duration</p>
-                  <p className="text-chalk font-semibold">{agent.vestingDurationDays} days (linear)</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Tokenomics */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <h2 className="font-display font-bold text-chalk text-2xl mb-4">
-                Tokenomics
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="arca-surface p-4">
-                  <TokenomicsChart />
-                </div>
-                <div className="arca-surface p-4">
-                  <BuybackFlowDiagram />
-                </div>
-              </div>
-              
-              {/* Circulating Supply Schedule */}
-              <CirculatingSupplySchedule 
-                vestingCliffDays={agent.vestingCliffDays}
-                vestingDurationDays={agent.vestingDurationDays}
-              />
-            </motion.div>
-            
-            {/* Team */}
-            {agent.team && agent.team.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="arca-surface p-6"
-              >
-                <h2 className="font-display font-bold text-chalk text-2xl mb-6">Team</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {agent.team.map((member, idx) => (
-                    <div key={idx} className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-mint/20 to-gold/20 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-lg font-bold text-chalk">
-                          {member.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-chalk font-semibold">
-                          {member.profileUrl ? (
-                            <a href={member.profileUrl} target="_blank" rel="noopener noreferrer" className="hover:text-mint transition-colors">
-                              {member.name}
-                            </a>
-                          ) : member.name}
-                        </p>
-                        <p className="text-chalk-dim text-sm">{member.role}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-            
-            {/* Documents */}
-            {agent.documents && agent.documents.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="arca-surface overflow-hidden"
-              >
-                <h2 className="font-display font-bold text-chalk text-2xl px-6 pt-6 mb-2">
-                  Documents
-                </h2>
-                <MdList>
-                  {agent.documents.map((doc, idx) => (
-                    <div key={idx}>
-                      <MdListItem href={doc.url} target="_blank">
-                        <MdIcon slot="start">description</MdIcon>
-                        <div slot="headline">{doc.title}</div>
-                        <div slot="supporting-text" className="capitalize">
-                          {doc.type}
-                        </div>
-                        <MdIcon slot="end">open_in_new</MdIcon>
-                      </MdListItem>
-                      {idx < agent.documents!.length - 1 && <MdDivider />}
-                    </div>
-                  ))}
-                </MdList>
-              </motion.div>
-            )}
-
-            {/* Buyback History */}
             {isTrading && buybacks.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="arca-surface p-6"
-              >
-                <h2 className="font-display font-bold text-chalk text-2xl mb-6">
-                  Buyback History
-                </h2>
-
+              <section>
+                <h2 className="agent-section-title">Buyback History</h2>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="agent-table">
                     <thead>
-                      <tr className="border-b border-chalk/10">
-                        <th className="text-left text-chalk-dim text-sm font-semibold pb-3">Time</th>
-                        <th className="text-left text-chalk-dim text-sm font-semibold pb-3">Revenue Spent</th>
-                        <th className="text-left text-chalk-dim text-sm font-semibold pb-3">Agent Tokens</th>
-                        <th className="text-left text-chalk-dim text-sm font-semibold pb-3">Platform Tokens</th>
-                        <th className="text-left text-chalk-dim text-sm font-semibold pb-3">Transaction</th>
+                      <tr>
+                        <th>Time</th>
+                        <th>Spent</th>
+                        <th>Agent</th>
+                        <th>Platform</th>
+                        <th>Tx</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {buybacks.map((buyback) => (
-                        <tr key={buyback.id} className="border-b border-chalk/5">
-                          <td className="py-4 text-chalk-dim text-sm">
-                            {formatRelativeTime(buyback.timestamp)}
-                          </td>
-                          <td className="py-4 text-chalk font-semibold">
-                            {formatCurrency(buyback.revenueSpent)}
-                          </td>
-                          <td className="py-4 text-mint">
-                            {formatNumber(buyback.agentTokensBought)}
-                          </td>
-                          <td className="py-4 text-gold">
-                            {formatNumber(buyback.platformTokensBought)}
-                          </td>
-                          <td className="py-4">
+                      {buybacks.map((b) => (
+                        <tr key={b.id}>
+                          <td>{formatRelativeTime(b.timestamp)}</td>
+                          <td>{formatCurrency(b.revenueSpent)}</td>
+                          <td>{formatNumber(b.agentTokensBought)}</td>
+                          <td>{formatNumber(b.platformTokensBought)}</td>
+                          <td>
                             <a
-                              href={getExplorerUrl(buyback.chain, buyback.txHash)}
+                              href={getExplorerUrl(b.chain, b.txHash)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-mint hover:text-mint-light text-sm font-mono"
+                              className="agent-text-link font-mono text-xs"
                             >
-                              {buyback.txHash}
+                              {b.txHash}
                             </a>
                           </td>
                         </tr>
@@ -422,138 +418,177 @@ export function AgentDetailClient({ agent, buybacks }: AgentDetailClientProps) {
                     </tbody>
                   </table>
                 </div>
-              </motion.div>
+              </section>
             )}
 
-            {/* Description */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="arca-surface p-6"
-            >
-              <h2 className="font-display font-bold text-chalk text-2xl mb-4">
-                About {agent.name}
-              </h2>
-              <p className="text-chalk-dim leading-relaxed">
-                {agent.description}
-              </p>
-            </motion.div>
+            <section>
+              <h2 className="agent-section-title">Allocations And Terms</h2>
+              <ol className="agent-number-list">
+                <li>
+                  Raise equals 10% of launch FDV. Capital goes to the agent treasury for
+                  execution and ops.
+                </li>
+                <li>
+                  90% of agent revenue buys {agent.ticker}. 10% buys the platform token.
+                  Split is locked on chain.
+                </li>
+                <li>
+                  Contributor tokens vest after a {agent.vestingCliffDays} day cliff over{' '}
+                  {agent.vestingDurationDays} days.
+                </li>
+                <li>
+                  If the raise finishes below {formatPercent(agent.raiseThreshold)} of
+                  target, contributions can be refunded.
+                </li>
+              </ol>
+            </section>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Stats */}
+          <aside className="agent-detail-aside space-y-4">
+            <div className="agent-side-card">
+              <p className="text-xs uppercase tracking-[0.14em] text-chalk-dim font-semibold mb-2">
+                Launch Status
+              </p>
+              <p className="font-display font-bold text-chalk text-xl mb-1">
+                {launch.title}
+              </p>
+              <p className="text-sm text-chalk-dim mb-4">{launch.detail}</p>
+              {isIcoLive && agent.icoEndsAt && (
+                <div className="mb-4">
+                  <Countdown endsAt={agent.icoEndsAt} className="justify-start" />
+                </div>
+              )}
+              {isIcoLive ? (
+                <Link href={`/agents/${agent.slug}/ico`} className="block">
+                  <MdFilledButton style={{ width: '100%' }}>
+                    <MdIcon slot="icon">bolt</MdIcon>
+                    Contribute Now
+                  </MdFilledButton>
+                </Link>
+              ) : isTrading ? (
+                <MdFilledButton style={{ width: '100%' }}>
+                  <MdIcon slot="icon">candlestick_chart</MdIcon>
+                  Trade {agent.ticker}
+                </MdFilledButton>
+              ) : (
+                <MdFilledButton style={{ width: '100%' }} disabled>
+                  Raise Not Open
+                </MdFilledButton>
+              )}
+            </div>
+
+            <div className="agent-side-card">
+              <p className="text-xs uppercase tracking-[0.14em] text-chalk-dim font-semibold mb-3">
+                Ape Meter
+              </p>
+              <div className="agent-ape-meter" aria-label={`Ape meter ${heat}`}>
+                <svg viewBox="0 0 120 70" className="w-full max-w-[200px] mx-auto">
+                  <path
+                    d="M10 60 A50 50 0 0 1 110 60"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.12)"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M10 60 A50 50 0 0 1 110 60"
+                    fill="none"
+                    stroke="#5D74E5"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(heat / 100) * 157} 157`}
+                  />
+                  <text
+                    x="60"
+                    y="58"
+                    textAnchor="middle"
+                    fill="#F5F6FA"
+                    fontSize="18"
+                    fontWeight="700"
+                  >
+                    {heat}
+                  </text>
+                </svg>
+              </div>
+              <p className="text-center text-xs text-chalk-dim mt-1">
+                Heat from raise pace and buyback activity
+              </p>
+            </div>
+
+            <div className="agent-side-card">
+              <p className="text-xs uppercase tracking-[0.14em] text-chalk-dim font-semibold mb-3">
+                Top Contributors
+              </p>
+              {contributors.length === 0 ? (
+                <p className="text-sm text-chalk-dim">No contributions yet.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {contributors.slice(0, 6).map((c, i) => {
+                    const share =
+                      agent.amountRaised > 0
+                        ? c.amount / agent.amountRaised
+                        : 0;
+                    return (
+                      <li key={`${c.handle}-${i}`} className="flex items-center gap-3">
+                        <span
+                          className="agent-avatar"
+                          style={{
+                            background: `hsl(${(c.handle.length * 37) % 360} 42% 38%)`,
+                          }}
+                        >
+                          {c.handle.replace('@', '').charAt(0).toUpperCase()}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-chalk font-medium truncate">
+                            {c.handle}
+                            {c.handle === agent.deployer && (
+                              <span className="ml-1 text-[10px] uppercase tracking-wide text-brand">
+                                Deployer
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-chalk-dim">
+                            {formatCurrency(c.amount)} · {formatPercent(share)}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
             {isTrading && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="arca-surface p-6"
-              >
-                <h3 className="font-display font-bold text-chalk text-lg mb-4">
-                  Market Stats
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Current Price</p>
-                    <p className="text-chalk font-bold text-2xl">
-                      ${agent.currentPrice.toFixed(5)}
-                    </p>
-                    <p className={`text-sm ${agent.priceChange24h >= 0 ? 'text-mint' : 'text-error'}`}>
-                      {agent.priceChange24h >= 0 ? '+' : ''}
-                      {formatPercent(agent.priceChange24h)} 24h
-                    </p>
+              <div className="agent-side-card">
+                <p className="text-xs uppercase tracking-[0.14em] text-chalk-dim font-semibold mb-3">
+                  Market
+                </p>
+                <p className="font-display font-bold text-chalk text-2xl">
+                  ${agent.currentPrice.toFixed(5)}
+                </p>
+                <p
+                  className={`text-sm mb-3 ${
+                    agent.priceChange24h >= 0 ? 'text-emerald-400' : 'text-error'
+                  }`}
+                >
+                  {agent.priceChange24h >= 0 ? '+' : ''}
+                  {formatPercent(agent.priceChange24h)} 24h
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between gap-3">
+                    <span className="text-chalk-dim">Buybacks</span>
+                    <span className="text-chalk font-semibold">{agent.totalBuybacks}</span>
                   </div>
-                  <MdDivider />
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Circulating Supply</p>
-                    <p className="text-chalk font-semibold">
+                  <div className="flex justify-between gap-3">
+                    <span className="text-chalk-dim">Circulating</span>
+                    <span className="text-chalk font-semibold">
                       {formatNumber(agent.circulatingSupply)}
-                    </p>
-                  </div>
-                  <MdDivider />
-                  <div>
-                    <p className="text-chalk-dim text-sm mb-1">Total Buybacks</p>
-                    <p className="text-mint font-semibold text-lg">
-                      {agent.totalBuybacks}
-                    </p>
+                    </span>
                   </div>
                 </div>
-              </motion.div>
-            )}
-
-            {/* Links */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="arca-surface p-6"
-            >
-              <h3 className="font-display font-bold text-chalk text-lg mb-4">
-                Resources
-              </h3>
-              <MdChipSet>
-                {agent.website && (
-                  <a href={agent.website} target="_blank" rel="noopener noreferrer">
-                    <MdAssistChip label="Website">
-                      <MdIcon slot="icon">language</MdIcon>
-                    </MdAssistChip>
-                  </a>
-                )}
-                {agent.docs && (
-                  <a href={agent.docs} target="_blank" rel="noopener noreferrer">
-                    <MdAssistChip label="Documentation">
-                      <MdIcon slot="icon">description</MdIcon>
-                    </MdAssistChip>
-                  </a>
-                )}
-                {agent.twitter && (
-                  <a href={agent.twitter} target="_blank" rel="noopener noreferrer">
-                    <MdAssistChip label="Twitter">
-                      <MdIcon slot="icon">alternate_email</MdIcon>
-                    </MdAssistChip>
-                  </a>
-                )}
-                <MdAssistChip label="Strategy Overview">
-                  <MdIcon slot="icon">analytics</MdIcon>
-                </MdAssistChip>
-                <MdAssistChip label="Audit Report">
-                  <MdIcon slot="icon">verified</MdIcon>
-                </MdAssistChip>
-              </MdChipSet>
-
-              <div className="mt-6 flex flex-col gap-3">
-                {isTrading && (
-                  <MdFilledButton style={{ width: '100%' }}>
-                    <MdIcon slot="icon">candlestick_chart</MdIcon>
-                    Trade on DEX
-                  </MdFilledButton>
-                )}
-                {isIcoLive && (
-                  <Link href={`/agents/${agent.slug}/ico`} className="block">
-                    <MdFilledButton style={{ width: '100%' }}>
-                      <MdIcon slot="icon">payments</MdIcon>
-                      Participate in ICO
-                    </MdFilledButton>
-                  </Link>
-                )}
-                {agent.website && (
-                  <a
-                    href={agent.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <MdOutlinedButton style={{ width: '100%' }}>
-                      <MdIcon slot="icon">open_in_new</MdIcon>
-                      Visit Website
-                    </MdOutlinedButton>
-                  </a>
-                )}
               </div>
-            </motion.div>
-          </div>
+            )}
+          </aside>
         </div>
       </div>
     </div>

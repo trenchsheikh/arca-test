@@ -36,7 +36,7 @@ export function RequireAuth({
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="arca-surface p-8 max-w-md w-full shadow-soft">
-          <h1 className="text-2xl font-bold text-black mb-2">{title}</h1>
+          <h1 className="text-2xl font-bold text-chalk mb-2">{title}</h1>
           <p className="text-chalk-dim text-sm mb-4">Demo credentials</p>
           <MdList className="mb-6">
             <MdListItem>

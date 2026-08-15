@@ -7,25 +7,40 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: '0.75rem',
+        sm: '1rem',
+        lg: '1.25rem',
+      },
+      screens: {
+        sm: '640px',
+        md: '768px',
+        lg: '920px',
+        xl: '1000px',
+        '2xl': '1080px',
+      },
+    },
     extend: {
       colors: {
-        // Brand guidelines: surfaces (mapped from previous ink tokens)
+        // Dark surfaces
         ink: {
-          DEFAULT: '#F5F6FA',
-          light: '#FFFFFF',
-          lighter: '#EEF0F8',
+          DEFAULT: '#000000',
+          light: '#12141C',
+          lighter: '#1A1D28',
         },
-        // Brand blue (mapped from previous mint tokens for system-wide accent)
+        // Brand blue
         mint: {
           DEFAULT: '#5D74E5',
           light: '#7B8DEB',
           dark: '#4559C7',
         },
-        // Text on light surfaces (mapped from chalk)
+        // Text on dark surfaces
         chalk: {
-          DEFAULT: '#000000',
-          muted: '#2A2A2A',
-          dim: '#5C6370',
+          DEFAULT: '#F5F6FA',
+          muted: '#C8CCD6',
+          dim: '#8B91A0',
         },
         brand: {
           DEFAULT: '#5D74E5',
@@ -37,8 +52,8 @@ const config: Config = {
           light: '#7B8DEB',
           dark: '#4559C7',
         },
-        error: '#D93025',
-        warning: '#E6A700',
+        error: '#FF6B6B',
+        warning: '#F0B429',
       },
       fontFamily: {
         display: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
@@ -49,8 +64,8 @@ const config: Config = {
         '2xl': '1.25rem',
       },
       boxShadow: {
-        soft: '0 8px 30px rgba(93, 116, 229, 0.12)',
-        card: '0 4px 24px rgba(0, 0, 0, 0.06)',
+        soft: '0 8px 30px rgba(0, 0, 0, 0.45)',
+        card: '0 4px 24px rgba(0, 0, 0, 0.35)',
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

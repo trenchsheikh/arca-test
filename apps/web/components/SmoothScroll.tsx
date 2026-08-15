@@ -1,28 +1,58 @@
 'use client';
 
-import { ReactLenis } from 'lenis/react';
+import { useEffect } from 'react';
+import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
-import { useReducedMotion } from 'framer-motion';
 
+type ArcaWindow = Window & { __arcaLenis?: Lenis };
+
+/**
+ * Site-wide momentum scrolling via Lenis.
+ * Uses an explicit RAF loop (more reliable than autoRaf under Next.js HMR)
+ * and ignores prefers-reduced-motion so the effect always mounts.
+ */
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
-  const reduceMotion = useReducedMotion();
+  useEffect(() => {
+    const w = window as ArcaWindow;
 
-  if (reduceMotion) {
-    return <>{children}</>;
-  }
+    // Tear down any leftover instance from HMR
+    w.__arcaLenis?.destroy();
+    w.__arcaLenis = undefined;
 
-  return (
-    <ReactLenis
-      root
-      options={{
-        duration: 1.15,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        touchMultiplier: 1.1,
-        autoRaf: true,
-      }}
-    >
-      {children}
-    </ReactLenis>
-  );
+    const lenis = new Lenis({
+      wrapper: window,
+      content: document.documentElement,
+      lerp: 0.055,
+      smoothWheel: true,
+      syncTouch: true,
+      syncTouchLerp: 0.06,
+      touchInertiaExponent: 1.7,
+      wheelMultiplier: 1,
+      touchMultiplier: 1.2,
+      autoRaf: false,
+      anchors: true,
+      allowNestedScroll: true,
+      stopInertiaOnNavigate: true,
+      respectReducedMotion: false,
+    });
+
+    w.__arcaLenis = lenis;
+
+    let rafId = 0;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    };
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      if (w.__arcaLenis === lenis) {
+        w.__arcaLenis = undefined;
+      }
+      lenis.destroy();
+    };
+  }, []);
+
+  return <>{children}</>;
 }

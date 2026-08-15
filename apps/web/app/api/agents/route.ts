@@ -25,12 +25,15 @@ export async function GET(request: NextRequest) {
       agents = agents.filter(a => a.status === status);
     }
     
-    // Search by name
+    // Search by name, deployer, ticker
     const search = searchParams.get('search');
     if (search) {
       const searchLower = search.toLowerCase();
       agents = agents.filter(a => 
         a.name.toLowerCase().includes(searchLower) ||
+        a.deployer.toLowerCase().includes(searchLower) ||
+        a.ticker.toLowerCase().includes(searchLower) ||
+        a.oneLiner.toLowerCase().includes(searchLower) ||
         a.description.toLowerCase().includes(searchLower)
       );
     }

@@ -18,13 +18,17 @@ type PlatformLink = {
   href: string;
   label: string;
   icon: string;
+  external?: boolean;
 };
+
+const DOCS_URL = 'https://docs.arca.markets/';
 
 const baseLinks: PlatformLink[] = [
   { href: '/discover', label: 'Discover Agents', icon: 'explore' },
   { href: '/dashboard', label: 'Investor Dashboard', icon: 'account_balance_wallet' },
   { href: '/deploy', label: 'Deployer Dashboard', icon: 'rocket_launch' },
   { href: '/apply', label: 'Apply To Launch', icon: 'edit_note' },
+  { href: DOCS_URL, label: 'Docs', icon: 'menu_book', external: true },
 ];
 
 const adminLink: PlatformLink = {
@@ -51,8 +55,8 @@ export function SiteFooter() {
   }, [isAdmin, isAuthenticated]);
 
   return (
-    <footer className="border-t border-black/5 bg-white mt-0">
-      <ScrollReveal className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+    <footer className="glass-panel glass-footer mt-0 rounded-none border-x-0 border-b-0">
+      <ScrollReveal className="container mx-auto py-10 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <ArcaLogo size={36} className="mb-4" />
@@ -68,7 +72,7 @@ export function SiteFooter() {
           </div>
 
           <div className="md:col-span-2">
-            <p className="font-semibold text-black mb-3 text-sm uppercase tracking-wide">
+            <p className="font-semibold text-chalk mb-3 text-sm uppercase tracking-wide">
               Platform
             </p>
             <MdList style={{ background: 'transparent', border: 'none' }}>
@@ -76,11 +80,19 @@ export function SiteFooter() {
                 <MdListItem
                   key={item.href}
                   type="button"
-                  onClick={() => router.push(item.href)}
+                  onClick={() => {
+                    if (item.external) {
+                      window.open(item.href, '_blank', 'noopener,noreferrer');
+                      return;
+                    }
+                    router.push(item.href);
+                  }}
                 >
                   <MdIcon slot="start">{item.icon}</MdIcon>
                   <div slot="headline">{item.label}</div>
-                  <MdIcon slot="end">chevron_right</MdIcon>
+                  <MdIcon slot="end">
+                    {item.external ? 'open_in_new' : 'chevron_right'}
+                  </MdIcon>
                 </MdListItem>
               ))}
             </MdList>

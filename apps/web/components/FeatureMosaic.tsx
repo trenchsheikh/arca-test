@@ -50,24 +50,24 @@ const toneStyles: Record<
   { card: string; fabClass: string; ink: string }
 > = {
   rose: {
-    card: 'bg-[#F8E8EC]',
+    card: 'bg-[#3A1F28]',
     fabClass: 'mosaic-fab-rose',
-    ink: 'bg-white/70 text-[#8B2E3C]',
+    ink: 'bg-black/35 text-[#F0A8B4]',
   },
   sand: {
-    card: 'bg-[#F5EFE0]',
+    card: 'bg-[#3A3224]',
     fabClass: 'mosaic-fab-sand',
-    ink: 'bg-white/70 text-[#8A5A1C]',
+    ink: 'bg-black/35 text-[#E8C48A]',
   },
   mint: {
-    card: 'bg-[#E4F3EA]',
+    card: 'bg-[#1F3328]',
     fabClass: 'mosaic-fab-mint',
-    ink: 'bg-white/70 text-[#1F6B45]',
+    ink: 'bg-black/35 text-[#8FD4AE]',
   },
   sky: {
-    card: 'bg-[#E4ECFA]',
+    card: 'bg-[#1F2740]',
     fabClass: 'mosaic-fab-sky',
-    ink: 'bg-white/70 text-[#3D4FA8]',
+    ink: 'bg-black/35 text-[#A8B6F5]',
   },
 };
 
@@ -75,8 +75,8 @@ export function FeatureMosaic() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section id="home-features" className="bg-white py-16 sm:py-24 lg:py-28 scroll-mt-16">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+    <section id="home-features" className="bg-ink py-16 sm:py-24 lg:py-28 scroll-mt-16">
+      <div className="container mx-auto max-w-5xl">
         <motion.div
           className="text-center mb-10 sm:mb-14 max-w-2xl mx-auto"
           variants={staggerContainer}
@@ -86,7 +86,7 @@ export function FeatureMosaic() {
         >
           <motion.h2
             variants={fadeUp}
-            className="font-display font-bold text-black text-2xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4 text-balance tracking-tight"
+            className="font-display font-bold text-chalk text-2xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4 text-balance tracking-tight"
           >
             Capital Markets Built For AI Agents
           </motion.h2>
@@ -142,9 +142,9 @@ function MosaicCard({
           ? undefined
           : { y: -4, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } }
       }
-      className={`relative overflow-hidden rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-8 ${tone.card} ${card.height} flex flex-col will-change-transform`}
+      className={`relative overflow-hidden rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-8 ${tone.card} ${card.height} flex flex-col will-change-transform border border-white/5`}
     >
-      <h3 className="font-display font-bold text-black text-xl sm:text-[1.75rem] leading-tight max-w-[16ch] mb-3 sm:mb-4 pr-12">
+      <h3 className="font-display font-bold text-chalk text-xl sm:text-[1.75rem] leading-tight max-w-[16ch] mb-3 sm:mb-4 pr-12">
         {card.title}
       </h3>
       <p className="text-chalk-muted text-sm sm:text-base leading-relaxed max-w-xs mb-4 sm:mb-6">
@@ -153,7 +153,7 @@ function MosaicCard({
 
       <div className="mt-auto flex-1 flex items-center justify-center py-2 sm:py-4">
         <div
-          className={`w-full max-w-[180px] sm:max-w-[220px] aspect-[4/3] rounded-2xl ${tone.ink} shadow-sm border border-black/5 flex flex-col items-center justify-center gap-2`}
+          className={`w-full max-w-[180px] sm:max-w-[220px] aspect-[4/3] rounded-2xl ${tone.ink} shadow-sm border border-white/10 flex flex-col items-center justify-center gap-2`}
         >
           <MdIcon className="arca-icon-lg">{card.icon}</MdIcon>
           <span className="text-xs font-semibold uppercase tracking-wider opacity-80">

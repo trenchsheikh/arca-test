@@ -1,14 +1,9 @@
 import { notFound } from 'next/navigation';
-import { getAgentBySlug, getAgentBuybacks } from '@/lib/mock-data';
+import { getAgentBySlug, getAgentBuybacks, mockAgents } from '@/lib/mock-data';
 import { AgentDetailClient } from './AgentDetailClient';
 
-export async function generateStaticParams() {
-  return [
-    { slug: 'quantum-flux' },
-    { slug: 'arbitrage-alpha' },
-    { slug: 'yield-optimizer' },
-    { slug: 'prediction-nexus' },
-  ];
+export function generateStaticParams() {
+  return mockAgents.map((agent) => ({ slug: agent.slug }));
 }
 
 export default async function AgentDetailPage({

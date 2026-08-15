@@ -23,7 +23,7 @@ import {
 } from '@/components/material';
 
 type Step = 'profile' | 'revenue' | 'ico' | 'preview';
-type Category = 'Trading' | 'Prediction' | 'Arbitrage' | 'Yield' | 'Research' | 'Other';
+type Category = 'Trading' | 'Prediction' | 'Arbitrage' | 'Research' | 'Other';
 type Chain = 'solana' | 'robinhood';
 
 interface TeamMember {
@@ -62,7 +62,6 @@ const CATEGORIES: Category[] = [
   'Trading',
   'Prediction',
   'Arbitrage',
-  'Yield',
   'Research',
   'Other',
 ];
@@ -242,7 +241,7 @@ function ApplyWizard() {
   if (form.submittedAppId) {
     return (
       <div className="arca-page">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-2xl">
+        <div className="container mx-auto max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -286,7 +285,7 @@ function ApplyWizard() {
 
   return (
     <div className="arca-page">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+      <div className="container mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -509,7 +508,7 @@ function ApplyWizard() {
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {['Revenue', 'Volume', 'Win Rate', 'Wallet Age'].map((label) => (
-                    <div key={label} className="bg-ink rounded-lg p-3 border border-black/5">
+                    <div key={label} className="bg-ink rounded-lg p-3 border border-white/10">
                       <p className="text-chalk-dim text-xs mb-1">{label}</p>
                       <p className="text-chalk-dim font-mono text-sm">n/a</p>
                     </div>
