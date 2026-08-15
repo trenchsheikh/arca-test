@@ -12,36 +12,76 @@ import {
 
 const cards = [
   {
-    title: 'Verified Agents',
-    body: 'Browse performance you can check: revenue, win rate, and risk in one place.',
+    title: (
+      <>
+        Verified <em className="italic font-normal">agents</em>
+      </>
+    ),
+    body: (
+      <>
+        Look at how an agent is doing: revenue, wins, and risk in{' '}
+        <em className="italic text-chalk">one</em> place.
+      </>
+    ),
     href: '/discover',
     icon: 'smart_toy',
     tone: 'rose',
     height: 'min-h-[240px] sm:min-h-[320px]',
+    label: 'Verified agents',
   },
   {
-    title: 'Automatic Buybacks',
-    body: '90% of agent revenue buys agent tokens. 10% buys platform. Locked on chain.',
+    title: (
+      <>
+        Automatic <em className="italic font-normal">buybacks</em>
+      </>
+    ),
+    body: (
+      <>
+        When an agent earns, most money buys its token. A little buys the{' '}
+        <em className="italic text-chalk">platform</em>. Locked on chain.
+      </>
+    ),
     href: '/discover',
     icon: 'autorenew',
     tone: 'sand',
     height: 'min-h-[240px] sm:min-h-[380px]',
+    label: 'Automatic buybacks',
   },
   {
-    title: 'Structured ICOs',
-    body: 'Fixed tokenomics, admin review, and a clear raise target at 10% of FDV.',
+    title: (
+      <>
+        Simple <em className="italic font-normal">raises</em>
+      </>
+    ),
+    body: (
+      <>
+        Clear rules, a clear goal, and a raise set at{' '}
+        <em className="italic text-chalk">10%</em> of FDV.
+      </>
+    ),
     href: '/apply',
     icon: 'savings',
     tone: 'mint',
     height: 'min-h-[240px] sm:min-h-[400px]',
+    label: 'Simple raises',
   },
   {
-    title: 'Explorer Proof',
-    body: 'Every buyback ships with a transaction hash. No trust, just verification.',
+    title: (
+      <>
+        Proof you can <em className="italic font-normal">check</em>
+      </>
+    ),
+    body: (
+      <>
+        Every buyback has a tx hash. No guessing. Just{' '}
+        <em className="italic text-chalk">verify</em>.
+      </>
+    ),
     href: '/discover',
     icon: 'verified',
     tone: 'sky',
     height: 'min-h-[240px] sm:min-h-[300px]',
+    label: 'Proof you can check',
   },
 ] as const;
 
@@ -75,7 +115,7 @@ export function FeatureMosaic() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section id="home-features" className="bg-ink py-16 sm:py-24 lg:py-28 scroll-mt-16">
+    <section id="home-features" className="bg-ink/40 py-16 sm:py-24 lg:py-28 scroll-mt-16">
       <div className="container mx-auto max-w-5xl">
         <motion.div
           className="text-center mb-10 sm:mb-14 max-w-2xl mx-auto"
@@ -86,15 +126,16 @@ export function FeatureMosaic() {
         >
           <motion.h2
             variants={fadeUp}
-            className="font-display font-bold text-chalk text-2xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4 text-balance tracking-tight"
+            className="font-display font-medium text-chalk text-2xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4 text-balance tracking-tight"
           >
-            Capital Markets Built For AI Agents
+            A home for AI <em className="italic font-normal">agents</em>
           </motion.h2>
           <motion.p
             variants={fadeUp}
             className="text-chalk-dim text-sm sm:text-lg text-balance px-1"
           >
-            Raise, return, and prove value with buybacks anyone can verify on chain.
+            Raise money, do the work, and send value back with{' '}
+            <em className="italic text-chalk">buybacks</em> you can check.
           </motion.p>
         </motion.div>
 
@@ -144,7 +185,7 @@ function MosaicCard({
       }
       className={`relative overflow-hidden rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-8 ${tone.card} ${card.height} flex flex-col will-change-transform border border-white/5`}
     >
-      <h3 className="font-display font-bold text-chalk text-xl sm:text-[1.75rem] leading-tight max-w-[16ch] mb-3 sm:mb-4 pr-12">
+      <h3 className="font-display font-medium text-chalk text-xl sm:text-[1.75rem] leading-tight max-w-[16ch] mb-3 sm:mb-4 pr-12">
         {card.title}
       </h3>
       <p className="text-chalk-muted text-sm sm:text-base leading-relaxed max-w-xs mb-4 sm:mb-6">
@@ -165,7 +206,7 @@ function MosaicCard({
       <Link
         href={card.href}
         className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6"
-        aria-label={`Learn more: ${card.title}`}
+        aria-label={`Learn more: ${card.label}`}
       >
         <MdFab className={tone.fabClass}>
           <MdIcon slot="icon">add</MdIcon>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
@@ -22,14 +22,32 @@ import {
   staggerFast,
 } from '@/lib/home-motion';
 
-const panels = [
+const panels: Array<{
+  id: string;
+  label: string;
+  icon: string;
+  title: ReactNode;
+  body: ReactNode;
+  cta: string;
+  href: string;
+  visual: string;
+}> = [
   {
     id: 'investors',
     label: 'Investors',
     icon: 'account_balance_wallet',
-    title: 'Put Capital Into Agents That Return It',
-    body: 'Participate in structured ICOs, track claims and holdings, and watch buybacks land on chain in real time.',
-    cta: 'Open Investor Dashboard',
+    title: (
+      <>
+        Put money into <em className="italic font-normal">agents</em> that give back
+      </>
+    ),
+    body: (
+      <>
+        Join a raise, watch your claim, and see{' '}
+        <em className="italic text-chalk">buybacks</em> land on chain.
+      </>
+    ),
+    cta: 'Open investor dashboard',
     href: '/dashboard',
     visual: 'payments',
   },
@@ -37,9 +55,18 @@ const panels = [
     id: 'deployers',
     label: 'Deployers',
     icon: 'rocket_launch',
-    title: 'Launch With Locked Buybacks From Day One',
-    body: 'Raise at 10% of FDV, route revenue through an immutable 90/10 split, and show investors proof, not promises.',
-    cta: 'Go To Deployer Dashboard',
+    title: (
+      <>
+        Launch an agent with <em className="italic font-normal">buybacks</em> from day one
+      </>
+    ),
+    body: (
+      <>
+        Raise at 10% of FDV, lock the 90/10 split, and show proof, not{' '}
+        <em className="italic text-chalk">promises</em>.
+      </>
+    ),
+    cta: 'Go to deployer dashboard',
     href: '/deploy',
     visual: 'rocket_launch',
   },
@@ -47,9 +74,18 @@ const panels = [
     id: 'builders',
     label: 'Builders',
     icon: 'edit_note',
-    title: 'Apply To List Your AI Agent',
-    body: 'Submit profile, revenue wallet, and ICO config. Admin review gates every launch so quality stays high.',
-    cta: 'Start Application',
+    title: (
+      <>
+        Apply to list your AI <em className="italic font-normal">agent</em>
+      </>
+    ),
+    body: (
+      <>
+        Share your profile, wallet, and raise plan. We review so quality stays{' '}
+        <em className="italic text-chalk">high</em>.
+      </>
+    ),
+    cta: 'Start application',
     href: '/apply',
     visual: 'edit_note',
   },
@@ -57,30 +93,75 @@ const panels = [
     id: 'discovery',
     label: 'Discovery',
     icon: 'explore',
-    title: 'Find Agents With Live Performance',
-    body: 'Filter by tier, category, and status. Open any agent page for buyback feeds, tokenomics, and risk.',
-    cta: 'Discover Agents',
+    title: (
+      <>
+        Find agents with <em className="italic font-normal">live</em> numbers
+      </>
+    ),
+    body: (
+      <>
+        Filter by Seed, Core, or Pro. Open any agent for buybacks, risk, and{' '}
+        <em className="italic text-chalk">tokenomics</em>.
+      </>
+    ),
+    cta: 'Discover agents',
     href: '/discover',
     visual: 'explore',
   },
-] as const;
+];
 
 const faqs = [
   {
-    q: 'What Makes arca Different From Other Launchpads?',
-    a: 'The product is the buyback engine. Capital raises get you in; immutable on chain 90/10 buybacks are why investors stay.',
+    q: (
+      <>
+        What makes arca <em className="italic font-normal">different</em>?
+      </>
+    ),
+    a: (
+      <>
+        The heart is the buyback engine. Raises get you in. On chain{' '}
+        <em className="italic text-chalk">buybacks</em> are why people stay.
+      </>
+    ),
   },
   {
-    q: 'How Does The 90/10 Buyback Split Work?',
-    a: 'When an agent generates revenue, 90% automatically buys its own token and 10% buys the platform token. The split is locked in the contract.',
+    q: (
+      <>
+        How does the <em className="italic font-normal">90/10</em> split work?
+      </>
+    ),
+    a: (
+      <>
+        When an agent earns, 90% buys its own token and 10% buys the platform token. The split is{' '}
+        <em className="italic text-chalk">locked</em> in the contract.
+      </>
+    ),
   },
   {
-    q: 'Who Can Launch An Agent On arca?',
-    a: 'Anyone can apply. Admin review assigns tier (Seed, Core, or Pro) and must approve before an ICO goes live.',
+    q: (
+      <>
+        Who can launch an <em className="italic font-normal">agent</em>?
+      </>
+    ),
+    a: (
+      <>
+        Anyone can apply. We pick Seed, Core, or Pro and must say yes before a raise goes{' '}
+        <em className="italic text-chalk">live</em>.
+      </>
+    ),
   },
   {
-    q: 'Which Chains Does V1 Support?',
-    a: 'Solana and Robinhood Chain (EVM L2). Agents pick a chain at application; buybacks and ICOs run on that network.',
+    q: (
+      <>
+        Which <em className="italic font-normal">chains</em> work?
+      </>
+    ),
+    a: (
+      <>
+        Solana and Robinhood Chain. An agent picks one at apply time, then buybacks and raises run
+        there.
+      </>
+    ),
   },
 ];
 
@@ -91,8 +172,7 @@ export function AudiencePanels() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="bg-ink">
-      {/* Tabbed audience panel */}
+    <div>
       <section className="py-14 sm:py-20 lg:py-24">
         <div className="container mx-auto max-w-5xl">
           <motion.div
@@ -103,9 +183,9 @@ export function AudiencePanels() {
           >
             <motion.h2
               variants={fadeUp}
-              className="font-display font-bold text-chalk text-2xl sm:text-4xl lg:text-5xl text-center mb-6 sm:mb-10 text-balance tracking-tight px-1"
+              className="font-display font-medium text-chalk text-2xl sm:text-4xl lg:text-5xl text-center mb-6 sm:mb-10 text-balance tracking-tight px-1"
             >
-              Built For Every Side Of The Market
+              Built for every side of the <em className="italic font-normal">market</em>
             </motion.h2>
 
             <motion.div
@@ -138,7 +218,7 @@ export function AudiencePanels() {
                 variants={slideInLeft}
                 className="order-2 md:order-1 text-left"
               >
-                <h3 className="font-display font-bold text-chalk text-xl sm:text-3xl mb-3 sm:mb-4 text-balance">
+                <h3 className="font-display font-medium text-chalk text-xl sm:text-3xl mb-3 sm:mb-4 text-balance">
                   {active.title}
                 </h3>
                 <p className="text-chalk-dim text-sm sm:text-lg leading-relaxed mb-5 sm:mb-6">
@@ -170,7 +250,6 @@ export function AudiencePanels() {
         </div>
       </section>
 
-      {/* Rounded CTA banner */}
       <section className="pb-14 sm:pb-20 lg:pb-24">
         <div className="container mx-auto max-w-5xl">
           <motion.div
@@ -189,17 +268,17 @@ export function AudiencePanels() {
               aria-hidden
             />
             <div className="relative grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-6 md:gap-12 items-center">
-              <h3 className="font-display font-bold text-white text-2xl sm:text-4xl text-balance leading-tight">
-                Start Today With arca
+              <h3 className="font-display font-medium text-white text-2xl sm:text-4xl text-balance leading-tight">
+                Start today with <em className="italic font-normal">arca</em>
               </h3>
               <div>
                 <p className="text-white/90 text-sm sm:text-lg mb-5 sm:mb-6 leading-relaxed">
-                  Explore live agents, join the waitlist, or sign in to dashboards with the demo
-                  account and see the full flow.
+                  Peek at live <em className="italic">agents</em>, join the waitlist, or sign in and
+                  try the full flow.
                 </p>
                 <Link href="/discover" className="inline-block w-full sm:w-auto">
                   <MdFilledButton className="hero-cta-filled" style={{ width: '100%' }}>
-                    Explore Agents
+                    Explore agents
                   </MdFilledButton>
                 </Link>
               </div>
@@ -208,7 +287,6 @@ export function AudiencePanels() {
         </div>
       </section>
 
-      {/* FAQ accordion */}
       <section className="pb-16 sm:pb-24 lg:pb-28">
         <div className="container mx-auto max-w-3xl">
           <motion.h2
@@ -216,9 +294,9 @@ export function AudiencePanels() {
             initial={reduceMotion ? false : 'hidden'}
             whileInView="show"
             viewport={homeViewport}
-            className="font-display font-bold text-chalk text-2xl sm:text-4xl lg:text-5xl text-center mb-8 sm:mb-12 text-balance tracking-tight px-1"
+            className="font-display font-medium text-chalk text-2xl sm:text-4xl lg:text-5xl text-center mb-8 sm:mb-12 text-balance tracking-tight px-1"
           >
-            Have Questions? We&apos;ve Got Answers
+            Have questions? We have <em className="italic font-normal">answers</em>
           </motion.h2>
 
           <motion.div
@@ -232,14 +310,14 @@ export function AudiencePanels() {
               const open = openFaq === i;
               return (
                 <motion.div
-                  key={item.q}
+                  key={i}
                   variants={fadeUp}
                   className="border-b border-white/10"
                 >
                   <div className="w-full flex items-start sm:items-center justify-between gap-3 py-5 sm:py-6">
                     <button
                       type="button"
-                      className="flex-1 text-left font-display font-bold text-chalk text-base sm:text-xl pr-2"
+                      className="flex-1 text-left font-display font-medium text-chalk text-base sm:text-xl pr-2"
                       onClick={() => setOpenFaq(open ? null : i)}
                       aria-expanded={open}
                     >

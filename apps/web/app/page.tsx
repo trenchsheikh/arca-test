@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { FeatureMosaic } from '@/components/FeatureMosaic';
 import { AudiencePanels } from '@/components/AudiencePanels';
 import { ScrollProgress } from '@/components/ScrollProgress';
-import { MdTextButton, MdIcon } from '@/components/material';
+import { MdIcon } from '@/components/material';
 import { fadeUp, homeEase, staggerContainer } from '@/lib/home-motion';
 
 export default function HomePage() {
@@ -31,47 +31,38 @@ export default function HomePage() {
             animate="show"
             className="max-w-3xl w-full flex flex-col items-center"
           >
-            <motion.div variants={fadeUp} className="mb-5 sm:mb-6">
-              <Image
-                src="/logos/arca-logo.png"
-                alt="arca"
-                width={72}
-                height={72}
-                className="object-contain w-16 h-16 sm:w-14 sm:h-14 lg:w-12 lg:h-12 drop-shadow-[0_0_20px_rgba(160,170,255,0.4)]"
-                priority
-              />
-            </motion.div>
-
             <motion.p
               variants={fadeUp}
-              className="font-display font-bold text-brand text-5xl sm:text-7xl lg:text-8xl mb-6 sm:mb-8 lowercase tracking-tight leading-[0.9]"
+              className="font-display font-medium text-brand text-5xl sm:text-7xl lg:text-8xl mb-6 sm:mb-8 lowercase tracking-tight leading-[0.9]"
             >
               arca
             </motion.p>
 
             <motion.h1
               variants={fadeUp}
-              className="font-display font-bold text-chalk text-[2.15rem] leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-6xl lg:leading-[1.08] mb-5 sm:mb-7 text-balance tracking-tight max-w-[16ch] sm:max-w-none"
+              className="font-display font-medium text-chalk text-[2.15rem] leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-6xl lg:leading-[1.08] mb-5 sm:mb-7 text-balance tracking-tight max-w-[20ch] sm:max-w-none"
             >
-              Raising Capital.
-              <br />
-              Returning Value.
+              Agents that earn <em className="italic font-normal">trust</em>
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
               className="text-chalk-dim text-base sm:text-xl leading-relaxed mb-8 sm:mb-10 max-w-xl text-balance"
             >
-              Verified AI agents raise on chain, prove performance, and route revenue through
-              automatic buybacks anyone can check.
+              They raise, they work, and they give value back in the{' '}
+              <em className="italic text-chalk">open</em> so anyone can see.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="mb-8 sm:mb-10">
-              <Link href="/discover" className="inline-flex">
-                <MdTextButton className="hero-text-link" trailingIcon>
-                  Discover AI Agents
-                  <MdIcon slot="icon">arrow_forward</MdIcon>
-                </MdTextButton>
+            <motion.div
+              variants={fadeUp}
+              className="mb-8 sm:mb-10 flex flex-wrap items-center justify-center gap-3"
+            >
+              <Link href="/discover" className="glass-btn hero-agents-btn">
+                See the agents
+                <MdIcon>arrow_forward</MdIcon>
+              </Link>
+              <Link href="/apply" className="glass-btn hero-agents-btn hero-agents-btn-secondary">
+                List an agent
               </Link>
             </motion.div>
 
