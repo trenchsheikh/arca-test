@@ -132,10 +132,12 @@ function syncCatalogAgents() {
   const extras = store.agents.filter(
     (a) => !mockIds.has(a.id) && a.id.startsWith('agent-'),
   );
-  const fingerprint = mockAgents.map((a) => `${a.id}:${a.name}`).join('|');
+  const fingerprint = mockAgents
+    .map((a) => `${a.id}:${a.name}:${a.status}:${a.amountRaised}`)
+    .join('|');
   const currentFingerprint = store.agents
     .filter((a) => mockIds.has(a.id))
-    .map((a) => `${a.id}:${a.name}`)
+    .map((a) => `${a.id}:${a.name}:${a.status}:${a.amountRaised}`)
     .join('|');
 
   if (
@@ -223,6 +225,27 @@ export function getWaitlist(): string[] {
   return Array.from(store.waitlist);
 }
 
+// Application IDs: ARCA-XXXXXX (6 chars, no 0/O/1/I)
+const APPLICATION_ID_ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+const APPLICATION_ID_LENGTH = 6;
+
+function generateApplicationId(): string {
+  const existing = new Set(store.applications.map((a) => a.id));
+  const bytes = new Uint8Array(APPLICATION_ID_LENGTH);
+
+  for (let attempt = 0; attempt < 32; attempt++) {
+    crypto.getRandomValues(bytes);
+    let code = '';
+    for (const byte of bytes) {
+      code += APPLICATION_ID_ALPHABET[byte % APPLICATION_ID_ALPHABET.length];
+    }
+    const id = `ARCA-${code}`;
+    if (!existing.has(id)) return id;
+  }
+
+  throw new Error('Unable to generate a unique application ID');
+}
+
 // Applications API
 export function createApplication(
   data: Partial<Application> & {
@@ -242,7 +265,7 @@ export function createApplication(
   );
 
   const app: Application = {
-    id: `app-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+    id: generateApplicationId(),
     status: 'Submitted',
     name: data.name,
     description: data.description,

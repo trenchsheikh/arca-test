@@ -20,22 +20,20 @@ const DOCS_URL = 'https://docs.arca.markets/';
 type NavItem = {
   href: string;
   label: string;
-  icon: string;
   external?: boolean;
 };
 
 const baseNav: NavItem[] = [
-  { href: '/discover', label: 'Discover', icon: 'explore' },
-  { href: '/dashboard', label: 'Investor', icon: 'account_balance_wallet' },
-  { href: '/deploy', label: 'Deployer', icon: 'rocket_launch' },
-  { href: '/apply', label: 'Apply', icon: 'edit_note' },
-  { href: DOCS_URL, label: 'Docs', icon: 'menu_book', external: true },
+  { href: '/discover', label: 'Discover' },
+  { href: '/dashboard', label: 'Investor' },
+  { href: '/deploy', label: 'Deployer' },
+  { href: '/apply', label: 'Apply' },
+  { href: DOCS_URL, label: 'Docs', external: true },
 ];
 
 const adminNav: NavItem = {
   href: '/admin',
   label: 'Admin',
-  icon: 'admin_panel_settings',
 };
 
 export function SiteHeader() {
@@ -94,7 +92,7 @@ export function SiteHeader() {
       <div className="container mx-auto">
         <div className="relative flex h-16 items-center justify-between gap-2">
           <div className="min-w-0 shrink-0">
-            <ArcaLogo size={36} />
+            <ArcaLogo size={36} wordmarkScale={0.75} />
           </div>
 
           <nav
@@ -115,16 +113,14 @@ export function SiteHeader() {
                       rel="noopener noreferrer"
                       className={className}
                     >
-                      <MdIcon>{item.icon}</MdIcon>
-                      <span>{item.label}</span>
+                      {item.label}
                     </a>
                   );
                 }
 
                 return (
                   <Link key={item.href} href={item.href} className={className}>
-                    <MdIcon>{item.icon}</MdIcon>
-                    <span>{item.label}</span>
+                    {item.label}
                   </Link>
                 );
               })}
@@ -138,15 +134,13 @@ export function SiteHeader() {
                   <span className="text-brand font-medium">{session?.username}</span>
                 </span>
                 <MdOutlinedButton className="header-auth-btn" onClick={logout}>
-                  <MdIcon slot="icon">logout</MdIcon>
-                  <span className="header-auth-label">Log out</span>
+                  Log out
                 </MdOutlinedButton>
               </>
             ) : (
               <Link href="/login" className="shrink-0">
                 <MdFilledButton className="header-auth-btn">
-                  <MdIcon slot="icon">login</MdIcon>
-                  <span className="header-auth-label">Login</span>
+                  Login
                 </MdFilledButton>
               </Link>
             )}
@@ -176,7 +170,6 @@ export function SiteHeader() {
                           type="button"
                           onClick={() => go(item)}
                         >
-                          <MdIcon slot="start">{item.icon}</MdIcon>
                           <div slot="headline">{item.label}</div>
                           {item.external ? (
                             <MdIcon slot="end">open_in_new</MdIcon>

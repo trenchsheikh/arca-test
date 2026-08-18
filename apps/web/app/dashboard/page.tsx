@@ -1,54 +1,92 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { formatPercent, formatRelativeTime, getExplorerUrl } from '@/lib/format';
+import {
+  formatCommaNumber,
+  formatPercent,
+  formatRelativeTime,
+  formatSignedUsd,
+  formatStatCurrency,
+  formatUsd,
+  getExplorerUrl,
+} from '@/lib/format';
 import { RequireAuth } from '@/components/RequireAuth';
 import { useAuth } from '@/components/AuthProvider';
 import { LoadingState } from '@/components/LoadingState';
 import type { InvestorPosition, InvestorTransaction } from '@/lib/store';
-import type { BuybackEvent } from '@/lib/mock-data';
-import {
-  MdTabs,
-  MdPrimaryTab,
-  MdList,
-  MdListItem,
-  MdIcon,
-  MdFilledButton,
-  MdDivider,
-} from '@/components/material';
+import type { Agent, BuybackEvent } from '@/lib/mock-data';
 
 type Tab = 'investments' | 'claims' | 'holdings' | 'pnl' | 'buybacks' | 'history';
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'investments', label: 'My Investments' },
+  { id: 'claims', label: 'Claims' },
+  { id: 'holdings', label: 'Holdings' },
+  { id: 'pnl', label: 'PnL' },
+  { id: 'buybacks', label: 'Buybacks' },
+  { id: 'history', label: 'History' },
+];
+
+const TX_TYPE_LABEL: Record<InvestorTransaction['type'], string> = {
+  contribute: 'Contribute',
+  claim: 'Claim',
+  refund: 'Refund',
+  buyback: 'Buyback',
+};
+
+const TX_STATUS_LABEL: Record<InvestorTransaction['status'], string> = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  failed: 'Failed',
+};
+
+function shortenAddress(value: string): string {
+  if (!value) return '';
+  if (value.length <= 14) return value;
+  return `${value.slice(0, 6)}…${value.slice(-4)}`;
+}
+
+function positionStatus(position: InvestorPosition): string {
+  if (position.claimed) return 'Claimed';
+  if (position.claimable) return 'Claimable';
+  if (position.refundable) return 'Refundable';
+  return 'Pending';
+}
+
+function holdingValue(position: InvestorPosition): number {
+  return position.tokensAllocated * 0.0005;
+}
 
 function InvestorDashboard() {
   const { wallet } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>('investments');
   const [walletAddress, setWalletAddress] = useState(wallet);
-
   const [positions, setPositions] = useState<InvestorPosition[]>([]);
   const [transactions, setTransactions] = useState<InvestorTransaction[]>([]);
   const [buybacks, setBuybacks] = useState<BuybackEvent[]>([]);
+  const [agentsById, setAgentsById] = useState<Record<string, Agent>>({});
   const [loading, setLoading] = useState(false);
-
-  const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: 'investments', label: 'My Investments', icon: 'account_balance_wallet' },
-    { id: 'claims', label: 'Claims', icon: 'redeem' },
-    { id: 'holdings', label: 'Holdings', icon: 'inventory_2' },
-    { id: 'pnl', label: 'PnL', icon: 'trending_up' },
-    { id: 'buybacks', label: 'Buybacks', icon: 'autorenew' },
-    { id: 'history', label: 'Transaction History', icon: 'history' },
-  ];
 
   const fetchPortfolio = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `/api/investor/portfolio?wallet=${encodeURIComponent(walletAddress)}`,
-      );
-      const data = await response.json();
+      const [portfolioRes, agentsRes] = await Promise.all([
+        fetch(`/api/investor/portfolio?wallet=${encodeURIComponent(walletAddress)}`),
+        fetch('/api/agents'),
+      ]);
+      const data = await portfolioRes.json();
+      const agentsData = await agentsRes.json();
       setPositions(data.positions || []);
       setTransactions(data.transactions || []);
       setBuybacks(data.buybacks || []);
+
+      const next: Record<string, Agent> = {};
+      for (const agent of (agentsData.agents || []) as Agent[]) {
+        next[agent.id] = agent;
+      }
+      setAgentsById(next);
     } catch (error) {
       console.error('Failed to fetch portfolio:', error);
     } finally {
@@ -65,22 +103,57 @@ function InvestorDashboard() {
   }, [walletAddress, fetchPortfolio]);
 
   const totalInvested = positions.reduce((sum, p) => sum + p.contributed, 0);
-  const totalHoldings = positions.reduce((sum, p) => sum + p.tokensAllocated * 0.0005, 0);
+  const totalHoldings = positions.reduce((sum, p) => sum + holdingValue(p), 0);
   const totalBuybacks = buybacks.reduce(
     (sum, b) => sum + parseFloat(b.agentTokensBought.toString()),
     0,
   );
   const unrealizedPnL = totalHoldings - totalInvested;
   const pnlRatio = totalInvested > 0 ? unrealizedPnL / totalInvested : 0;
+  const pnlTone =
+    unrealizedPnL > 0 ? 'is-up' : unrealizedPnL < 0 ? 'is-down' : '';
 
-  const positionStatus = (position: InvestorPosition) =>
-    position.claimed
-      ? 'Claimed'
-      : position.claimable
-        ? 'Claimable'
-        : position.refundable
-          ? 'Refundable'
-          : 'Pending';
+  const claimable = useMemo(
+    () => positions.filter((p) => p.claimable && !p.claimed),
+    [positions],
+  );
+
+  const agentName = (agentId: string) =>
+    agentsById[agentId]?.name ?? `Agent ${agentId.slice(0, 8)}`;
+  const agentTicker = (agentId: string) => agentsById[agentId]?.ticker;
+  const agentHref = (agentId: string) => {
+    const slug = agentsById[agentId]?.slug ?? agentId;
+    return `/agents/${slug}`;
+  };
+
+  const stats = [
+    {
+      label: 'Total Invested',
+      value: formatStatCurrency(totalInvested),
+      hint: `${formatCommaNumber(positions.length)} position${positions.length === 1 ? '' : 's'}`,
+    },
+    {
+      label: 'Holdings Value',
+      value: formatStatCurrency(totalHoldings),
+      hint: `${unrealizedPnL >= 0 ? '+' : ''}${formatPercent(pnlRatio)}`,
+      tone: pnlTone,
+    },
+    {
+      label: 'Buybacks Received',
+      value: formatCommaNumber(totalBuybacks),
+      hint: `${formatCommaNumber(buybacks.length)} event${buybacks.length === 1 ? '' : 's'}`,
+    },
+    {
+      label: 'Unrealized PnL',
+      value: formatSignedUsd(unrealizedPnL),
+      hint: `${unrealizedPnL >= 0 ? '+' : ''}${formatPercent(pnlRatio)}`,
+      tone: pnlTone,
+    },
+  ];
+
+  const renderEmpty = (message: string) => (
+    <p className="dashboard-empty">{message}</p>
+  );
 
   return (
     <div className="arca-page">
@@ -88,263 +161,265 @@ function InvestorDashboard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="dashboard-header"
         >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
-            <h1 className="arca-section-title text-white">Investor Dashboard</h1>
-            <p className="text-sm text-white/70 font-mono">{walletAddress}</p>
-          </div>
+          <h1 className="arca-section-title">Investor Dashboard</h1>
           <p className="arca-page-lead">
-            Track your investments, claims, and buyback rewards
+            Track investments, claims, and buyback rewards on arca.
           </p>
+          {walletAddress && (
+            <p className="dashboard-wallet" title={walletAddress}>
+              {shortenAddress(walletAddress)}
+            </p>
+          )}
         </motion.div>
 
-        <div className="arca-surface mb-8 overflow-hidden">
-          <MdList>
-            <MdListItem>
-              <MdIcon slot="start">payments</MdIcon>
-              <div slot="overline">Total Invested</div>
-              <div slot="headline">${totalInvested.toFixed(2)}</div>
-              <div slot="supporting-text">{positions.length} positions</div>
-            </MdListItem>
-            <MdDivider />
-            <MdListItem>
-              <MdIcon slot="start">savings</MdIcon>
-              <div slot="overline">Holdings Value</div>
-              <div slot="headline">${totalHoldings.toFixed(2)}</div>
-              <div slot="supporting-text">
-                {unrealizedPnL >= 0 ? '+' : ''}
-                {formatPercent(pnlRatio)}
-              </div>
-            </MdListItem>
-            <MdDivider />
-            <MdListItem>
-              <MdIcon slot="start">autorenew</MdIcon>
-              <div slot="overline">Buybacks Received</div>
-              <div slot="headline">{totalBuybacks.toFixed(0)}</div>
-              <div slot="supporting-text">{buybacks.length} events</div>
-            </MdListItem>
-            <MdDivider />
-            <MdListItem>
-              <MdIcon slot="start">
-                {unrealizedPnL >= 0 ? 'trending_up' : 'trending_down'}
-              </MdIcon>
-              <div slot="overline">Unrealized PnL</div>
-              <div slot="headline">
-                {unrealizedPnL >= 0 ? '+' : ''}${Math.abs(unrealizedPnL).toFixed(2)}
-              </div>
-              <div slot="supporting-text">
-                {unrealizedPnL >= 0 ? '+' : ''}
-                {formatPercent(pnlRatio)}
-              </div>
-            </MdListItem>
-          </MdList>
+        <div className="dashboard-stat-grid">
+          {stats.map((stat) => (
+            <article key={stat.label} className="arca-surface dashboard-stat">
+              <p className="dashboard-stat-label">{stat.label}</p>
+              <p
+                className={`dashboard-stat-value${stat.tone ? ` ${stat.tone}` : ''}`}
+              >
+                {stat.value}
+              </p>
+              <p className="dashboard-stat-hint">{stat.hint}</p>
+            </article>
+          ))}
         </div>
 
-        <div className="arca-surface overflow-hidden">
-          <div className="px-2 pt-2 border-b border-white/10 overflow-x-auto">
-            <MdTabs
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: any) => {
-                const idx = e.target?.activeTabIndex ?? 0;
-                setActiveTab(tabs[idx].id);
-              }}
-              activeTabIndex={tabs.findIndex((t) => t.id === activeTab)}
-            >
-              {tabs.map((tab) => (
-                <MdPrimaryTab key={tab.id}>
-                  <MdIcon slot="icon">{tab.icon}</MdIcon>
-                  {tab.label}
-                </MdPrimaryTab>
-              ))}
-            </MdTabs>
+        <div className="arca-surface dashboard-board">
+          <div className="dashboard-tabs" role="tablist" aria-label="Portfolio sections">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                id={`dashboard-tab-${tab.id}`}
+                aria-selected={activeTab === tab.id}
+                aria-controls={`dashboard-panel-${tab.id}`}
+                className={`dashboard-tab${activeTab === tab.id ? ' is-active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          <div className="p-4 sm:p-6">
+          <div
+            className="dashboard-panel"
+            role="tabpanel"
+            id={`dashboard-panel-${activeTab}`}
+            aria-labelledby={`dashboard-tab-${activeTab}`}
+          >
             {loading ? (
               <LoadingState label="Loading portfolio…" />
             ) : (
               <>
-                {activeTab === 'investments' &&
-                  (positions.length === 0 ? (
-                    <MdList>
-                      <MdListItem>
-                        <MdIcon slot="start">inbox</MdIcon>
-                        <div slot="headline">No investments yet</div>
-                        <div slot="supporting-text">
-                          Contribute to a live ICO to see positions here
-                        </div>
-                      </MdListItem>
-                    </MdList>
-                  ) : (
-                    <MdList>
-                      {positions.map((position, idx) => (
-                        <div key={idx}>
-                          {idx > 0 && <MdDivider />}
-                          <MdListItem>
-                            <MdIcon slot="start">smart_toy</MdIcon>
-                            <div slot="headline">
-                              Agent {position.agentId.substring(0, 8)}
+                {activeTab === 'investments' && (
+                  <>
+                    <h2 className="dashboard-panel-title">My Investments</h2>
+                    {positions.length === 0 ? (
+                      renderEmpty('Contribute to a live ICO to see investments here.')
+                    ) : (
+                      <ul className="dashboard-list">
+                        {positions.map((position, idx) => (
+                          <li key={`${position.agentId}-${idx}`} className="dashboard-row">
+                            <div className="dashboard-row-main">
+                              <p className="dashboard-row-title">
+                                {agentName(position.agentId)}
+                              </p>
+                              <p className="dashboard-row-meta">
+                                {agentTicker(position.agentId)
+                                  ? `${agentTicker(position.agentId)} · `
+                                  : ''}
+                                {formatCommaNumber(position.tokensAllocated)} tokens
+                              </p>
                             </div>
-                            <div slot="supporting-text">
-                              Contributed: ${position.contributed.toFixed(2)}
-                            </div>
-                            <div slot="trailing-supporting-text">
-                              {position.tokensAllocated.toFixed(0)} tokens ·{' '}
+                            <p className="dashboard-row-amount">
+                              {formatUsd(position.contributed)}
+                            </p>
+                            <p className="dashboard-row-status">
                               {positionStatus(position)}
-                            </div>
-                          </MdListItem>
-                        </div>
-                      ))}
-                    </MdList>
-                  ))}
-
-                {activeTab === 'claims' &&
-                  (positions.filter((p) => p.claimable && !p.claimed).length === 0 ? (
-                    <MdList>
-                      <MdListItem>
-                        <MdIcon slot="start">redeem</MdIcon>
-                        <div slot="headline">No claimable positions</div>
-                        <div slot="supporting-text">
-                          Tokens become claimable after a successful ICO
-                        </div>
-                      </MdListItem>
-                    </MdList>
-                  ) : (
-                    <div className="space-y-3">
-                      {positions
-                        .filter((p) => p.claimable && !p.claimed)
-                        .map((position, idx) => (
-                          <div
-                            key={idx}
-                            className="arca-surface-muted p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                          >
-                            <div>
-                              <p className="font-bold text-chalk mb-1">
-                                Agent {position.agentId.substring(0, 8)}
-                              </p>
-                              <p className="text-chalk-dim text-sm">
-                                {position.tokensAllocated.toFixed(0)} tokens available
-                              </p>
-                            </div>
-                            <MdFilledButton onClick={() => alert('Claim via ICO page')}>
-                              <MdIcon slot="icon">redeem</MdIcon>
-                              Claim
-                            </MdFilledButton>
-                          </div>
+                            </p>
+                            <Link
+                              href={agentHref(position.agentId)}
+                              className="dashboard-text-link dashboard-row-action"
+                            >
+                              View
+                            </Link>
+                          </li>
                         ))}
-                    </div>
-                  ))}
+                      </ul>
+                    )}
+                  </>
+                )}
+
+                {activeTab === 'claims' && (
+                  <>
+                    <h2 className="dashboard-panel-title">Claims</h2>
+                    {claimable.length === 0 ? (
+                      renderEmpty('Tokens become claimable after a successful ICO.')
+                    ) : (
+                      <ul className="dashboard-list">
+                        {claimable.map((position, idx) => (
+                          <li key={`${position.agentId}-claim-${idx}`} className="dashboard-row">
+                            <div className="dashboard-row-main">
+                              <p className="dashboard-row-title">
+                                {agentName(position.agentId)}
+                              </p>
+                              <p className="dashboard-row-meta">
+                                {formatCommaNumber(position.tokensAllocated)} tokens available
+                              </p>
+                            </div>
+                            <p className="dashboard-row-amount">
+                              {formatUsd(holdingValue(position))}
+                            </p>
+                            <Link
+                              href={`${agentHref(position.agentId)}/ico`}
+                              className="dashboard-claim dashboard-row-action"
+                            >
+                              Claim
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                )}
 
                 {activeTab === 'holdings' && (
-                  <MdList>
-                    <MdListItem>
-                      <MdIcon slot="start">inventory_2</MdIcon>
-                      <div slot="headline">Holdings value</div>
-                      <div slot="supporting-text">
-                        ${totalHoldings.toFixed(2)} across {positions.length} position
-                        {positions.length !== 1 ? 's' : ''}
-                      </div>
-                    </MdListItem>
-                  </MdList>
+                  <>
+                    <h2 className="dashboard-panel-title">Holdings</h2>
+                    {positions.length === 0 ? (
+                      renderEmpty('Holdings appear after you contribute to an agent.')
+                    ) : (
+                      <ul className="dashboard-list">
+                        {positions.map((position, idx) => (
+                          <li key={`${position.agentId}-hold-${idx}`} className="dashboard-row">
+                            <div className="dashboard-row-main">
+                              <p className="dashboard-row-title">
+                                {agentName(position.agentId)}
+                              </p>
+                              <p className="dashboard-row-meta">
+                                {formatCommaNumber(position.tokensAllocated)} tokens
+                              </p>
+                            </div>
+                            <p className="dashboard-row-amount">
+                              {formatUsd(holdingValue(position))}
+                            </p>
+                            <p className="dashboard-row-status">
+                              {positionStatus(position)}
+                            </p>
+                            <Link
+                              href={agentHref(position.agentId)}
+                              className="dashboard-text-link dashboard-row-action"
+                            >
+                              View
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
                 )}
 
                 {activeTab === 'pnl' && (
-                  <div className="arca-surface-muted p-8 text-center">
-                    <p className="text-chalk-dim text-sm mb-2">Total PnL</p>
-                    <p className="font-bold text-3xl text-chalk">
-                      {unrealizedPnL >= 0 ? '+' : ''}${Math.abs(unrealizedPnL).toFixed(2)}
-                    </p>
-                    <p className="text-sm mt-2 text-brand">
-                      {unrealizedPnL >= 0 ? '+' : ''}
-                      {formatPercent(pnlRatio)}
-                    </p>
-                  </div>
+                  <>
+                    <h2 className="dashboard-panel-title">PnL</h2>
+                    <dl className="dashboard-pnl">
+                      <div className="dashboard-pnl-row">
+                        <dt>Total Invested</dt>
+                        <dd className="tabular-nums">{formatUsd(totalInvested)}</dd>
+                      </div>
+                      <div className="dashboard-pnl-row">
+                        <dt>Holdings Value</dt>
+                        <dd className="tabular-nums">{formatUsd(totalHoldings)}</dd>
+                      </div>
+                      <div className="dashboard-pnl-row dashboard-pnl-total">
+                        <dt>Unrealized PnL</dt>
+                        <dd className={`tabular-nums ${pnlTone}`}>
+                          {formatSignedUsd(unrealizedPnL)}
+                          <span className="dashboard-pnl-ratio">
+                            {unrealizedPnL >= 0 ? '+' : ''}
+                            {formatPercent(pnlRatio)}
+                          </span>
+                        </dd>
+                      </div>
+                    </dl>
+                  </>
                 )}
 
-                {activeTab === 'buybacks' &&
-                  (buybacks.length === 0 ? (
-                    <MdList>
-                      <MdListItem>
-                        <MdIcon slot="start">autorenew</MdIcon>
-                        <div slot="headline">No buyback events yet</div>
-                        <div slot="supporting-text">
-                          Buybacks appear here when agents execute them
-                        </div>
-                      </MdListItem>
-                    </MdList>
-                  ) : (
-                    <MdList>
-                      {buybacks.map((buyback, idx) => (
-                        <div key={idx}>
-                          {idx > 0 && <MdDivider />}
-                          <MdListItem
-                            type="link"
-                            href={getExplorerUrl(
-                              buyback.chain as 'solana' | 'robinhood',
-                              buyback.txHash,
-                            )}
-                          >
-                            <MdIcon slot="start">autorenew</MdIcon>
-                            <div slot="headline">
-                              Agent {buyback.agentId.substring(0, 8)}
+                {activeTab === 'buybacks' && (
+                  <>
+                    <h2 className="dashboard-panel-title">Buybacks</h2>
+                    {buybacks.length === 0 ? (
+                      renderEmpty('Buybacks appear here when agents execute them.')
+                    ) : (
+                      <ul className="dashboard-list">
+                        {buybacks.map((buyback, idx) => (
+                          <li key={`${buyback.txHash}-${idx}`} className="dashboard-row">
+                            <div className="dashboard-row-main">
+                              <p className="dashboard-row-title">
+                                {agentName(buyback.agentId)}
+                              </p>
+                              <p className="dashboard-row-meta">
+                                {formatRelativeTime(buyback.timestamp)}
+                              </p>
                             </div>
-                            <div slot="supporting-text">
-                              {formatRelativeTime(buyback.timestamp)} ·{' '}
-                              {buyback.txHash.substring(0, 8)}…
-                            </div>
-                            <div slot="trailing-supporting-text">
-                              {parseFloat(buyback.agentTokensBought.toString()).toFixed(0)}{' '}
+                            <p className="dashboard-row-amount">
+                              {formatCommaNumber(
+                                parseFloat(buyback.agentTokensBought.toString()),
+                              )}{' '}
                               tokens
-                            </div>
-                            <MdIcon slot="end">open_in_new</MdIcon>
-                          </MdListItem>
-                        </div>
-                      ))}
-                    </MdList>
-                  ))}
+                            </p>
+                            <a
+                              href={getExplorerUrl(
+                                buyback.chain as 'solana' | 'robinhood',
+                                buyback.txHash,
+                              )}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="dashboard-text-link dashboard-row-action"
+                            >
+                              View Tx
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                )}
 
-                {activeTab === 'history' &&
-                  (transactions.length === 0 ? (
-                    <MdList>
-                      <MdListItem>
-                        <MdIcon slot="start">history</MdIcon>
-                        <div slot="headline">No transactions yet</div>
-                        <div slot="supporting-text">
-                          Contributions, claims, and refunds show up here
-                        </div>
-                      </MdListItem>
-                    </MdList>
-                  ) : (
-                    <MdList>
-                      {transactions.map((tx, idx) => (
-                        <div key={tx.id}>
-                          {idx > 0 && <MdDivider />}
-                          <MdListItem>
-                            <MdIcon slot="start">
-                              {tx.type === 'contribute'
-                                ? 'add_circle'
-                                : tx.type === 'claim'
-                                  ? 'redeem'
-                                  : tx.type === 'refund'
-                                    ? 'undo'
-                                    : 'swap_horiz'}
-                            </MdIcon>
-                            <div slot="overline">
-                              {tx.type} · {tx.status}
+                {activeTab === 'history' && (
+                  <>
+                    <h2 className="dashboard-panel-title">Transaction History</h2>
+                    {transactions.length === 0 ? (
+                      renderEmpty(
+                        'Contributions, claims, and refunds will appear here.',
+                      )
+                    ) : (
+                      <ul className="dashboard-list">
+                        {transactions.map((tx) => (
+                          <li key={tx.id} className="dashboard-row">
+                            <div className="dashboard-row-main">
+                              <p className="dashboard-row-title">
+                                {TX_TYPE_LABEL[tx.type]} · {agentName(tx.agentId)}
+                              </p>
+                              <p className="dashboard-row-meta">
+                                {formatRelativeTime(tx.timestamp)}
+                              </p>
                             </div>
-                            <div slot="headline">
-                              Agent {tx.agentId.substring(0, 8)} · {tx.amount.toFixed(2)}
-                            </div>
-                            <div slot="supporting-text">
-                              {formatRelativeTime(tx.timestamp)} ·{' '}
-                              {tx.txHash.substring(0, 8)}…
-                            </div>
-                          </MdListItem>
-                        </div>
-                      ))}
-                    </MdList>
-                  ))}
+                            <p className="dashboard-row-amount">{formatUsd(tx.amount)}</p>
+                            <p className="dashboard-row-status">
+                              {TX_STATUS_LABEL[tx.status]}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                )}
               </>
             )}
           </div>

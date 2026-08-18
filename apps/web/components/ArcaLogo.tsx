@@ -4,10 +4,12 @@ import Link from 'next/link';
 export function ArcaLogo({
   size = 32,
   showWordmark = true,
+  wordmarkScale = 0.85,
   className = '',
 }: {
   size?: number;
   showWordmark?: boolean;
+  wordmarkScale?: number;
   className?: string;
 }) {
   return (
@@ -21,7 +23,10 @@ export function ArcaLogo({
         priority
       />
       {showWordmark && (
-        <span className="font-display text-[1.35rem] font-semibold lowercase tracking-tight text-chalk">
+        <span
+          className="font-display font-medium lowercase leading-none tracking-tight text-chalk"
+          style={{ fontSize: size * wordmarkScale }}
+        >
           arca
         </span>
       )}

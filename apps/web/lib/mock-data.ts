@@ -226,7 +226,58 @@ export const mockBuybackEvents: BuybackEvent[] = [
   },
 ];
 
+export const FEATURED_AGENT_SLUG = 'elvis';
+
 export const mockAgents: Agent[] = [
+  {
+    id: 'elvis',
+    slug: 'elvis',
+    name: 'Elvis',
+    ticker: 'ELVIS',
+    deployer: '@elvisdesk',
+    oneLiner: 'Trades statistical arbitrage on airline stocks onchain',
+    description: 'Elvis was deployed by @elvisdesk to trade statistical arbitrage on airline stocks onchain. It hunts mean reversion across carriers and keeps inventory tight so the book stays market neutral.',
+    logoUrl: '/logos/elvis.png?v=2',
+    category: 'Trading',
+    tier: 'Core',
+    status: 'ICO Live',
+    chain: 'robinhood',
+
+    totalRevenue: 0,
+    tradingVolume: 0,
+    winRate: 0,
+    avgMonthlyReturn: 0,
+    capitalDeployed: 0,
+    walletAge: 0,
+    numPositions: 0,
+    riskRating: 'Medium',
+
+    launchFdv: 500000,
+    raiseTarget: 50000,
+    amountRaised: 46000,
+    raiseThreshold: 0.5,
+    minTicket: 0.1,
+    tokenPrice: 0.0005,
+
+    currentPrice: 0,
+    priceChange24h: 0,
+    circulatingSupply: 0,
+
+    totalBuybacks: 0,
+
+    twitter: 'https://twitter.com/elvisdesk',
+
+    team: [
+      { name: 'Elvis Desk', role: 'Deployer', profileUrl: 'https://twitter.com/elvisdesk' },
+    ],
+    documents: [
+      { type: 'strategy', title: 'Airline Statistical Arbitrage Notes', url: '#' },
+    ],
+    drawdownHistory: [],
+    vestingCliffDays: 90,
+    vestingDurationDays: 730,
+    icoEndsAt: new Date(Date.now() + 1000 * 60 * 60 * 36).toISOString(),
+  },
   {
     id: 'quantum-flux',
     slug: 'quantum-flux',

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Agent } from '@/lib/mock-data';
-import { formatCurrency } from '@/lib/format';
+import { formatCurrency, discoverCtaLabel } from '@/lib/format';
 import { MdIcon } from '@/components/material';
 
 function statusLabel(status: Agent['status']): string {
@@ -19,24 +19,6 @@ function statusLabel(status: Agent['status']): string {
     case 'Failed':
       return 'FAILED';
   }
-}
-
-function ctaLabel(agent: Agent): string {
-  const price =
-    agent.status === 'Trading' ? agent.currentPrice : agent.tokenPrice;
-  const priceText =
-    price >= 0.01 ? `$${price.toFixed(3)}` : `$${price.toFixed(5)}`;
-
-  if (agent.status === 'ICO Live') {
-    return `Join ${agent.ticker} | ${priceText}`;
-  }
-  if (agent.status === 'Trading') {
-    return `Buy ${agent.ticker} | ${priceText}`;
-  }
-  if (agent.status === 'ICO Upcoming') {
-    return `View ${agent.ticker}`;
-  }
-  return `Open ${agent.ticker}`;
 }
 
 export function DiscoverProjectCard({ agent }: { agent: Agent }) {
@@ -120,7 +102,7 @@ export function DiscoverProjectCard({ agent }: { agent: Agent }) {
         </div>
 
         <Link href={ctaHref} className="discover-cta">
-          {ctaLabel(agent)}
+          {discoverCtaLabel(agent)}
         </Link>
       </div>
     </article>

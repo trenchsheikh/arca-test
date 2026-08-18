@@ -17,30 +17,27 @@ import {
 type PlatformLink = {
   href: string;
   label: string;
-  icon: string;
   external?: boolean;
 };
 
 const DOCS_URL = 'https://docs.arca.markets/';
 
 const baseLinks: PlatformLink[] = [
-  { href: '/discover', label: 'Discover Agents', icon: 'explore' },
-  { href: '/dashboard', label: 'Investor Dashboard', icon: 'account_balance_wallet' },
-  { href: '/deploy', label: 'Deployer Dashboard', icon: 'rocket_launch' },
-  { href: '/apply', label: 'Apply To Launch', icon: 'edit_note' },
-  { href: DOCS_URL, label: 'Docs', icon: 'menu_book', external: true },
+  { href: '/discover', label: 'Discover Agents' },
+  { href: '/dashboard', label: 'Investor Dashboard' },
+  { href: '/deploy', label: 'Deployer Dashboard' },
+  { href: '/apply', label: 'Apply To Launch' },
+  { href: DOCS_URL, label: 'Docs', external: true },
 ];
 
 const adminLink: PlatformLink = {
   href: '/admin',
   label: 'Admin',
-  icon: 'admin_panel_settings',
 };
 
 const loginLink: PlatformLink = {
   href: '/login',
   label: 'Log In',
-  icon: 'login',
 };
 
 export function SiteFooter() {
@@ -88,11 +85,7 @@ export function SiteFooter() {
                     router.push(item.href);
                   }}
                 >
-                  <MdIcon slot="start">{item.icon}</MdIcon>
                   <div slot="headline">{item.label}</div>
-                  <MdIcon slot="end">
-                    {item.external ? 'open_in_new' : 'chevron_right'}
-                  </MdIcon>
                 </MdListItem>
               ))}
             </MdList>

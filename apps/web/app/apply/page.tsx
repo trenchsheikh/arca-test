@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 import { motion } from 'framer-motion';
 import { RequireAuth } from '@/components/RequireAuth';
+import { WalletStatsPanel } from '@/components/WalletStatsPanel';
 import {
   MdFilledButton,
   MdOutlinedButton,
@@ -34,6 +35,7 @@ interface DocumentMeta {
   type: 'strategy' | 'audit' | 'other';
   title: string;
   url: string;
+  fileName: string;
 }
 
 interface FormState {
@@ -79,14 +81,250 @@ const initialForm: FormState = {
   threshold: 50,
   cliffDays: 30,
   durationDays: 365,
-  documents: [{ type: 'strategy', title: '', url: '' }],
+  documents: [{ type: 'strategy', title: '', url: '', fileName: '' }],
   acknowledge: false,
   submittedAppId: null,
 };
 
+const MAX_FILE_BYTES = 4 * 1024 * 1024;
+
+const LOGO_ACCEPT =
+  'image/png,image/jpeg,image/webp,image/svg+xml,image/gif,.png,.jpg,.jpeg,.webp,.svg,.gif';
+const LOGO_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.svg', '.gif'];
+const LOGO_MIMES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'image/svg+xml',
+  'image/gif',
+]);
+
+const DOC_ACCEPT =
+  'image/png,image/jpeg,image/webp,image/svg+xml,image/gif,application/pdf,text/plain,text/markdown,text/csv,.png,.jpg,.jpeg,.webp,.svg,.gif,.pdf,.txt,.md,.doc,.docx,.csv';
+const DOC_EXTS = [
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.webp',
+  '.svg',
+  '.gif',
+  '.pdf',
+  '.txt',
+  '.md',
+  '.doc',
+  '.docx',
+  '.csv',
+];
+const DOC_MIMES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'image/svg+xml',
+  'image/gif',
+  'application/pdf',
+  'text/plain',
+  'text/markdown',
+  'text/csv',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]);
+
+function fileMatches(file: File, exts: string[], mimes: Set<string>) {
+  const name = file.name.toLowerCase();
+  if (exts.some((ext) => name.endsWith(ext))) return true;
+  return Boolean(file.type && mimes.has(file.type));
+}
+
+function isImageDataUrl(value: string) {
+  return value.startsWith('data:image/');
+}
+
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') resolve(reader.result);
+      else reject(new Error('Could not read that file'));
+    };
+    reader.onerror = () => reject(new Error('Could not read that file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+interface FileDropzoneProps {
+  inputId: string;
+  labelledBy: string;
+  emptyTitle: string;
+  hint: string;
+  accept: string;
+  exts: string[];
+  mimes: Set<string>;
+  compact?: boolean;
+  value: string;
+  fileName: string;
+  onFile: (dataUrl: string, fileName: string) => void;
+  onClear: () => void;
+}
+
+function FileDropzone({
+  inputId,
+  labelledBy,
+  emptyTitle,
+  hint,
+  accept,
+  exts,
+  mimes,
+  compact = false,
+  value,
+  fileName,
+  onFile,
+  onClear,
+}: FileDropzoneProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dragCount = useRef(0);
+  const [dragging, setDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const hasFile = Boolean(value);
+
+  const applyFile = useCallback(
+    async (file: File | undefined) => {
+      if (!file) return;
+      setError(null);
+      if (!fileMatches(file, exts, mimes)) {
+        setError('That file type is not supported');
+        return;
+      }
+      if (file.size > MAX_FILE_BYTES) {
+        setError('File is too large. Use a file under 4 MB.');
+        return;
+      }
+      try {
+        const dataUrl = await readFileAsDataUrl(file);
+        onFile(dataUrl, file.name);
+      } catch {
+        setError('Could not read that file');
+      }
+    },
+    [exts, mimes, onFile],
+  );
+
+  const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    void applyFile(file);
+  };
+
+  const onDragEnter = (event: DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dragCount.current += 1;
+    setDragging(true);
+  };
+
+  const onDragLeave = (event: DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dragCount.current = Math.max(0, dragCount.current - 1);
+    if (dragCount.current === 0) setDragging(false);
+  };
+
+  const onDragOver = (event: DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const onDrop = (event: DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dragCount.current = 0;
+    setDragging(false);
+    void applyFile(event.dataTransfer.files?.[0]);
+  };
+
+  const openPicker = () => inputRef.current?.click();
+
+  const dropzoneClass = [
+    'apply-dropzone',
+    compact ? 'is-compact' : '',
+    hasFile ? 'is-filled' : '',
+    dragging ? 'is-dragging' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <div className="apply-dropzone-wrap">
+      <input
+        ref={inputRef}
+        id={inputId}
+        className="apply-file-input"
+        type="file"
+        accept={accept}
+        aria-labelledby={labelledBy}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${inputId}-error` : undefined}
+        tabIndex={hasFile ? -1 : undefined}
+        onChange={onInputChange}
+      />
+
+      {hasFile ? (
+        <div className={dropzoneClass} onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}>
+          <div className="apply-dropzone-filled">
+            {isImageDataUrl(value) ? (
+              <div className={`apply-dropzone-preview${compact ? ' is-compact' : ''}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={value} alt="" />
+              </div>
+            ) : null}
+            <div className="apply-dropzone-meta">
+              <p className="apply-dropzone-name">{fileName || 'Selected file'}</p>
+              <div className="apply-dropzone-actions">
+                <button type="button" className="apply-dropzone-action" onClick={openPicker}>
+                  Replace
+                </button>
+                <button
+                  type="button"
+                  className="apply-dropzone-action"
+                  onClick={() => {
+                    setError(null);
+                    onClear();
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <label
+          htmlFor={inputId}
+          className={dropzoneClass}
+          onDragEnter={onDragEnter}
+          onDragLeave={onDragLeave}
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+        >
+          <span className="apply-dropzone-copy">
+            <span className="apply-dropzone-title">{emptyTitle}</span>
+            <span className="apply-dropzone-hint">{hint}</span>
+          </span>
+        </label>
+      )}
+
+      {error ? (
+        <p id={`${inputId}-error`} className="apply-dropzone-error" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function ApplyWizard() {
   const [currentStep, setCurrentStep] = useState<Step>('profile');
   const [form, setForm] = useState<FormState>(initialForm);
+  const [logoFileName, setLogoFileName] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -138,7 +376,7 @@ function ApplyWizard() {
   const addDocument = () => {
     setForm((prev) => ({
       ...prev,
-      documents: [...prev.documents, { type: 'strategy', title: '', url: '' }],
+      documents: [...prev.documents, { type: 'strategy', title: '', url: '', fileName: '' }],
     }));
   };
 
@@ -256,25 +494,22 @@ function ApplyWizard() {
                 Your agent application is in the review queue.
               </p>
             </div>
-            <MdList>
-              <MdListItem>
-                <MdIcon slot="start">flag</MdIcon>
-                <div slot="headline">Status</div>
-                <div slot="supporting-text">Submitted</div>
-              </MdListItem>
-              <MdDivider />
-              <MdListItem>
-                <MdIcon slot="start">tag</MdIcon>
-                <div slot="headline">Application ID</div>
-                <div slot="supporting-text">{form.submittedAppId}</div>
-              </MdListItem>
-              <MdDivider />
-              <MdListItem>
-                <MdIcon slot="start">smart_toy</MdIcon>
-                <div slot="headline">Agent</div>
-                <div slot="supporting-text">{form.name}</div>
-              </MdListItem>
-            </MdList>
+            <div className="divide-y divide-white/10 text-left">
+              <div className="py-4">
+                <p className="text-sm text-chalk-dim">Status</p>
+                <p className="text-chalk mt-1">Submitted</p>
+              </div>
+              <div className="py-4">
+                <p className="text-sm text-chalk-dim">Application ID</p>
+                <p className="text-chalk mt-1 font-mono text-xl tracking-[0.18em]">
+                  {form.submittedAppId}
+                </p>
+              </div>
+              <div className="py-4">
+                <p className="text-sm text-chalk-dim">Agent</p>
+                <p className="text-chalk mt-1">{form.name}</p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -367,17 +602,30 @@ function ApplyWizard() {
                 style={{ width: '100%' }}
               />
 
-              <MdOutlinedTextField
-                label="Logo URL"
-                type="url"
-                value={form.logoUrl}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onInput={(e: any) => updateField('logoUrl', e.target.value)}
-                placeholder="https://"
-                style={{ width: '100%' }}
-              >
-                <MdIcon slot="leading-icon">image</MdIcon>
-              </MdOutlinedTextField>
+              <div>
+                <label className="apply-field-label" id="agent-logo-label" htmlFor="agent-logo-input">
+                  Agent logo
+                </label>
+                <FileDropzone
+                  inputId="agent-logo-input"
+                  labelledBy="agent-logo-label"
+                  emptyTitle="Drop an image here or click to upload"
+                  hint="PNG, JPG, WEBP, SVG, or GIF"
+                  accept={LOGO_ACCEPT}
+                  exts={LOGO_EXTS}
+                  mimes={LOGO_MIMES}
+                  value={form.logoUrl}
+                  fileName={logoFileName}
+                  onFile={(dataUrl, name) => {
+                    updateField('logoUrl', dataUrl);
+                    setLogoFileName(name);
+                  }}
+                  onClear={() => {
+                    updateField('logoUrl', '');
+                    setLogoFileName('');
+                  }}
+                />
+              </div>
 
               <MdOutlinedSelect
                 label="Category *"
@@ -501,23 +749,9 @@ function ApplyWizard() {
                 onInput={(e: any) => updateField('revenueWallet', e.target.value)}
                 placeholder="Enter wallet address"
                 style={{ width: '100%' }}
-              >
-                <MdIcon slot="leading-icon">account_balance_wallet</MdIcon>
-              </MdOutlinedTextField>
+              />
 
-              <div className="arca-surface-muted p-4">
-                <p className="text-chalk-dim text-sm mb-4">
-                  Auto-pull pending wallet connect
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {['Revenue', 'Volume', 'Win Rate', 'Wallet Age'].map((label) => (
-                    <div key={label} className="bg-ink rounded-lg p-3 border border-white/10">
-                      <p className="text-chalk-dim text-xs mb-1">{label}</p>
-                      <p className="text-chalk-dim font-mono text-sm">n/a</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <WalletStatsPanel address={form.revenueWallet} chain={form.chain} />
 
               <div className="bg-warning/10 border border-warning/30 rounded-lg p-4">
                 <p className="text-chalk text-sm">
@@ -526,59 +760,97 @@ function ApplyWizard() {
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between gap-3 mb-3">
                   <label className="block text-chalk text-sm font-semibold">
                     Documents * (at least 1)
                   </label>
                   <MdTextButton type="button" onClick={addDocument}>
-                    <MdIcon slot="icon">note_add</MdIcon>
                     Add document
                   </MdTextButton>
                 </div>
                 <div className="space-y-4">
-                  {form.documents.map((doc, index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 arca-surface-muted items-end"
-                    >
-                      <MdOutlinedSelect
-                        label="Type"
-                        value={doc.type}
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        onChange={(e: any) => updateDocument(index, 'type', e.target.value)}
-                        style={{ width: '100%' }}
+                  {form.documents.map((doc, index) => {
+                    const fileInputId = `apply-doc-file-${index}`;
+                    const fileLabelId = `apply-doc-file-label-${index}`;
+                    return (
+                      <div
+                        key={index}
+                        className={`apply-doc-row arca-surface-muted${
+                          form.documents.length > 1 ? ' has-remove' : ''
+                        }`}
                       >
-                        <MdSelectOption value="strategy"><div slot="headline">Strategy</div></MdSelectOption>
-                        <MdSelectOption value="audit"><div slot="headline">Audit</div></MdSelectOption>
-                        <MdSelectOption value="other"><div slot="headline">Other</div></MdSelectOption>
-                      </MdOutlinedSelect>
-                      <MdOutlinedTextField
-                        label="Title"
-                        value={doc.title}
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        onInput={(e: any) => updateDocument(index, 'title', e.target.value)}
-                        style={{ width: '100%' }}
-                      />
-                      <MdOutlinedTextField
-                        label="URL"
-                        type="url"
-                        value={doc.url}
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        onInput={(e: any) => updateDocument(index, 'url', e.target.value)}
-                        placeholder="https://"
-                        style={{ width: '100%' }}
-                      />
-                      {form.documents.length > 1 && (
-                        <MdOutlinedButton
-                          type="button"
-                          onClick={() => removeDocument(index)}
-                        >
-                          <MdIcon slot="icon">delete</MdIcon>
-                          Remove
-                        </MdOutlinedButton>
-                      )}
-                    </div>
-                  ))}
+                        <div className="apply-doc-type">
+                          <MdOutlinedSelect
+                            label="Type"
+                            value={doc.type}
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            onChange={(e: any) => updateDocument(index, 'type', e.target.value)}
+                          >
+                            <MdSelectOption value="strategy"><div slot="headline">Strategy</div></MdSelectOption>
+                            <MdSelectOption value="audit"><div slot="headline">Audit</div></MdSelectOption>
+                            <MdSelectOption value="other"><div slot="headline">Other</div></MdSelectOption>
+                          </MdOutlinedSelect>
+                        </div>
+                        <div className="apply-doc-title">
+                          <MdOutlinedTextField
+                            label="Title"
+                            value={doc.title}
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            onInput={(e: any) => updateDocument(index, 'title', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="apply-field-label" id={fileLabelId} htmlFor={fileInputId}>
+                            Document file
+                          </label>
+                          <FileDropzone
+                            inputId={fileInputId}
+                            labelledBy={fileLabelId}
+                            emptyTitle="Drop a file here or click to upload"
+                            hint="PDF, images, or text files"
+                            accept={DOC_ACCEPT}
+                            exts={DOC_EXTS}
+                            mimes={DOC_MIMES}
+                            compact
+                            value={doc.url}
+                            fileName={doc.fileName}
+                            onFile={(dataUrl, name) => {
+                              setForm((prev) => {
+                                const documents = [...prev.documents];
+                                documents[index] = {
+                                  ...documents[index],
+                                  url: dataUrl,
+                                  fileName: name,
+                                };
+                                return { ...prev, documents };
+                              });
+                            }}
+                            onClear={() => {
+                              setForm((prev) => {
+                                const documents = [...prev.documents];
+                                documents[index] = {
+                                  ...documents[index],
+                                  url: '',
+                                  fileName: '',
+                                };
+                                return { ...prev, documents };
+                              });
+                            }}
+                          />
+                        </div>
+                        {form.documents.length > 1 && (
+                          <div className="apply-doc-remove">
+                            <MdOutlinedButton
+                              type="button"
+                              onClick={() => removeDocument(index)}
+                            >
+                              Remove
+                            </MdOutlinedButton>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -710,6 +982,20 @@ function ApplyWizard() {
             <div className="space-y-6">
               <div className="arca-surface-muted overflow-hidden">
                 <h3 className="font-bold text-chalk px-4 pt-4 mb-2">Application Summary</h3>
+                {form.logoUrl ? (
+                  <div className="flex items-center gap-3 px-4 pb-3">
+                    <div className="apply-dropzone-preview is-compact">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={form.logoUrl} alt="" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-chalk text-sm font-semibold">Agent logo</p>
+                      <p className="text-chalk-dim text-sm break-all">
+                        {logoFileName || 'Attached'}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
                 <MdList>
                   {[
                     ['Agent Name', form.name || 'Not set', 'badge'],

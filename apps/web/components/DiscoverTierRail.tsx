@@ -5,23 +5,17 @@ import type { Agent, AgentTier } from '@/lib/mock-data';
 import { DiscoverProjectCard } from '@/components/DiscoverProjectCard';
 import { MdIcon, MdIconButton } from '@/components/material';
 
-const tierMeta: Record<
-  AgentTier,
-  { title: string; icon: string; blurb: string }
-> = {
+const tierMeta: Record<AgentTier, { title: string; blurb: string }> = {
   Seed: {
     title: 'Seed',
-    icon: 'spa',
     blurb: 'Little starter agents. A good place to begin.',
   },
   Core: {
     title: 'Core',
-    icon: 'verified',
     blurb: 'Middle agents. A bit bigger and stronger.',
   },
   Pro: {
     title: 'Pro',
-    icon: 'workspace_premium',
     blurb: 'The big agents. They do the heavy stuff.',
   },
 };
@@ -61,6 +55,80 @@ export function DiscoverTierRail({
       el.removeEventListener('scroll', updateArrows);
       window.removeEventListener('resize', updateArrows);
       cancelAnimationFrame(frameRef.current);
+    };
+  }, [agents]);
+
+  // Vertical wheel/touch must reach Lenis. Only steal clearly horizontal gestures.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    const stopLerp = () => cancelAnimationFrame(frameRef.current);
+
+    const onWheel = (event: WheelEvent) => {
+      const shiftAsHorizontal =
+        event.shiftKey && Math.abs(event.deltaX) <= Math.abs(event.deltaY);
+      const deltaX = shiftAsHorizontal ? event.deltaY : event.deltaX;
+      const deltaY = shiftAsHorizontal ? 0 : event.deltaY;
+
+      if (Math.abs(deltaY) >= Math.abs(deltaX)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      stopLerp();
+      el.scrollLeft += deltaX;
+    };
+
+    const touch = { x: 0, y: 0, axis: null as 'x' | 'y' | null };
+    const AXIS_LOCK_PX = 8;
+
+    const onTouchStart = (event: TouchEvent) => {
+      const point = event.touches[0];
+      if (!point) return;
+      touch.x = point.clientX;
+      touch.y = point.clientY;
+      touch.axis = null;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      const point = event.touches[0];
+      if (!point) return;
+
+      const dx = point.clientX - touch.x;
+      const dy = point.clientY - touch.y;
+
+      if (touch.axis === null) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < AXIS_LOCK_PX) return;
+        touch.axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
+      }
+
+      touch.x = point.clientX;
+      touch.y = point.clientY;
+
+      if (touch.axis === 'y') return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      stopLerp();
+      el.scrollLeft -= dx;
+    };
+
+    const onTouchEnd = () => {
+      touch.axis = null;
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchEnd);
     };
   }, [agents]);
 
@@ -104,9 +172,6 @@ export function DiscoverTierRail({
       <div className="discover-tier-header">
         <div className="discover-tier-copy min-w-0">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-brand/15 text-brand">
-              <MdIcon>{meta.icon}</MdIcon>
-            </span>
             <h2
               id={`tier-${tier}`}
               className="font-display text-lg sm:text-xl font-bold text-chalk tracking-tight"
@@ -142,7 +207,6 @@ export function DiscoverTierRail({
         ref={scrollerRef}
         className="discover-tier-scroller"
         role="list"
-        data-lenis-prevent
       >
         {agents.map((agent) => (
           <div key={agent.id} className="discover-tier-item" role="listitem">
