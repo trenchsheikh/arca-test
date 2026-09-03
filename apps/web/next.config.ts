@@ -6,6 +6,25 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/discover',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/deploy',
+        destination: '/deployer',
+        permanent: true,
+      },
+      {
+        source: '/apply',
+        destination: '/deployer/launch',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',

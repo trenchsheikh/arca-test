@@ -16,10 +16,10 @@ type NavItem = {
 };
 
 const baseNav: NavItem[] = [
-  { href: '/discover', label: 'Discover' },
-  { href: '/dashboard', label: 'Investor' },
-  { href: '/deploy', label: 'Deployer' },
-  { href: '/apply', label: 'Apply' },
+  { href: '/', label: 'Discover' },
+  { href: '/investor', label: 'Investor' },
+  { href: '/deployer', label: 'Deployer' },
+  { href: '/deployer/launch', label: 'Apply' },
   { href: DOCS_URL, label: 'Docs', external: true },
 ];
 
@@ -75,15 +75,25 @@ export function SiteHeader() {
     router.push(item.href);
   };
 
-  const isActive = (item: NavItem) =>
-    !item.external &&
-    (pathname === item.href || pathname.startsWith(`${item.href}/`));
+  const isActive = (item: NavItem) => {
+    if (item.external) return false;
+    // Discover lives on `/` — exact match only so other routes stay inactive.
+    if (item.href === '/') return pathname === '/';
+    return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  };
 
   const joinHref = '/login';
-  const isHomePage = pathname === '/';
+  const isFramedPage = pathname === '/' || /^\/agents\/[^/]+$/.test(pathname);
+  const isInvestorApp = pathname.startsWith('/investor');
+  const isDeployerApp = pathname.startsWith('/deployer');
+  const isAdminApp = pathname.startsWith('/admin');
+
+  if (isInvestorApp || isDeployerApp || isAdminApp) {
+    return null;
+  }
 
   const headerBar = (
-    <div className={`site-header-bar${isHomePage ? ' home-column-inset' : ''}`}>
+    <div className={`site-header-bar${isFramedPage ? ' home-column-inset' : ''}`}>
       <Link href="/" className="site-header-logo" aria-label="arca home">
         <Image
           src="/home/header-logo-name.png"
@@ -218,8 +228,8 @@ export function SiteHeader() {
   );
 
   return (
-    <header className={`site-header${isHomePage ? ' site-header--home' : ''}`}>
-      {isHomePage ? headerBar : <div className="site-header-shell">{headerBar}</div>}
+    <header className={`site-header${isFramedPage ? ' site-header--home' : ''}`}>
+      {isFramedPage ? headerBar : <div className="site-header-shell">{headerBar}</div>}
     </header>
   );
 }

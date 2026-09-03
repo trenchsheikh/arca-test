@@ -35,7 +35,7 @@ export function DiscoverFeatured({ agent }: { agent: Agent }) {
             <MdIcon>info</MdIcon>
           </span>
         </div>
-        <Link href="/apply" className="discover-featured-apply">
+        <Link href="/deployer/launch" className="discover-featured-apply">
           Apply
         </Link>
       </div>

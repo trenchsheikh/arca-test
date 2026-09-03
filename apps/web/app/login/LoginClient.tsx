@@ -21,7 +21,7 @@ export default function LoginClient() {
   const { login, isAuthenticated, ready } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get('next') || '/dashboard';
+  const next = searchParams.get('next') || '/investor';
 
   const [username, setUsername] = useState<string>(DEMO_CREDENTIALS.username);
   const [password, setPassword] = useState('');
@@ -105,10 +105,10 @@ export default function LoginClient() {
         <p className="text-xs text-chalk-dim mt-6 mb-2">Quick destinations</p>
         <MdChipSet>
           {[
-            ['Investor', '/dashboard'],
-            ['Deployer', '/deploy'],
+            ['Investor', '/investor'],
+            ['Deployer', '/deployer'],
             ['Admin', '/admin'],
-            ['Apply', '/apply'],
+            ['Apply', '/deployer/launch'],
           ].map(([label, href]) => (
             <Link key={href} href={`/login?next=${encodeURIComponent(href)}`}>
               <MdSuggestionChip label={label}>

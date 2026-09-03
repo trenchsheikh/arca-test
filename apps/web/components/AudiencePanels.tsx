@@ -48,7 +48,7 @@ const panels: Array<{
       </>
     ),
     cta: 'Open investor dashboard',
-    href: '/dashboard',
+    href: '/investor',
     visual: 'payments',
   },
   {
@@ -67,7 +67,7 @@ const panels: Array<{
       </>
     ),
     cta: 'Go to deployer dashboard',
-    href: '/deploy',
+    href: '/deployer',
     visual: 'rocket_launch',
   },
   {
@@ -86,7 +86,7 @@ const panels: Array<{
       </>
     ),
     cta: 'Start application',
-    href: '/apply',
+    href: '/deployer/launch',
     visual: 'edit_note',
   },
   {
@@ -105,7 +105,7 @@ const panels: Array<{
       </>
     ),
     cta: 'Discover agents',
-    href: '/discover',
+    href: '/',
     visual: 'explore',
   },
 ];
@@ -276,7 +276,7 @@ export function AudiencePanels() {
                   Peek at live <em className="italic">agents</em>, join the waitlist, or sign in and
                   try the full flow.
                 </p>
-                <Link href="/discover" className="inline-block w-full sm:w-auto">
+                <Link href="/" className="inline-block w-full sm:w-auto">
                   <MdFilledButton className="hero-cta-filled" style={{ width: '100%' }}>
                     Explore agents
                   </MdFilledButton>

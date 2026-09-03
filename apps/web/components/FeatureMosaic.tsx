@@ -23,7 +23,7 @@ const cards = [
         <em className="italic text-chalk">one</em> place.
       </>
     ),
-    href: '/discover',
+    href: '/',
     icon: 'smart_toy',
     tone: 'rose',
     height: 'min-h-[240px] sm:min-h-[320px]',
@@ -41,7 +41,7 @@ const cards = [
         <em className="italic text-chalk">platform</em>. Locked on chain.
       </>
     ),
-    href: '/discover',
+    href: '/',
     icon: 'autorenew',
     tone: 'sand',
     height: 'min-h-[240px] sm:min-h-[380px]',
@@ -59,7 +59,7 @@ const cards = [
         <em className="italic text-chalk">10%</em> of FDV.
       </>
     ),
-    href: '/apply',
+    href: '/deployer/launch',
     icon: 'savings',
     tone: 'mint',
     height: 'min-h-[240px] sm:min-h-[400px]',
@@ -77,7 +77,7 @@ const cards = [
         <em className="italic text-chalk">verify</em>.
       </>
     ),
-    href: '/discover',
+    href: '/',
     icon: 'verified',
     tone: 'sky',
     height: 'min-h-[240px] sm:min-h-[300px]',

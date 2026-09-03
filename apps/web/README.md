@@ -32,7 +32,7 @@ app/
 ├── agents/[slug]/        # Agent detail (most important page)
 │   └── ico/              # ICO participation
 ├── dashboard/            # Investor dashboard
-├── deploy/               # Deployer dashboard
+├── deployer/             # Deployer dashboard
 ├── apply/                # Multi-step application wizard
 ├── admin/                # Admin panel (internal)
 └── api/                  # API routes (stubs)
@@ -125,7 +125,7 @@ pnpm lint
 - **Buybacks received** (core feature)
 - Transaction history
 
-### 6. Deployer Dashboard `/deploy`
+### 6. Deployer Dashboard `/deployer`
 - Capital raised
 - Operational wallet balance
 - Revenue generated

@@ -16,10 +16,10 @@ export function HomeHero() {
           </p>
           <div className="home-hero-cta-wrap">
             <div className="home-hero-actions">
-              <Link href="/discover" className="home-hero-link-btn">
+              <Link href="#home-discover" className="home-hero-link-btn">
                 Learn more
               </Link>
-              <HomeCtaButton href="/apply">Launch an agent</HomeCtaButton>
+              <HomeCtaButton href="/deployer/launch">Launch an agent</HomeCtaButton>
             </div>
           </div>
         </div>

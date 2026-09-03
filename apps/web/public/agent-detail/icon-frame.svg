@@ -1,0 +1,23 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="79" height="79" viewBox="0 0 79 79" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 1">
+<g id=" brand_icon" filter="url(#filter0_i_0_28)">
+<rect width="65" height="65" transform="translate(6.5 6.5)" fill="#5D74E6"/>
+</g>
+<path id="Vector 1" d="M0.5 6.5V0.5H6.5" stroke="#5D74E6"/>
+<path id="Vector 2" d="M0.5 72.5V78.5H6.5" stroke="#5D74E6"/>
+<path id="Vector 3" d="M78.5 6.5V0.5H72.5" stroke="#5D74E6"/>
+<path id="Vector 4" d="M78.5 72.5V78.5H72.5" stroke="#5D74E6"/>
+</g>
+<defs>
+<filter id="filter0_i_0_28" x="6.5" y="6.5" width="65" height="65" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="9"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_0_28"/>
+</filter>
+</defs>
+</svg>
