@@ -1,108 +1,189 @@
-'use client';
-
-import { useMemo } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ArcaLogo } from '@/components/ArcaLogo';
-import { useAuth } from '@/components/AuthProvider';
-import { ScrollReveal } from '@/components/ScrollReveal';
-import {
-  MdList,
-  MdListItem,
-  MdIcon,
-  MdDivider,
-  MdTextButton,
-} from '@/components/material';
-
-type PlatformLink = {
-  href: string;
-  label: string;
-  external?: boolean;
-};
-
-const DOCS_URL = 'https://docs.arca.markets/';
-
-const baseLinks: PlatformLink[] = [
-  { href: '/discover', label: 'Discover Agents' },
-  { href: '/dashboard', label: 'Investor Dashboard' },
-  { href: '/deploy', label: 'Deployer Dashboard' },
-  { href: '/apply', label: 'Apply To Launch' },
-  { href: DOCS_URL, label: 'Docs', external: true },
-];
-
-const adminLink: PlatformLink = {
-  href: '/admin',
-  label: 'Admin',
-};
-
-const loginLink: PlatformLink = {
-  href: '/login',
-  label: 'Log In',
-};
-
-export function SiteFooter() {
-  const { isAdmin, isAuthenticated } = useAuth();
-  const router = useRouter();
-
-  const platformLinks = useMemo(() => {
-    const links: PlatformLink[] = [...baseLinks];
-    if (isAdmin) links.push(adminLink);
-    if (!isAuthenticated) links.push(loginLink);
-    return links;
-  }, [isAdmin, isAuthenticated]);
-
-  return (
-    <footer className="glass-panel glass-footer mt-0 rounded-none border-x-0 border-b-0">
-      <ScrollReveal className="container mx-auto py-10 sm:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <ArcaLogo size={36} className="mb-4" />
-            <p className="text-chalk-dim text-sm leading-relaxed mb-4">
-              Verified AI agent capital markets with automatic on chain buybacks.
-            </p>
-            <Link href="/discover">
-              <MdTextButton>
-                <MdIcon slot="icon">arrow_forward</MdIcon>
-                Explore Agents
-              </MdTextButton>
-            </Link>
-          </div>
-
-          <div className="md:col-span-2">
-            <p className="font-semibold text-chalk mb-3 text-sm uppercase tracking-wide">
-              Platform
-            </p>
-            <MdList style={{ background: 'transparent', border: 'none' }}>
-              {platformLinks.map((item) => (
-                <MdListItem
-                  key={item.href}
-                  type="button"
-                  onClick={() => {
-                    if (item.external) {
-                      window.open(item.href, '_blank', 'noopener,noreferrer');
-                      return;
-                    }
-                    router.push(item.href);
-                  }}
-                >
-                  <div slot="headline">{item.label}</div>
-                </MdListItem>
-              ))}
-            </MdList>
-          </div>
-        </div>
-
-        <MdDivider style={{ margin: '2rem 0' }} />
-
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-chalk-dim">
-          <p>&copy; 2026 arca. All rights reserved.</p>
-          <div className="flex gap-2">
-            <MdTextButton>Terms</MdTextButton>
-            <MdTextButton>Privacy</MdTextButton>
-            <MdTextButton>Risk Disclaimer</MdTextButton>
-          </div>
-        </div>
-      </ScrollReveal>
-    </footer>
-  );
-}
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+
+const DOCS_URL = 'https://docs.arca.markets/';
+
+type FooterGridLink = {
+  href: string;
+  label: string;
+  external?: boolean;
+  emphasis?: boolean;
+};
+
+const footerGridLinks: FooterGridLink[] = [
+  { href: '/', label: 'Platform', emphasis: true },
+  { href: '/discover', label: 'Discover Agents' },
+  { href: '/dashboard', label: 'Investor Dashboard' },
+  { href: '/deploy', label: 'Deployer Dashboard' },
+  { href: '/apply', label: 'Apply To Launch' },
+  { href: DOCS_URL, label: 'Docs', external: true },
+];
+
+const legalLinks = [
+  { href: '#privacy', label: 'Privacy' },
+  { href: '#terms', label: 'Terms' },
+  { href: '#disclaimer', label: 'Disclaimer' },
+];
+
+function FooterSocialLink({
+  href,
+  label,
+  iconSrc,
+  iconWidth,
+  iconHeight,
+}: {
+  href: string;
+  label: string;
+  iconSrc: string;
+  iconWidth: number;
+  iconHeight: number;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="site-footer-social"
+      aria-label={label}
+    >
+      <span className="site-footer-social-corner site-footer-social-corner-tl" aria-hidden />
+      <span className="site-footer-social-corner site-footer-social-corner-bl" aria-hidden />
+      <span className="site-footer-social-corner site-footer-social-corner-tr" aria-hidden />
+      <span className="site-footer-social-corner site-footer-social-corner-br" aria-hidden />
+      <span className="site-footer-social-icon">
+        <Image src={iconSrc} alt="" width={iconWidth} height={iconHeight} />
+      </span>
+    </a>
+  );
+}
+
+function FooterGridLinkItem({ link }: { link: FooterGridLink }) {
+  const className = `site-footer-grid-link${link.emphasis ? ' is-emphasis' : ''}`;
+
+  if (link.external) {
+    return (
+      <a href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
+        {link.label}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={link.href} className={className}>
+      {link.label}
+    </Link>
+  );
+}
+
+export function SiteFooter() {
+  return (
+    <footer className="site-footer">
+      <div className="site-footer-shell">
+        <div className="site-footer-top">
+          <div className="site-footer-copyright">
+            <Image
+              src="/footer/copyright.svg"
+              alt=""
+              width={18}
+              height={18}
+              className="site-footer-copyright-icon"
+              aria-hidden
+            />
+            <span>All Copyright reserved</span>
+          </div>
+
+          <Link href="/" className="site-footer-logo" aria-label="arca home">
+            <Image
+              src="/footer/logo-mark.png"
+              alt=""
+              width={27}
+              height={27}
+              className="site-footer-logo-mark"
+            />
+            <span>arca</span>
+          </Link>
+
+          <div className="site-footer-socials">
+            <FooterSocialLink
+              href="https://x.com"
+              label="arca on X"
+              iconSrc="/footer/twitter.svg"
+              iconWidth={20}
+              iconHeight={20}
+            />
+            <FooterSocialLink
+              href="https://linkedin.com"
+              label="arca on LinkedIn"
+              iconSrc="/footer/linkedin.svg"
+              iconWidth={24}
+              iconHeight={24}
+            />
+          </div>
+        </div>
+
+        <div className="site-footer-grid-wrap">
+          <nav className="site-footer-grid" aria-label="Footer">
+            {footerGridLinks.map((link) => (
+              <FooterGridLinkItem key={link.label} link={link} />
+            ))}
+          </nav>
+
+          <div className="site-footer-legal">
+            <div className="site-footer-legal-links">
+              {legalLinks.map((link) => (
+                <a key={link.label} href={link.href} className="site-footer-legal-link">
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="site-footer-wordmark-stage">
+            <div className="site-footer-wordmark-row">
+              <span className="site-footer-wordmark-text" aria-hidden>
+                arca
+              </span>
+              <div className="site-footer-wordmark-mark">
+                <Image
+                  src="/footer/wordmark-glow.png"
+                  alt=""
+                  width={243}
+                  height={257}
+                  className="site-footer-wordmark-glow"
+                />
+                <Image
+                  src="/footer/wordmark-shadow.png"
+                  alt=""
+                  width={297}
+                  height={73}
+                  className="site-footer-wordmark-shadow"
+                />
+                <Image
+                  src="/footer/wordmark-floor.png"
+                  alt=""
+                  width={750}
+                  height={123}
+                  className="site-footer-wordmark-floor"
+                />
+              </div>
+              <span className="site-footer-wordmark-text" aria-hidden>
+                arca
+              </span>
+            </div>
+            <Image
+              src="/footer/wordmark-base.svg"
+              alt=""
+              width={1904}
+              height={291}
+              className="site-footer-wordmark-base"
+              aria-hidden
+            />
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+

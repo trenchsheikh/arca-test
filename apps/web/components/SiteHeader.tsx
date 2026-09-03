@@ -1,19 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { ArcaLogo } from '@/components/ArcaLogo';
-import {
-  MdFilledButton,
-  MdOutlinedButton,
-  MdIcon,
-  MdIconButton,
-  MdList,
-  MdListItem,
-  MdDivider,
-} from '@/components/material';
+import { MdIcon, MdIconButton, MdList, MdListItem, MdDivider } from '@/components/material';
 
 const DOCS_URL = 'https://docs.arca.markets/';
 
@@ -37,7 +29,7 @@ const adminNav: NavItem = {
 };
 
 export function SiteHeader() {
-  const { isAuthenticated, isAdmin, ready, logout, session } = useAuth();
+  const { isAdmin, ready, logout, session, isAuthenticated } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -87,116 +79,147 @@ export function SiteHeader() {
     !item.external &&
     (pathname === item.href || pathname.startsWith(`${item.href}/`));
 
-  return (
-    <header className="sticky top-0 z-50 w-full glass-panel glass-header">
-      <div className="container mx-auto">
-        <div className="relative flex h-16 items-center justify-between gap-2">
-          <div className="min-w-0 shrink-0">
-            <ArcaLogo size={36} wordmarkScale={0.75} />
-          </div>
+  const joinHref = '/login';
+  const isHomePage = pathname === '/';
 
-          <nav
-            className="pointer-events-none absolute inset-y-0 left-1/2 hidden -translate-x-1/2 items-center lg:flex"
-            aria-label="Primary"
-          >
-            <div className="pointer-events-auto header-nav-links">
-              {nav.map((item) => {
-                const active = isActive(item);
-                const className = `header-nav-link${active ? ' is-active' : ''}`;
+  const headerBar = (
+    <div className={`site-header-bar${isHomePage ? ' home-column-inset' : ''}`}>
+      <Link href="/" className="site-header-logo" aria-label="arca home">
+        <Image
+          src="/home/header-logo-name.png"
+          alt="arca"
+          width={85}
+          height={31}
+          className="site-header-logo-img"
+          priority
+        />
+      </Link>
 
-                if (item.external) {
-                  return (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={className}
-                    >
-                      {item.label}
-                    </a>
-                  );
-                }
+      <nav className="site-header-nav" aria-label="Primary">
+        {nav.map((item) => {
+          const active = isActive(item);
+          const className = `site-header-nav-link${active ? ' is-active' : ''}`;
 
-                return (
-                  <Link key={item.href} href={item.href} className={className}>
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-          </nav>
-
-          <div className="ml-auto flex shrink-0 items-center justify-end gap-1 sm:gap-2">
-            {ready && isAuthenticated ? (
-              <>
-                <span className="hidden md:inline text-chalk-dim text-sm">
-                  <span className="text-brand font-medium">{session?.username}</span>
-                </span>
-                <MdOutlinedButton className="header-auth-btn" onClick={logout}>
-                  Log out
-                </MdOutlinedButton>
-              </>
-            ) : (
-              <Link href="/login" className="shrink-0">
-                <MdFilledButton className="header-auth-btn">
-                  Login
-                </MdFilledButton>
-              </Link>
-            )}
-
-            <div ref={menuWrapRef} className="relative lg:hidden">
-              <MdIconButton
-                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-                aria-expanded={menuOpen}
-                aria-haspopup="menu"
-                onClick={() => setMenuOpen((open) => !open)}
+          if (item.external) {
+            return (
+              <a
+                key={`${item.label}-${item.href}`}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={className}
               >
-                <MdIcon>{menuOpen ? 'close' : 'menu'}</MdIcon>
-              </MdIconButton>
-
-              {menuOpen && (
-                <div
-                  role="menu"
-                  aria-label="Navigation"
-                  className="header-mobile-menu absolute top-full right-0 z-[60] w-[min(100vw-2rem,18rem)] origin-top-right rounded-2xl py-2 shadow-soft"
+                <span>{item.label}</span>
+                <svg
+                  className="site-header-nav-chevron"
+                  width="10"
+                  height="6"
+                  viewBox="0 0 10 6"
+                  fill="none"
+                  aria-hidden
                 >
-                  <MdList style={{ border: 'none', background: 'transparent' }}>
-                    {nav.map((item) => {
-                      const active = isActive(item);
-                      return (
-                        <MdListItem
-                          key={item.href}
-                          type="button"
-                          onClick={() => go(item)}
-                        >
-                          <div slot="headline">{item.label}</div>
-                          {item.external ? (
-                            <MdIcon slot="end">open_in_new</MdIcon>
-                          ) : active ? (
-                            <MdIcon slot="end">check</MdIcon>
-                          ) : null}
-                        </MdListItem>
-                      );
-                    })}
-                  </MdList>
-                  {ready && isAuthenticated && (
-                    <>
-                      <MdDivider style={{ margin: '0.35rem 0' }} />
-                      <p className="text-sm text-chalk-dim px-4 py-2">
-                        Signed in as{' '}
-                        <span className="text-brand font-medium">
-                          {session?.username}
-                        </span>
-                      </p>
-                    </>
-                  )}
-                </div>
+                  <path
+                    d="M1 1.5L5 4.5L9 1.5"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+            );
+          }
+
+          return (
+            <Link
+              key={`${item.label}-${item.href}`}
+              href={item.href}
+              className={className}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="site-header-actions">
+        <Link href={joinHref} className="site-header-join">
+          <span>Join Arca</span>
+          <Image
+            src="/home/join-arrow.svg"
+            alt=""
+            width={12}
+            height={12}
+            className="site-header-join-arrow"
+            aria-hidden
+          />
+        </Link>
+
+        <div ref={menuWrapRef} className="site-header-menu-wrap">
+          <MdIconButton
+            className="site-header-menu-btn"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <MdIcon>{menuOpen ? 'close' : 'menu'}</MdIcon>
+          </MdIconButton>
+
+          {menuOpen && (
+            <div
+              role="menu"
+              aria-label="Navigation"
+              className="site-header-mobile-menu"
+            >
+              <MdList style={{ border: 'none', background: 'transparent' }}>
+                {nav.map((item) => {
+                  const active = isActive(item);
+                  return (
+                    <MdListItem
+                      key={`${item.label}-${item.href}`}
+                      type="button"
+                      onClick={() => go(item)}
+                    >
+                      <div slot="headline">{item.label}</div>
+                      {item.external ? (
+                        <MdIcon slot="end">open_in_new</MdIcon>
+                      ) : active ? (
+                        <MdIcon slot="end">check</MdIcon>
+                      ) : null}
+                    </MdListItem>
+                  );
+                })}
+              </MdList>
+              {ready && isAuthenticated && (
+                <>
+                  <MdDivider style={{ margin: '0.35rem 0' }} />
+                  <p className="site-header-mobile-user">
+                    Signed in as{' '}
+                    <span>{session?.username}</span>
+                  </p>
+                  <button
+                    type="button"
+                    className="site-header-mobile-logout"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      logout();
+                    }}
+                  >
+                    Log out
+                  </button>
+                </>
               )}
             </div>
-          </div>
+          )}
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <header className={`site-header${isHomePage ? ' site-header--home' : ''}`}>
+      {isHomePage ? headerBar : <div className="site-header-shell">{headerBar}</div>}
     </header>
   );
 }

@@ -56,8 +56,9 @@ const config: Config = {
         warning: '#F0B429',
       },
       fontFamily: {
-        display: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
-        body: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-manrope)', 'Manrope', 'system-ui', 'sans-serif'],
+        body: ['var(--font-manrope)', 'Manrope', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'Geist Mono', 'ui-monospace', 'monospace'],
       },
       borderRadius: {
         xl: '1rem',
