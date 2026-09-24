@@ -21,28 +21,7 @@ export function BuybackEngineCard() {
 
       <div className="dep-buyback-body">
         <div className="dep-donut-col">
-          <div className="dep-donut" aria-hidden>
-            <Image
-              src="/deployer/donut-ring.svg"
-              alt=""
-              width={219}
-              height={219}
-              className="dep-donut-ring"
-            />
-            <Image
-              src="/deployer/donut-segment.svg"
-              alt=""
-              width={110}
-              height={110}
-              className="dep-donut-segment"
-            />
-            <Image
-              src="/deployer/donut-inner.svg"
-              alt=""
-              width={174}
-              height={176}
-              className="dep-donut-inner"
-            />
+          <div className="dep-donut" style={{ background: `conic-gradient(#636363 0 ${buybackSplit.deployerPct}%, #5d74e6 ${buybackSplit.deployerPct}% 100%)` }} role="img" aria-label={`Revenue split: ${buybackSplit.buybackPct}% buyback, ${buybackSplit.deployerPct}% deployer share`}>
             <div className="dep-donut-label">
               <span>Revenue</span>
               <span>Buyback split</span>

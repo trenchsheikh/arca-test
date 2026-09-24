@@ -28,38 +28,6 @@ const legalLinks = [
   { href: '#disclaimer', label: 'Disclaimer' },
 ];
 
-function FooterSocialLink({
-  href,
-  label,
-  iconSrc,
-  iconWidth,
-  iconHeight,
-}: {
-  href: string;
-  label: string;
-  iconSrc: string;
-  iconWidth: number;
-  iconHeight: number;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="site-footer-social"
-      aria-label={label}
-    >
-      <span className="site-footer-social-corner site-footer-social-corner-tl" aria-hidden />
-      <span className="site-footer-social-corner site-footer-social-corner-bl" aria-hidden />
-      <span className="site-footer-social-corner site-footer-social-corner-tr" aria-hidden />
-      <span className="site-footer-social-corner site-footer-social-corner-br" aria-hidden />
-      <span className="site-footer-social-icon">
-        <Image src={iconSrc} alt="" width={iconWidth} height={iconHeight} />
-      </span>
-    </a>
-  );
-}
-
 function FooterGridLinkItem({ link }: { link: FooterGridLink }) {
   const className = `site-footer-grid-link${link.emphasis ? ' is-emphasis' : ''}`;
 
@@ -113,23 +81,6 @@ export function SiteFooter() {
               className="site-footer-logo-img"
             />
           </Link>
-
-          <div className="site-footer-socials">
-            <FooterSocialLink
-              href="https://x.com"
-              label="arca on X"
-              iconSrc="/footer/twitter.svg"
-              iconWidth={20}
-              iconHeight={20}
-            />
-            <FooterSocialLink
-              href="https://linkedin.com"
-              label="arca on LinkedIn"
-              iconSrc="/footer/linkedin.svg"
-              iconWidth={24}
-              iconHeight={24}
-            />
-          </div>
         </div>
 
         <div className="site-footer-grid-wrap">

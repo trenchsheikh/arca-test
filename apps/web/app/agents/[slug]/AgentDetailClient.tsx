@@ -87,7 +87,6 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
     launchFdv: agent.launchFdv,
   });
   const websiteHost = hostLabel(agent.website);
-  const twitterUrl = agent.twitter || agent.team[0]?.profileUrl;
   const tradeHref =
     agent.status === 'ICO Live' || agent.status === 'ICO Upcoming'
       ? `/agents/${agent.slug}/ico`
@@ -412,17 +411,6 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
                     className="ad-link-btn"
                   >
                     <span>{websiteHost}</span>
-                    <Image src="/agent-detail/icon-ext-arrow.svg" alt="" width={20} height={20} />
-                  </a>
-                ) : null}
-                {twitterUrl ? (
-                  <a
-                    href={twitterUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ad-link-btn"
-                  >
-                    <span>Twitter</span>
                     <Image src="/agent-detail/icon-ext-arrow.svg" alt="" width={20} height={20} />
                   </a>
                 ) : null}
