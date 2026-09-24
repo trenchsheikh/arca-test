@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 import { getAgentBySlug, getAgentBuybacks, mockAgents } from '@/lib/mock-data';
 import { AgentDetailClient } from './AgentDetailClient';
-import { ApolloPage } from '@/components/agents/ApolloPage';
+import { PreIcoAgentDetailClient } from '@/components/agents/PreIcoAgentDetailClient';
+import { preIcoAgents } from '@/lib/pre-ico-agents';
 
 export function generateStaticParams() {
-  return [...mockAgents.map((agent) => ({ slug: agent.slug })), { slug: 'apollo' }];
+  return [...mockAgents.map((agent) => ({ slug: agent.slug })), ...Object.keys(preIcoAgents).map((slug) => ({ slug }))];
 }
 
 export default async function AgentDetailPage({
@@ -13,7 +14,8 @@ export default async function AgentDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  if (slug === 'apollo') return <ApolloPage />;
+  const preIcoAgent = preIcoAgents[slug];
+  if (preIcoAgent) return <PreIcoAgentDetailClient agent={preIcoAgent} />;
 
   const agent = getAgentBySlug(slug);
 
