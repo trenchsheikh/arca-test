@@ -71,3 +71,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @arca/web build
+
+      - name: Verify Apollo project page renders
+        shell: bash
+        run: |
+          pnpm --filter @arca/web exec next start -p 3100 > /tmp/arca-next.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --silent --fail http://localhost:3100/agents/apollo -o /tmp/arca-apollo.html; then break; fi
+            sleep 1
+          done
+          test -s /tmp/arca-apollo.html
+          grep -q 'Autonomous prediction agent trading probability dislocations on Polymarket' /tmp/arca-apollo.html
+          grep -q 'Upcoming ICO / Deal Terms' /tmp/arca-apollo.html
