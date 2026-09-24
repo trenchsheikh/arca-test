@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getAgentBySlug, getAgentBuybacks, mockAgents } from '@/lib/mock-data';
 import { AgentDetailClient } from './AgentDetailClient';
-import { ApolloPage } from '../apollo/ApolloPage';
+import { ApolloPage } from '@/components/agents/ApolloPage';
 
 export function generateStaticParams() {
   return [...mockAgents.map((agent) => ({ slug: agent.slug })), { slug: 'apollo' }];
