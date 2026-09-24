@@ -3,18 +3,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Agent } from '@/lib/mock-data';
-import { HomeAgentCardMedia } from './HomeAgentCardMedia';
 import { HomeAgentCardProgress } from './HomeAgentCardProgress';
 import { HomeCtaButton } from './HomeCtaButton';
 
 export function HomeFeatured({ agent }: { agent: Agent }) {
   const detailHref = `/agents/${agent.slug}`;
-  const buyHref = detailHref;
 
   return (
     <article className="home-featured">
       <div className="home-featured-inner">
-        <HomeAgentCardMedia agent={agent} variant="featured" className="home-featured-media" />
+        <div className="home-agent-media home-featured-media">
+          <Image src="/featured.png" alt="Apollo featured artwork" fill sizes="(max-width: 900px) 100vw, 494px" className="home-featured-art" />
+          <span className="home-agent-badge home-agent-badge-left">Featured</span>
+          <span className="home-agent-badge home-agent-badge-right">Coming soon</span>
+        </div>
 
         <div className="home-featured-content">
           <div className="home-featured-copy">
@@ -42,7 +44,7 @@ export function HomeFeatured({ agent }: { agent: Agent }) {
           </div>
 
           <div className="home-featured-actions">
-            <HomeCtaButton href={buyHref}>Buy {agent.ticker}</HomeCtaButton>
+            <span className="home-cta-btn" aria-disabled="true">ICO coming soon</span>
             <HomeCtaButton href={detailHref} variant="secondary">
               View Project
             </HomeCtaButton>
