@@ -44,12 +44,12 @@ function CornerIcon({
   className?: string;
 }) {
   return (
-    <span className={`ad-corner-icon ${className}`}>
-      <span className="ad-corner ad-corner-tl" aria-hidden />
-      <span className="ad-corner ad-corner-tr" aria-hidden />
-      <span className="ad-corner ad-corner-bl" aria-hidden />
-      <span className="ad-corner ad-corner-br" aria-hidden />
-      <span className="ad-corner-icon-inner">{children}</span>
+    <span className={`agd-corner-icon ${className}`}>
+      <span className="agd-corner agd-corner-tl" aria-hidden />
+      <span className="agd-corner agd-corner-tr" aria-hidden />
+      <span className="agd-corner agd-corner-bl" aria-hidden />
+      <span className="agd-corner agd-corner-br" aria-hidden />
+      <span className="agd-corner-icon-inner">{children}</span>
     </span>
   );
 }
@@ -64,8 +64,8 @@ function SectionTitle({
   children: React.ReactNode;
 }) {
   return (
-    <div className="ad-section-title">
-      <Image src={icon} alt="" width={iconSize} height={iconSize} className="ad-section-title-icon" />
+    <div className="agd-section-title">
+      <Image src={icon} alt="" width={iconSize} height={iconSize} className="agd-section-title-icon" />
       <span>{children}</span>
     </div>
   );
@@ -196,21 +196,21 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
   const raiseMetaMin = Math.max(250, Math.round(agent.minTicket * 200));
 
   return (
-    <div className="ad-page">
+    <div className="agd-page">
       <HomeSectionDivider />
 
-      <section className="ad-hero">
-        <div className="ad-hero-bg" aria-hidden>
+      <section className="agd-hero">
+        <div className="agd-hero-bg" aria-hidden>
           <div
-            className="ad-hero-bg-pattern"
+            className="agd-hero-bg-pattern"
             style={{ backgroundImage: 'url(/agent-detail/hero-bg.png)' }}
           />
-          <div className="ad-hero-bg-wash" />
+          <div className="agd-hero-bg-wash" />
         </div>
 
-        <div className="ad-hero-inner">
-          <nav className="ad-breadcrumb" aria-label="Breadcrumb">
-            <Link href="/" className="ad-breadcrumb-chip">
+        <div className="agd-hero-inner">
+          <nav className="agd-breadcrumb" aria-label="Breadcrumb">
+            <Link href="/" className="agd-breadcrumb-chip">
               Discover
             </Link>
             <Image
@@ -218,37 +218,37 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
               alt=""
               width={10}
               height={20}
-              className="ad-breadcrumb-sep"
+              className="agd-breadcrumb-sep"
             />
-            <span className="ad-breadcrumb-chip">{agent.name}</span>
+            <span className="agd-breadcrumb-chip">{agent.name}</span>
           </nav>
 
-          <div className="ad-hero-identity">
-            <div className="ad-hero-identity-left">
-              <div className="ad-agent-mark">
+          <div className="agd-hero-identity">
+            <div className="agd-hero-identity-left">
+              <div className="agd-agent-mark">
                 <Image
                   src="/agent-detail/icon-frame.svg"
                   alt=""
                   width={78}
                   height={78}
-                  className="ad-agent-mark-frame"
+                  className="agd-agent-mark-frame"
                 />
                 <Image
                   src="/agent-detail/icon-chart.svg"
                   alt=""
                   width={32}
                   height={32}
-                  className="ad-agent-mark-glyph"
+                  className="agd-agent-mark-glyph"
                 />
               </div>
-              <div className="ad-hero-copy">
-                <h1 className="ad-hero-title">{agent.name}</h1>
-                <p className="ad-hero-lead">{agent.oneLiner}</p>
+              <div className="agd-hero-copy">
+                <h1 className="agd-hero-title">{agent.name}</h1>
+                <p className="agd-hero-lead">{agent.oneLiner}</p>
               </div>
             </div>
 
-            <div className="ad-hero-actions">
-              <button type="button" className="ad-btn ad-btn-ghost" onClick={onShare}>
+            <div className="agd-hero-actions">
+              <button type="button" className="agd-btn agd-btn-ghost" onClick={onShare}>
                 <span>Share</span>
                 <Image src="/agent-detail/icon-send.svg" alt="" width={20} height={20} />
               </button>
@@ -257,46 +257,46 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
                   href={agent.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ad-btn ad-btn-ghost"
+                  className="agd-btn agd-btn-ghost"
                 >
                   <span>Visit</span>
                   <Image src="/agent-detail/icon-visit.svg" alt="" width={20} height={20} />
                 </a>
               ) : null}
-              <Link href={tradeHref} className="ad-btn ad-btn-primary">
+              <Link href={tradeHref} className="agd-btn agd-btn-primary">
                 <span>{tradeLabel}</span>
                 <Image src="/agent-detail/icon-trade.svg" alt="" width={20} height={20} />
               </Link>
             </div>
           </div>
 
-          <div className="ad-raise">
-            <div className="ad-raise-head">
-              <p className="ad-raise-label">Current Raise</p>
-              <div className="ad-raise-values">
-                <p className="ad-raise-amount">
+          <div className="agd-raise">
+            <div className="agd-raise-head">
+              <p className="agd-raise-label">Current Raise</p>
+              <div className="agd-raise-values">
+                <p className="agd-raise-amount">
                   <span>{formatUsd(agent.amountRaised, 0)}</span>
-                  <span className="ad-raise-target"> / {formatUsd(agent.raiseTarget, 0)}</span>
+                  <span className="agd-raise-target"> / {formatUsd(agent.raiseTarget, 0)}</span>
                 </p>
-                <p className="ad-raise-pct">{progressPct}%</p>
+                <p className="agd-raise-pct">{progressPct}%</p>
               </div>
             </div>
 
-            <div className="ad-raise-track" role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}>
-              <div className="ad-raise-fill" style={{ width: `${progressPct}%` }}>
+            <div className="agd-raise-track" role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}>
+              <div className="agd-raise-fill" style={{ width: `${progressPct}%` }}>
                 <span
-                  className="ad-raise-stripes"
+                  className="agd-raise-stripes"
                   style={{ backgroundImage: 'url(/agent-detail/progress-stripes.svg)' }}
                   aria-hidden
                 />
               </div>
             </div>
 
-            <div className="ad-raise-meta">
-              <div className="ad-raise-meta-item">
-                <span className="ad-avatar-stack" aria-hidden>
+            <div className="agd-raise-meta">
+              <div className="agd-raise-meta-item">
+                <span className="agd-avatar-stack" aria-hidden>
                   {[0, 1, 2].map((i) => (
-                    <span key={i} className="ad-avatar-chip">
+                    <span key={i} className="agd-avatar-chip">
                       <Image
                         src="/agent-detail/avatar.png"
                         alt=""
@@ -314,7 +314,7 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
                 </span>
               </div>
               {closesIn !== null ? (
-                <div className="ad-raise-meta-item">
+                <div className="agd-raise-meta-item">
                   <Image src="/agent-detail/icon-time.svg" alt="" width={20} height={20} />
                   <span>
                     {closesIn === 0
@@ -323,7 +323,7 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
                   </span>
                 </div>
               ) : (
-                <div className="ad-raise-meta-item">
+                <div className="agd-raise-meta-item">
                   <Image src="/agent-detail/icon-time.svg" alt="" width={20} height={20} />
                   <span>
                     {agent.status === 'Trading' || agent.status === 'Successful'
@@ -332,7 +332,7 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
                   </span>
                 </div>
               )}
-              <div className="ad-raise-meta-item">
+              <div className="agd-raise-meta-item">
                 <Image src="/agent-detail/icon-meter.svg" alt="" width={20} height={20} />
                 <span>
                   Min {formatCurrency(raiseMetaMin, 0)} - Max{' '}
@@ -343,13 +343,13 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
           </div>
         </div>
 
-        <div className="ad-stats">
+        <div className="agd-stats">
           {stats.map((stat) => (
-            <div key={stat.label} className="ad-stat-cell">
-              <div className="ad-stat-copy">
-                <p className="ad-stat-label">{stat.label}</p>
+            <div key={stat.label} className="agd-stat-cell">
+              <div className="agd-stat-copy">
+                <p className="agd-stat-label">{stat.label}</p>
                 <p
-                  className={`ad-stat-value${stat.tone === 'positive' ? ' is-positive' : ''}`}
+                  className={`agd-stat-value${stat.tone === 'positive' ? ' is-positive' : ''}`}
                 >
                   {stat.value}
                 </p>
@@ -364,51 +364,51 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
 
       <HomeSectionDivider />
 
-      <section className="ad-body">
-        <div className="ad-body-row">
-          <article className="ad-panel ad-panel-about">
-            <div className="ad-panel-block">
+      <section className="agd-body">
+        <div className="agd-body-row">
+          <article className="agd-panel agd-panel-about">
+            <div className="agd-panel-block">
               <SectionTitle icon="/agent-detail/icon-info.svg">About</SectionTitle>
-              <p className="ad-panel-text">{agent.description}</p>
+              <p className="agd-panel-text">{agent.description}</p>
             </div>
 
-            <div className="ad-panel-rule" aria-hidden />
+            <div className="agd-panel-rule" aria-hidden />
 
-            <div className="ad-panel-block">
+            <div className="agd-panel-block">
               <SectionTitle icon="/agent-detail/icon-settings.svg">Deployer</SectionTitle>
-              <div className="ad-deployer">
-                <div className="ad-deployer-avatar">
+              <div className="agd-deployer">
+                <div className="agd-deployer-avatar">
                   <Image
                     src={agent.logoUrl}
                     alt=""
                     width={24}
                     height={24}
-                    className="ad-deployer-avatar-img"
+                    className="agd-deployer-avatar-img"
                   />
                 </div>
-                <div className="ad-deployer-copy">
-                  <p className="ad-deployer-handle">
+                <div className="agd-deployer-copy">
+                  <p className="agd-deployer-handle">
                     <span>@</span>
                     {deployerHandle}
                   </p>
-                  <p className="ad-deployer-bio">
+                  <p className="agd-deployer-bio">
                     Deployed {agent.name} on {agent.chain}. Tier {agent.tier}. {founderRole}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="ad-panel-rule" aria-hidden />
+            <div className="agd-panel-rule" aria-hidden />
 
-            <div className="ad-panel-block">
+            <div className="agd-panel-block">
               <SectionTitle icon="/agent-detail/icon-link.svg">Links</SectionTitle>
-              <div className="ad-links">
+              <div className="agd-links">
                 {agent.website ? (
                   <a
                     href={agent.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ad-link-btn"
+                    className="agd-link-btn"
                   >
                     <span>{websiteHost}</span>
                     <Image src="/agent-detail/icon-ext-arrow.svg" alt="" width={20} height={20} />
@@ -419,7 +419,7 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
                     href={agent.docs}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ad-link-btn"
+                    className="agd-link-btn"
                   >
                     <span>Docs</span>
                     <Image src="/agent-detail/icon-ext-arrow.svg" alt="" width={20} height={20} />
@@ -429,63 +429,63 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
             </div>
           </article>
 
-          <article className="ad-panel ad-panel-contributors">
+          <article className="agd-panel agd-panel-contributors">
             <SectionTitle icon="/agent-detail/icon-money.svg">Top Contributors</SectionTitle>
-            <div className="ad-contributors">
+            <div className="agd-contributors">
               {topContributors.map((c) => (
-                <div key={`${c.handle}-${c.amount}`} className="ad-contributor">
-                  <div className="ad-contributor-avatar">
+                <div key={`${c.handle}-${c.amount}`} className="agd-contributor">
+                  <div className="agd-contributor-avatar">
                     <Image
                       src="/agent-detail/avatar2.png"
                       alt=""
                       width={24}
                       height={24}
-                      className="ad-contributor-avatar-img"
+                      className="agd-contributor-avatar-img"
                     />
                   </div>
-                  <div className="ad-contributor-main">
-                    <div className="ad-contributor-id">
-                      <p className="ad-contributor-handle">{c.handle}</p>
-                      <p className="ad-contributor-role">{c.role}</p>
+                  <div className="agd-contributor-main">
+                    <div className="agd-contributor-id">
+                      <p className="agd-contributor-handle">{c.handle}</p>
+                      <p className="agd-contributor-role">{c.role}</p>
                     </div>
-                    <div className="ad-contributor-stats">
-                      <p className="ad-contributor-amount">
+                    <div className="agd-contributor-stats">
+                      <p className="agd-contributor-amount">
                         <span>+{formatCompactCurrency(c.amount)}</span>
-                        <span className="ad-contributor-slash"> / </span>
-                        <span className="ad-contributor-pct">
+                        <span className="agd-contributor-slash"> / </span>
+                        <span className="agd-contributor-pct">
                           +{formatPercent(c.pct, 1)}
                         </span>
                       </p>
-                      <p className="ad-contributor-time">{c.timeAgo}</p>
+                      <p className="agd-contributor-time">{c.timeAgo}</p>
                     </div>
                   </div>
                 </div>
               ))}
               {moreContributors > 0 ? (
-                <p className="ad-contributors-more">+{moreContributors} more</p>
+                <p className="agd-contributors-more">+{moreContributors} more</p>
               ) : null}
             </div>
           </article>
         </div>
 
-        <div className="ad-body-row">
-          <div className="ad-panel-stack">
-            <article className="ad-panel ad-panel-list">
+        <div className="agd-body-row">
+          <div className="agd-panel-stack">
+            <article className="agd-panel agd-panel-list">
               <SectionTitle icon="/agent-detail/icon-list.svg" iconSize={18}>
                 How Capital Is Used
               </SectionTitle>
-              <ul className="ad-bullet-list">
+              <ul className="agd-bullet-list">
                 {capitalUses.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             </article>
 
-            <article className="ad-panel ad-panel-list">
+            <article className="agd-panel agd-panel-list">
               <SectionTitle icon="/agent-detail/icon-note.svg">
                 Allocations And Terms
               </SectionTitle>
-              <ul className="ad-bullet-list">
+              <ul className="agd-bullet-list">
                 {allocationTerms.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -493,11 +493,11 @@ export function AgentDetailClient({ agent }: AgentDetailClientProps) {
             </article>
           </div>
 
-          <article className="ad-panel ad-panel-terms">
+          <article className="agd-panel agd-panel-terms">
             <SectionTitle icon="/agent-detail/icon-note.svg">Deal Terms</SectionTitle>
-            <dl className="ad-terms">
+            <dl className="agd-terms">
               {dealTerms.map((row) => (
-                <div key={row.label} className="ad-terms-row">
+                <div key={row.label} className="agd-terms-row">
                   <dt>{row.label}</dt>
                   <dd>{row.value}</dd>
                 </div>
