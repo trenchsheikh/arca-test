@@ -27,6 +27,8 @@ function UsersView() {
           <div className="inv-table-empty">
             <LoadingState label="Loading wallets…" />
           </div>
+        ) : wallets.length === 0 ? (
+          <p className="inv-table-empty">No wallets yet.</p>
         ) : (
           <table className="inv-table">
             <thead>
@@ -66,7 +68,7 @@ function UsersView() {
 
 export default function AdminUsersPage() {
   return (
-    <RequireAuth title="Sign In To Access Admin">
+    <RequireAuth admin title="Sign In To Access Admin">
       <UsersView />
     </RequireAuth>
   );

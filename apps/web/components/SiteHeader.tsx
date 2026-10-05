@@ -206,7 +206,7 @@ export function SiteHeader() {
                   <MdDivider style={{ margin: '0.35rem 0' }} />
                   <p className="site-header-mobile-user">
                     Signed in as{' '}
-                    <span>{session?.username}</span>
+                    <span>{session?.wallet ? session.username : 'wallet'}</span>
                   </p>
                   <button
                     type="button"

@@ -22,6 +22,7 @@ export function InvestorStatCard({
           <p className="inv-stat-label">{label}</p>
           <p className="inv-stat-value">{value}</p>
         </div>
+        {sparkline ? (
         <div className="inv-stat-spark">
           <Image
             src={
@@ -34,6 +35,7 @@ export function InvestorStatCard({
             height={42}
           />
         </div>
+        ) : null}
       </div>
       <div className="inv-stat-card-footer">
         <Image

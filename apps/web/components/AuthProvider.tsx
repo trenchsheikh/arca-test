@@ -2,75 +2,89 @@
 
 import {
   createContext,
-  useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
   type ReactNode,
 } from 'react';
+import { usePrivy, type User } from '@privy-io/react-auth';
+import { useWallets } from '@privy-io/react-auth/solana';
 import {
-  clearSession,
-  getSession,
-  login as doLogin,
+  isAdminWallet,
+  shortenAddress,
   type AuthSession,
-  DEMO_CREDENTIALS,
-  DEMO_WALLET,
 } from '@/lib/auth';
 
 type AuthContextValue = {
   session: AuthSession | null;
   ready: boolean;
+  configured: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
   wallet: string;
-  login: (username: string, password: string) => boolean;
+  login: () => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSessionState] = useState<AuthSession | null>(null);
-  const [ready, setReady] = useState(false);
+function solanaAddressFromUser(user: User | null): string {
+  if (!user) return '';
+  const account = user.linkedAccounts.find(
+    (entry) => entry.type === 'wallet' && entry.chainType === 'solana',
+  );
+  return account && 'address' in account ? account.address : '';
+}
 
-  const refresh = useCallback(() => {
-    setSessionState(getSession());
-    setReady(true);
-  }, []);
+export function PrivyAuthProvider({ children }: { children: ReactNode }) {
+  const { ready, authenticated, user, login, logout } = usePrivy();
+  const { wallets } = useWallets();
 
-  useEffect(() => {
-    refresh();
-    const onChange = () => refresh();
-    window.addEventListener('arca-auth-changed', onChange);
-    window.addEventListener('storage', onChange);
-    return () => {
-      window.removeEventListener('arca-auth-changed', onChange);
-      window.removeEventListener('storage', onChange);
-    };
-  }, [refresh]);
+  const wallet = wallets[0]?.address || solanaAddressFromUser(user);
+  const isAuthenticated = ready && authenticated && !!wallet;
 
-  const value = useMemo<AuthContextValue>(
-    () => ({
+  const value = useMemo<AuthContextValue>(() => {
+    const session: AuthSession | null = isAuthenticated
+      ? {
+          username: shortenAddress(wallet),
+          wallet,
+          loggedInAt: user?.createdAt
+            ? new Date(user.createdAt).toISOString()
+            : new Date().toISOString(),
+        }
+      : null;
+
+    return {
       session,
       ready,
-      isAuthenticated: !!session,
-      isAdmin: !!session && session.username === DEMO_CREDENTIALS.username,
-      wallet: DEMO_WALLET,
-      login: (username, password) => {
-        const next = doLogin(username, password);
-        if (next) {
-          setSessionState(next);
-          return true;
-        }
-        return false;
+      configured: true,
+      isAuthenticated,
+      isAdmin: isAuthenticated && isAdminWallet(wallet),
+      wallet: isAuthenticated ? wallet : '',
+      login: () => {
+        login();
       },
       logout: () => {
-        clearSession();
-        setSessionState(null);
+        void logout();
       },
+    };
+  }, [isAuthenticated, login, logout, ready, user?.createdAt, wallet]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function UnconfiguredAuthProvider({ children }: { children: ReactNode }) {
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      session: null,
+      ready: true,
+      configured: false,
+      isAuthenticated: false,
+      isAdmin: false,
+      wallet: '',
+      login: () => {},
+      logout: () => {},
     }),
-    [session, ready],
+    [],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

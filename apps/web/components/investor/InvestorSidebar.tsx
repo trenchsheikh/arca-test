@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
+import { shortenAddress } from '@/lib/auth';
 
 const investorNav = [
   {
@@ -31,12 +32,6 @@ const investorNav = [
     match: (path: string) => path.startsWith('/investor/history'),
   },
 ] as const;
-
-function shortenAddress(value: string): string {
-  if (!value) return '';
-  if (value.length <= 14) return value;
-  return `${value.slice(0, 6)}…${value.slice(-4)}`;
-}
 
 export function InvestorSidebar({
   collapsed,

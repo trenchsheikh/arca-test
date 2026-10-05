@@ -30,6 +30,11 @@ function BuybackView() {
             </button>
           </div>
           <div className="dep-param-list">
+            {data.engineParams.length === 0 ? (
+              <p className="inv-table-empty">
+                Engine parameters are set when you launch an agent.
+              </p>
+            ) : null}
             {data.engineParams.map((row) => (
               <div key={row.label} className="dep-param-row">
                 <span className="dep-metric-label">{row.label}</span>
@@ -76,6 +81,9 @@ function BuybackView() {
       </div>
 
       <InvestorTableChrome title="Buyback History">
+        {data.buybackHistory.length === 0 ? (
+          <p className="inv-table-empty">No buybacks yet.</p>
+        ) : (
         <table className="inv-table">
           <thead>
             <tr>
@@ -106,6 +114,7 @@ function BuybackView() {
             ))}
           </tbody>
         </table>
+        )}
       </InvestorTableChrome>
     </DeployerShell>
   );

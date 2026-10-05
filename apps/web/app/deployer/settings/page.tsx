@@ -34,13 +34,15 @@ function SettingsView() {
             <div className="dep-panel-heading">
               <h2 className="inv-table-title">API & Integrations</h2>
               <span className="dep-connected-pill">
-                <Image
-                  src="/deployer/icon-connected.svg"
-                  alt=""
-                  width={14}
-                  height={14}
-                />
-                Connected
+                {data.settings.connected ? (
+                  <Image
+                    src="/deployer/icon-connected.svg"
+                    alt=""
+                    width={14}
+                    height={14}
+                  />
+                ) : null}
+                {data.settings.connected ? 'Connected' : 'Not connected'}
               </span>
             </div>
             <div className="dep-chart-controls">
@@ -57,7 +59,9 @@ function SettingsView() {
             <div className="dep-settings-row">
               <div>
                 <span className="dep-metric-label">API Key</span>
-                <span className="dep-settings-value">{data.settings.apiKey}</span>
+                <span className="dep-settings-value">
+                  {data.settings.apiKey || 'Not issued yet'}
+                </span>
               </div>
               <button
                 type="button"
@@ -71,7 +75,9 @@ function SettingsView() {
             <div className="dep-settings-row">
               <div>
                 <span className="dep-metric-label">Webhook URL</span>
-                <span className="dep-settings-value">{data.settings.webhookUrl}</span>
+                <span className="dep-settings-value">
+                  {data.settings.webhookUrl || 'Not configured'}
+                </span>
               </div>
               <button
                 type="button"

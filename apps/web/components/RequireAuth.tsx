@@ -1,28 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { DEMO_CREDENTIALS } from '@/lib/auth';
 import { LoadingState } from '@/components/LoadingState';
-import {
-  MdFilledButton,
-  MdTextButton,
-  MdIcon,
-  MdList,
-  MdListItem,
-} from '@/components/material';
+import { MdFilledButton, MdTextButton, MdIcon } from '@/components/material';
 
 export function RequireAuth({
   children,
-  title = 'Sign In To Continue',
+  title = 'Connect Your Solana Wallet',
+  admin = false,
 }: {
   children: React.ReactNode;
   title?: string;
+  admin?: boolean;
 }) {
-  const { ready, isAuthenticated } = useAuth();
+  const { ready, isAuthenticated, isAdmin, configured, login } = useAuth();
   const pathname = usePathname();
-  const router = useRouter();
 
   if (!ready) {
     return (
@@ -37,33 +31,44 @@ export function RequireAuth({
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="arca-surface p-8 max-w-md w-full shadow-soft">
           <h1 className="text-2xl font-bold text-chalk mb-2">{title}</h1>
-          <p className="text-chalk-dim text-sm mb-4">Demo credentials</p>
-          <MdList className="mb-6">
-            <MdListItem>
-              <MdIcon slot="start">person</MdIcon>
-              <div slot="headline">Username</div>
-              <div slot="supporting-text">{DEMO_CREDENTIALS.username}</div>
-            </MdListItem>
-            <MdListItem>
-              <MdIcon slot="start">lock</MdIcon>
-              <div slot="headline">Password</div>
-              <div slot="supporting-text">{DEMO_CREDENTIALS.password}</div>
-            </MdListItem>
-          </MdList>
-          <MdFilledButton
-            onClick={() =>
-              router.push(`/login?next=${encodeURIComponent(pathname || '/')}`)
-            }
-            style={{ width: '100%' }}
-          >
-            <MdIcon slot="icon">login</MdIcon>
-            Go To Login
-          </MdFilledButton>
+          <p className="text-chalk-dim text-sm mb-6">
+            Connect a Solana wallet to open this page. Email and other chains
+            are not accepted.
+          </p>
+          {configured ? (
+            <MdFilledButton onClick={() => login()} style={{ width: '100%' }}>
+              <MdIcon slot="icon">account_balance_wallet</MdIcon>
+              Connect Solana wallet
+            </MdFilledButton>
+          ) : (
+            <p className="text-sm text-error mb-4">
+              Set NEXT_PUBLIC_PRIVY_APP_ID before wallet login can run.
+            </p>
+          )}
           <div className="mt-3 text-center">
-            <Link href="/">
-              <MdTextButton>Back To Home</MdTextButton>
+            <Link href={`/login?next=${encodeURIComponent(pathname || '/')}`}>
+              <MdTextButton>Open login page</MdTextButton>
             </Link>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (admin && !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="arca-surface p-8 max-w-md w-full shadow-soft">
+          <h1 className="text-2xl font-bold text-chalk mb-2">Admin access</h1>
+          <p className="text-chalk-dim text-sm mb-6">
+            This Solana wallet is not on the admin allowlist.
+          </p>
+          <Link href="/investor">
+            <MdFilledButton style={{ width: '100%' }}>
+              <MdIcon slot="icon">arrow_back</MdIcon>
+              Go to dashboard
+            </MdFilledButton>
+          </Link>
         </div>
       </div>
     );

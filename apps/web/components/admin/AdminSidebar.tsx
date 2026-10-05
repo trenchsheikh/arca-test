@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
+import { shortenAddress } from '@/lib/auth';
 
 const reviewNav = [
   {
@@ -55,11 +56,8 @@ export function AdminSidebar({
   onToggle: () => void;
 }) {
   const pathname = usePathname();
-  const { logout, session } = useAuth();
-  const displayName =
-    session?.username === 'admin'
-      ? 'Pankaj'
-      : session?.username || 'Admin';
+  const { logout, wallet } = useAuth();
+  const displayName = shortenAddress(wallet) || 'Admin';
 
   return (
     <aside className={`inv-sidebar${collapsed ? ' is-collapsed' : ''}`}>

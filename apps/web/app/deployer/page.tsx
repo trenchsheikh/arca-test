@@ -21,34 +21,30 @@ function DashboardView() {
   return (
     <DeployerShell crumb="Dashboard">
       <DeployerPageHeader
-        title="Welcome back, Pankaj!"
-        subtitle="Monitor your agent's capital, revenue, and buyback performance"
+        title="Welcome"
+        subtitle="Your deployer dashboard is empty until you launch an agent."
       />
 
       <div className="inv-stat-grid">
         <InvestorStatCard
           label="Raise Progress"
           value={`${data.raiseProgress.toFixed(1)}%`}
-          hint="8.0% left"
-          sparkline="up"
+          hint="No raise yet"
         />
         <InvestorStatCard
           label="Capital Raised"
           value={data.capitalRaised}
-          hint="92.0% of target"
-          sparkline="up"
+          hint="No capital yet"
         />
         <InvestorStatCard
           label="Operational Wallet"
           value={data.operationalWallet}
-          hint="available for trading"
-          sparkline="down"
+          hint="Nothing available yet"
         />
         <InvestorStatCard
           label="Revenue Generated"
           value={data.revenueGenerated}
-          hint="0%"
-          sparkline="down"
+          hint="No revenue yet"
         />
       </div>
 
@@ -58,6 +54,11 @@ function DashboardView() {
       </div>
 
       <InvestorTableChrome title="Transactions">
+        {data.transactions.length === 0 ? (
+          <p className="inv-table-empty">
+            Transactions appear after your agent is live.
+          </p>
+        ) : (
         <table className="inv-table">
           <thead>
             <tr>
@@ -98,6 +99,7 @@ function DashboardView() {
             ))}
           </tbody>
         </table>
+        )}
       </InvestorTableChrome>
     </DeployerShell>
   );

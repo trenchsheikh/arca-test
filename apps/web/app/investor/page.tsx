@@ -34,7 +34,7 @@ function DashboardView() {
   } = useInvestorPortfolio();
 
   const pnlTone = unrealizedPnL > 0 ? 'up' : unrealizedPnL < 0 ? 'down' : '';
-  const sparkTone = unrealizedPnL >= 0 ? 'up' : 'down';
+  const sparkline = rows.length === 0 ? undefined : unrealizedPnL >= 0 ? 'up' : 'down';
 
   return (
     <InvestorShell crumb="Dashboard">
@@ -48,27 +48,27 @@ function DashboardView() {
           label="Total Invested"
           value={formatStatCurrency(totalInvested)}
           hint={`${formatCommaNumber(rows.length)} position${rows.length === 1 ? '' : 's'}`}
-          sparkline={sparkTone}
+          sparkline={sparkline}
         />
         <InvestorStatCard
           label="Holdings Value"
           value={formatStatCurrency(totalHoldings)}
           hint={`${unrealizedPnL >= 0 ? '+' : ''}${formatPercent(pnlRatio)}`}
           tone={pnlTone}
-          sparkline={sparkTone}
+          sparkline={sparkline}
         />
         <InvestorStatCard
           label="Buybacks Received"
           value={formatCommaNumber(totalBuybacks)}
           hint={`${formatCommaNumber(buybacks.length)} event${buybacks.length === 1 ? '' : 's'}`}
-          sparkline={sparkTone}
+          sparkline={sparkline}
         />
         <InvestorStatCard
           label="Unrealized PnL"
           value={formatSignedUsd(unrealizedPnL)}
           hint={`${unrealizedPnL >= 0 ? '+' : ''}${formatPercent(pnlRatio)}`}
           tone={pnlTone}
-          sparkline={sparkTone}
+          sparkline={sparkline}
         />
       </div>
 

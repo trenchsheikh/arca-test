@@ -30,26 +30,22 @@ function PerformanceView() {
         <InvestorStatCard
           label="Win Rate"
           value={performanceStats.winRate}
-          hint="8.0% left"
-          sparkline="up"
+          hint="No closed trades"
         />
         <InvestorStatCard
           label="Avg. Monthly Return"
           value={performanceStats.avgMonthlyReturn}
-          hint="92.0% of target"
-          sparkline="up"
+          hint="No return history"
         />
         <InvestorStatCard
           label="Trading Volume"
           value={performanceStats.tradingVolume}
-          hint="available for trading"
-          sparkline="up"
+          hint="No volume yet"
         />
         <InvestorStatCard
           label="Total Positions"
           value={performanceStats.totalPositions}
-          hint="0%"
-          sparkline="up"
+          hint="No open positions"
         />
       </div>
 
@@ -59,6 +55,9 @@ function PerformanceView() {
       </div>
 
       <InvestorTableChrome title="Open Positions">
+        {data.openPositions.length === 0 ? (
+          <p className="inv-table-empty">No open positions yet.</p>
+        ) : (
         <table className="inv-table">
           <thead>
             <tr>
@@ -91,6 +90,7 @@ function PerformanceView() {
             ))}
           </tbody>
         </table>
+        )}
       </InvestorTableChrome>
     </DeployerShell>
   );

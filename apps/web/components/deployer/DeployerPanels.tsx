@@ -88,7 +88,9 @@ export function FeeRevenueCard() {
         <div className="dep-fee-hero">
           <p className="dep-fee-total">{feeRevenue.total}</p>
           <span className="dep-delta-pill">
-            <Image src="/deployer/icon-trend-up.svg" alt="" width={14} height={14} />
+            {feeRevenue.delta.startsWith('+') ? (
+              <Image src="/deployer/icon-trend-up.svg" alt="" width={14} height={14} />
+            ) : null}
             {feeRevenue.delta}
           </span>
         </div>
@@ -120,6 +122,20 @@ export function FeeRevenueCard() {
 
 export function MonthlyReturnChart() {
   const { monthlyReturns } = useDeployerData();
+
+  if (monthlyReturns.length === 0) {
+    return (
+      <section className="dep-panel dep-panel--chart">
+        <div className="dep-panel-toolbar">
+          <div className="dep-panel-heading">
+            <h2 className="inv-table-title">Monthly return</h2>
+          </div>
+        </div>
+        <p className="inv-table-empty">No return history yet.</p>
+      </section>
+    );
+  }
+
   const max = Math.max(...monthlyReturns.map((m) => Math.abs(m.value)), 1);
   const highlight = 'JUL';
 
@@ -191,6 +207,17 @@ export function MonthlyReturnChart() {
 
 export function RiskExposureCard() {
   const { riskExposure, exposureSplit } = useDeployerData();
+
+  if (riskExposure.length === 0) {
+    return (
+      <section className="dep-panel dep-panel--risk">
+        <div className="dep-panel-toolbar">
+          <h2 className="inv-table-title">Risk & exposure</h2>
+        </div>
+        <p className="inv-table-empty">No exposure yet.</p>
+      </section>
+    );
+  }
 
   return (
     <section className="dep-panel dep-panel--risk">

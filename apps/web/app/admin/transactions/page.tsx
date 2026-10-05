@@ -28,6 +28,8 @@ function TransactionsView() {
           <div className="inv-table-empty">
             <LoadingState label="Loading transactions…" />
           </div>
+        ) : transactions.length === 0 ? (
+          <p className="inv-table-empty">No transactions yet.</p>
         ) : (
           <table className="inv-table">
             <thead>
@@ -87,7 +89,7 @@ function TransactionsView() {
 
 export default function AdminTransactionsPage() {
   return (
-    <RequireAuth title="Sign In To Access Admin">
+    <RequireAuth admin title="Sign In To Access Admin">
       <TransactionsView />
     </RequireAuth>
   );

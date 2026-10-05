@@ -10,14 +10,9 @@ import {
 import { AdminShell } from '@/components/admin/AdminShell';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { useAdminData } from '@/components/admin/useAdminData';
-import { formatCompactCurrency, formatCommaNumber } from '@/lib/format';
 
 function BuybackView() {
-  const { loading, pendingCount, analytics, buybackRows } = useAdminData();
-
-  const lastSuccess = analytics?.buybackHealth.lastSuccessAt
-    ? new Date(analytics.buybackHealth.lastSuccessAt).toLocaleString()
-    : 'n/a';
+  const { loading, pendingCount, buybackRows } = useAdminData();
 
   return (
     <AdminShell crumb="Buyback Engine">
@@ -29,35 +24,23 @@ function BuybackView() {
       <div className="inv-stat-grid">
         <InvestorStatCard
           label="Buyback Events"
-          value={String(analytics?.totalBuybacks ?? 24)}
-          hint="platform-wide"
-          sparkline="up"
+          value="0"
+          hint="No events yet"
         />
         <InvestorStatCard
           label="Buyback Volume"
-          value={
-            analytics?.platformBuybackVolume != null
-              ? formatCommaNumber(analytics.platformBuybackVolume)
-              : '128.4K'
-          }
-          hint="tokens acquired"
-          sparkline="up"
+          value="0"
+          hint="No tokens acquired"
         />
         <InvestorStatCard
           label="Fee Revenue"
-          value={
-            analytics?.feeRevenue != null
-              ? formatCompactCurrency(analytics.feeRevenue)
-              : '$12.4K'
-          }
-          hint="treasury share"
-          sparkline="down"
+          value="$0"
+          hint="No treasury share yet"
         />
         <InvestorStatCard
           label="Indexer Lag"
-          value={`${analytics?.buybackHealth.lagSeconds ?? 5}s`}
-          hint={`last success ${lastSuccess}`}
-          sparkline="down"
+          value="—"
+          hint="No buybacks recorded"
         />
       </div>
 
@@ -66,6 +49,8 @@ function BuybackView() {
           <div className="inv-table-empty">
             <LoadingState label="Loading buybacks…" />
           </div>
+        ) : buybackRows.length === 0 ? (
+          <p className="inv-table-empty">No buyback activity yet.</p>
         ) : (
           <table className="inv-table">
             <thead>
@@ -111,7 +96,7 @@ function BuybackView() {
 
 export default function AdminBuybackPage() {
   return (
-    <RequireAuth title="Sign In To Access Admin">
+    <RequireAuth admin title="Sign In To Access Admin">
       <BuybackView />
     </RequireAuth>
   );

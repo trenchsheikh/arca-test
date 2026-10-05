@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { useDeployerData } from '@/components/deployer/useDeployerData';
+import { shortenAddress } from '@/lib/auth';
 
 const deployerNav = [
   {
@@ -53,8 +53,7 @@ export function DeployerSidebar({
   onToggle: () => void;
 }) {
   const pathname = usePathname();
-  const { logout } = useAuth();
-  const { agentName, agentStatus } = useDeployerData();
+  const { logout, wallet } = useAuth();
 
   return (
     <aside className={`inv-sidebar${collapsed ? ' is-collapsed' : ''}`}>
@@ -128,8 +127,8 @@ export function DeployerSidebar({
           />
           {!collapsed && (
             <span className="inv-wallet-meta">
-              <span className="inv-wallet-addr">{agentName}</span>
-              <span className="inv-wallet-role">{agentStatus}</span>
+              <span className="inv-wallet-addr">{shortenAddress(wallet) || 'Wallet'}</span>
+              <span className="inv-wallet-role">Deployer</span>
             </span>
           )}
           {!collapsed && (

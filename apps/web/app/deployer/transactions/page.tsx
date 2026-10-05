@@ -22,6 +22,9 @@ function TransactionsView() {
       />
 
       <InvestorTableChrome title="On-chain Transactions">
+        {data.transactions.length === 0 ? (
+          <p className="inv-table-empty">No transactions yet.</p>
+        ) : (
         <table className="inv-table">
           <thead>
             <tr>
@@ -62,6 +65,7 @@ function TransactionsView() {
             ))}
           </tbody>
         </table>
+        )}
       </InvestorTableChrome>
     </DeployerShell>
   );

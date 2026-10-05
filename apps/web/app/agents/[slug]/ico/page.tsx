@@ -11,7 +11,6 @@ import { LoadingState } from '@/components/LoadingState';
 import { formatCurrency } from '@/lib/format';
 import { tokensForContributionPreview } from '@arca/shared';
 import { useAuth } from '@/components/AuthProvider';
-import { DEMO_WALLET } from '@/lib/auth';
 import {
   MdOutlinedTextField,
   MdFilledButton,
@@ -262,18 +261,16 @@ export default function IcoPage() {
                   <MdOutlinedTextField
                     label="Wallet address"
                     value={wallet}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onInput={(e: any) => setWallet(e.target.value)}
+                    readOnly
                     style={{ width: '100%' }}
                   >
                     <MdIcon slot="leading-icon">account_balance_wallet</MdIcon>
                   </MdOutlinedTextField>
-                  <div className="mt-2">
-                    <MdTextButton onClick={() => setWallet(DEMO_WALLET)}>
-                      <MdIcon slot="icon">bolt</MdIcon>
-                      Use demo wallet
-                    </MdTextButton>
-                  </div>
+                  {!isAuthenticated && (
+                    <p className="text-chalk-dim text-sm mt-2">
+                      Connect your Solana wallet to contribute.
+                    </p>
+                  )}
                 </div>
 
                 {actionMsg && (

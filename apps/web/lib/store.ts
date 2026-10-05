@@ -150,70 +150,26 @@ function syncCatalogAgents() {
 
 syncCatalogAgents();
 
-// Initialize demo ICO session once
-if (!store.icoSessions.size) {
-  const predictionNexusAgent = store.agents.find((a) => a.slug === 'prediction-nexus');
-  if (predictionNexusAgent) {
-    store.icoSessions.set(predictionNexusAgent.id, {
-      agentId: predictionNexusAgent.id,
-      contributions: [
-        {
-          wallet: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-          amount: 15200,
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12),
-          txHash: '0xabc123...',
-        },
-        {
-          wallet: 'DYw8j...kL3n',
-          amount: 22200,
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6),
-          txHash: '3Kx9m...',
-        },
-      ],
-      endsAt: new Date(Date.now() + 1000 * 60 * 60 * 48),
-      totalRaised: 37400,
-    });
+/** Drop seeded demo wallets so a fresh login starts with an empty portfolio. */
+const SEEDED_DEMO_WALLETS = new Set([
+  '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
+  'DYw8j...kL3n',
+]);
 
-    store.investorPositions.push(
-      {
-        wallet: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-        agentId: predictionNexusAgent.id,
-        contributed: 15200,
-        tokensAllocated: 0,
-        claimable: false,
-        refundable: false,
-        claimed: false,
-        refunded: false,
-      },
-      {
-        wallet: 'DYw8j...kL3n',
-        agentId: predictionNexusAgent.id,
-        contributed: 22200,
-        tokensAllocated: 0,
-        claimable: false,
-        refundable: false,
-        claimed: false,
-        refunded: false,
-      },
-    );
-  }
-}
-
-// Mock positions for Trading agents (claimable), only once
-if (!store.investorPositions.some((p) => p.agentId === 'quantum-flux')) {
-  const quantumFlux = store.agents.find((a) => a.slug === 'quantum-flux');
-  if (quantumFlux) {
-    store.investorPositions.push({
-      wallet: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-      agentId: quantumFlux.id,
-      contributed: 5.0,
-      tokensAllocated: 10_000_000,
-      claimable: true,
-      refundable: false,
-      claimed: false,
-      refunded: false,
-    });
-  }
+store.investorPositions = store.investorPositions.filter(
+  (position) => !SEEDED_DEMO_WALLETS.has(position.wallet),
+);
+store.transactions = store.transactions.filter(
+  (tx) => !SEEDED_DEMO_WALLETS.has(tx.wallet),
+);
+for (const session of store.icoSessions.values()) {
+  session.contributions = session.contributions.filter(
+    (contribution) => !SEEDED_DEMO_WALLETS.has(contribution.wallet),
+  );
+  session.totalRaised = session.contributions.reduce(
+    (sum, contribution) => sum + contribution.amount,
+    0,
+  );
 }
 
 // Waitlist API

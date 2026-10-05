@@ -86,107 +86,6 @@ export type TxRow = {
   flagged: boolean;
 };
 
-const PLACEHOLDER_WALLETS: WalletRow[] = [
-  {
-    id: 'w1',
-    wallet: '0x4f2…9a2c',
-    role: 'Investor',
-    joined: 'Jun 2, 2026',
-    total: '$128,400',
-    status: 'Active',
-    agentsBacked: 5,
-  },
-  {
-    id: 'w2',
-    wallet: '0x8a1…3c7e',
-    role: 'Investor',
-    joined: 'May 18, 2026',
-    total: '$64,200',
-    status: 'Active',
-    agentsBacked: 3,
-  },
-  {
-    id: 'w3',
-    wallet: '0x2b9…f01d',
-    role: 'Deployer',
-    joined: 'Apr 9, 2026',
-    total: '$0',
-    status: 'Active',
-    agentsBacked: 1,
-  },
-  {
-    id: 'w4',
-    wallet: '0x7c4…aa12',
-    role: 'Investor',
-    joined: 'Mar 22, 2026',
-    total: '$12,800',
-    status: 'Active',
-    agentsBacked: 2,
-  },
-  {
-    id: 'w5',
-    wallet: '0xd01…88bf',
-    role: 'Investor',
-    joined: 'Feb 14, 2026',
-    total: '$250,000',
-    status: 'Active',
-    agentsBacked: 8,
-  },
-];
-
-const PLACEHOLDER_TX: TxRow[] = [
-  {
-    id: 't1',
-    type: 'Contribution',
-    agent: 'Elvis',
-    amount: '$2,500',
-    txHash: '0x9f2a…c41e',
-    time: '2h ago',
-    status: 'Confirmed',
-    flagged: false,
-  },
-  {
-    id: 't2',
-    type: 'Buyback',
-    agent: 'Nimbus Yield',
-    amount: '$1,200',
-    txHash: '0x71bc…90aa',
-    time: '5h ago',
-    status: 'Confirmed',
-    flagged: false,
-  },
-  {
-    id: 't3',
-    type: 'Withdrawal',
-    agent: 'Helix Desk',
-    amount: '$8,400',
-    txHash: '0x3aad…12f0',
-    time: '1d ago',
-    status: 'Flagged',
-    flagged: true,
-  },
-  {
-    id: 't4',
-    type: 'Fee',
-    agent: 'Platform',
-    amount: '$420',
-    txHash: '0x55e1…77cd',
-    time: '1d ago',
-    status: 'Confirmed',
-    flagged: false,
-  },
-  {
-    id: 't5',
-    type: 'Refund',
-    agent: 'Orbit AI',
-    amount: '$1,000',
-    txHash: '0xab90…6e21',
-    time: '2d ago',
-    status: 'Flagged',
-    flagged: true,
-  },
-];
-
 function formatSubmitted(value?: string | Date): string {
   if (!value) return '—';
   const d = value instanceof Date ? value : new Date(value);
@@ -240,130 +139,56 @@ export function useAdminData() {
     [applications],
   );
 
+  const launchedAgents = useMemo(
+    () => agents.filter((agent) => agent.id.startsWith('agent-')),
+    [agents],
+  );
+
   const icoAgents = useMemo(
     () =>
-      agents.filter(
+      launchedAgents.filter(
         (a) => a.status === 'ICO Live' || a.status === 'ICO Upcoming',
       ),
-    [agents],
+    [launchedAgents],
   );
 
   const liveAgents = useMemo(
     () =>
-      agents.filter(
+      launchedAgents.filter(
         (a) =>
           a.status === 'Trading' ||
           a.status === 'ICO Live' ||
           a.status === 'ICO Upcoming',
       ).length,
-    [agents],
+    [launchedAgents],
+  );
+
+  const raisedCapital = useMemo(
+    () => launchedAgents.reduce((sum, agent) => sum + (agent.amountRaised || 0), 0),
+    [launchedAgents],
   );
 
   const stats: AdminDashboardStats = useMemo(() => {
-    const tvl =
-      analytics?.totalRaised != null
-        ? formatCompactCurrency(analytics.totalRaised || 41_200_000)
-        : '$41.2M';
     return {
-      pendingApplications: pendingApps.length || 7,
-      liveAgents: liveAgents || 86,
-      platformTvl: analytics?.totalRaised ? tvl : '$41.2M',
-      flaggedTransactions: 2,
+      pendingApplications: pendingApps.length,
+      liveAgents,
+      platformTvl: formatCompactCurrency(raisedCapital),
+      flaggedTransactions: 0,
     };
-  }, [analytics, liveAgents, pendingApps.length]);
+  }, [liveAgents, pendingApps.length, raisedCapital]);
 
   const applicationRows = useMemo(() => {
-    const source =
-      applications.length > 0
-        ? applications
-        : [
-            {
-              id: 'demo-1',
-              name: 'Rho North Labs',
-              description: '',
-              category: 'DeFi',
-              chain: 'solana',
-              launchFdv: 18_000_000,
-              raiseTarget: 1_800_000,
-              status: 'Pending',
-              revenueWallet: '',
-              team: [],
-              createdAt: '2026-08-20',
-            },
-            {
-              id: 'demo-2',
-              name: 'Rho North Labs',
-              description: '',
-              category: 'DeFi',
-              chain: 'solana',
-              launchFdv: 18_000_000,
-              raiseTarget: 1_800_000,
-              status: 'Pending',
-              revenueWallet: '',
-              team: [],
-              createdAt: '2026-08-20',
-            },
-            {
-              id: 'demo-3',
-              name: 'Rho North Labs',
-              description: '',
-              category: 'DeFi',
-              chain: 'solana',
-              launchFdv: 18_000_000,
-              raiseTarget: 1_800_000,
-              status: 'Pending',
-              revenueWallet: '',
-              team: [],
-              createdAt: '2026-08-20',
-            },
-          ];
-
-    return source.map((app) => ({
+    return applications.map((app) => ({
       ...app,
       agentName: app.name.includes('Rho') ? 'Nimbus Yield' : app.name,
       targetLabel: formatUsd(app.raiseTarget || app.launchFdv * 0.1, 0),
       submittedLabel: formatSubmitted(app.createdAt || app.updatedAt),
-      raiseDate: formatSubmitted(app.createdAt || '2026-08-20'),
+      raiseDate: formatSubmitted(app.createdAt || app.updatedAt),
     }));
   }, [applications]);
 
   const raiseRows: RaiseRow[] = useMemo(() => {
-    const source = agents.length > 0 ? agents : [];
-    if (source.length === 0) {
-      return [
-        {
-          id: 'r1',
-          agent: 'Elvis',
-          ticker: 'ELVIS',
-          target: '$50,000',
-          raised: '$46,000',
-          progress: 92,
-          status: 'ICO Live',
-          investors: 128,
-        },
-        {
-          id: 'r2',
-          agent: 'Nimbus Yield',
-          ticker: 'NIM',
-          target: '$1,800,000',
-          raised: '$420,000',
-          progress: 23,
-          status: 'ICO Upcoming',
-          investors: 41,
-        },
-        {
-          id: 'r3',
-          agent: 'Helix Desk',
-          ticker: 'HELX',
-          target: '$250,000',
-          raised: '$250,000',
-          progress: 100,
-          status: 'Trading',
-          investors: 312,
-        },
-      ];
-    }
-    return source.map((agent) => {
+    return launchedAgents.map((agent) => {
       const progress =
         agent.raiseTarget > 0
           ? Math.min(100, Math.round((agent.amountRaised / agent.raiseTarget) * 100))
@@ -376,57 +201,12 @@ export function useAdminData() {
         raised: formatUsd(agent.amountRaised, 0),
         progress,
         status: agent.status,
-        investors: Math.max(1, Math.round(agent.amountRaised / 2500)),
+        investors: 0,
       };
     });
-  }, [agents]);
+  }, [launchedAgents]);
 
-  const buybackRows: BuybackRowRow[] = useMemo(() => {
-    const trading = agents.filter((a) => a.status === 'Trading').slice(0, 6);
-    if (trading.length === 0) {
-      return [
-        {
-          id: 'b1',
-          agent: 'Helix Desk',
-          date: 'Sep 1, 2026',
-          trigger: 'Threshold',
-          revenue: '$12,400',
-          buybackAmt: '$6,200',
-          health: 'Healthy',
-        },
-        {
-          id: 'b2',
-          agent: 'Orbit AI',
-          date: 'Aug 28, 2026',
-          trigger: 'Manual',
-          revenue: '$4,100',
-          buybackAmt: '$2,050',
-          health: 'Healthy',
-        },
-        {
-          id: 'b3',
-          agent: 'Nimbus Yield',
-          date: 'Aug 20, 2026',
-          trigger: 'Threshold',
-          revenue: '$9,800',
-          buybackAmt: '$4,900',
-          health: 'Lagging',
-        },
-      ];
-    }
-    return trading.map((agent, idx) => ({
-      id: agent.id,
-      agent: agent.name,
-      date: formatSubmitted(new Date(Date.now() - idx * 86_400_000 * 3)),
-      trigger: idx % 2 === 0 ? 'Threshold' : 'Manual',
-      revenue: formatUsd(agent.totalRevenue || 4_100 + idx * 800, 0),
-      buybackAmt: formatUsd((agent.totalRevenue || 4_100) * 0.5, 0),
-      health:
-        analytics?.buybackHealth.failures && analytics.buybackHealth.failures > 0
-          ? 'Lagging'
-          : 'Healthy',
-    }));
-  }, [agents, analytics]);
+  const buybackRows: BuybackRowRow[] = useMemo(() => [], []);
 
   const decide = async (
     id: string,
@@ -495,15 +275,15 @@ export function useAdminData() {
     busy,
     load,
     stats,
-    pendingCount: pendingApps.length || 2,
+    pendingCount: pendingApps.length,
     applications: applicationRows,
     icoAgents,
     agents,
     analytics,
-    wallets: PLACEHOLDER_WALLETS,
+    wallets: [] as WalletRow[],
     raiseRows,
     buybackRows,
-    transactions: PLACEHOLDER_TX,
+    transactions: [] as TxRow[],
     decide,
     setAgentStatus,
     finalize,

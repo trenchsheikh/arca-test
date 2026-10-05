@@ -1,8 +1,9 @@
 import type { NextConfig } from 'next';
+import webpack from 'webpack';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@arca/shared', '@material/web', '@lit/react'],
+  transpilePackages: ['@arca/shared', '@material/web', '@lit/react', '@privy-io/react-auth'],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -24,6 +25,14 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ];
+  },
+  webpack: (config) => {
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^@farcaster\/mini-app-solana$/,
+      }),
+    );
+    return config;
   },
   images: {
     dangerouslyAllowSVG: true,

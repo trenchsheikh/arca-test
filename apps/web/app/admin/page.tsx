@@ -30,6 +30,8 @@ function ApplicationsView() {
           <div className="inv-table-empty">
             <LoadingState label="Loading applications…" />
           </div>
+        ) : applications.length === 0 ? (
+          <p className="inv-table-empty">No applications yet.</p>
         ) : (
           <table className="inv-table">
             <thead>
@@ -97,7 +99,7 @@ function ApplicationsView() {
 
 export default function AdminApplicationsPage() {
   return (
-    <RequireAuth title="Sign In To Access Admin">
+    <RequireAuth admin title="Sign In To Access Admin">
       <ApplicationsView />
     </RequireAuth>
   );

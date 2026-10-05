@@ -27,6 +27,8 @@ function RaisesView() {
           <div className="inv-table-empty">
             <LoadingState label="Loading raises…" />
           </div>
+        ) : raiseRows.length === 0 ? (
+          <p className="inv-table-empty">No raises yet.</p>
         ) : (
           <table className="inv-table">
             <thead>
@@ -88,7 +90,7 @@ function RaisesView() {
 
 export default function AdminRaisesPage() {
   return (
-    <RequireAuth title="Sign In To Access Admin">
+    <RequireAuth admin title="Sign In To Access Admin">
       <RaisesView />
     </RequireAuth>
   );

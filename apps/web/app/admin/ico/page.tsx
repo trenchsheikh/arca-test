@@ -24,20 +24,6 @@ function IcoView() {
     finalize,
   } = useAdminData();
 
-  const rows =
-    icoAgents.length > 0
-      ? icoAgents
-      : [
-          {
-            id: 'demo-elvis',
-            slug: 'elvis',
-            name: 'Elvis',
-            amountRaised: 46_000,
-            raiseTarget: 50_000,
-            status: 'ICO Live' as const,
-          },
-        ];
-
   return (
     <AdminShell crumb="ICO Management">
       <AdminPageHeader
@@ -51,6 +37,8 @@ function IcoView() {
           <div className="inv-table-empty">
             <LoadingState label="Loading ICOs…" />
           </div>
+        ) : icoAgents.length === 0 ? (
+          <p className="inv-table-empty">No ICOs yet. Approved launches will show up here.</p>
         ) : (
           <table className="inv-table">
             <thead>
@@ -64,7 +52,7 @@ function IcoView() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((agent) => {
+              {icoAgents.map((agent) => {
                 const progress =
                   agent.raiseTarget > 0
                     ? Math.min(
@@ -109,9 +97,6 @@ function IcoView() {
                           className="adm-review-btn"
                           disabled={busy === agent.slug}
                           onClick={() => {
-                            if (!('slug' in agent) || agent.id.startsWith('demo-')) {
-                              return;
-                            }
                             if (agent.status === 'ICO Upcoming') {
                               void setAgentStatus(agent.slug, 'ICO Live');
                               return;
@@ -148,7 +133,7 @@ function IcoView() {
 
 export default function AdminIcoPage() {
   return (
-    <RequireAuth title="Sign In To Access Admin">
+    <RequireAuth admin title="Sign In To Access Admin">
       <IcoView />
     </RequireAuth>
   );
