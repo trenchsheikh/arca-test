@@ -40,7 +40,11 @@ export function HomeFeatured({ agent }: { agent: Agent }) {
           </div>
 
           <div className="home-featured-progress-wrap">
-            <HomeAgentCardProgress raised={agent.amountRaised} target={agent.raiseTarget} />
+            <HomeAgentCardProgress
+              raised={agent.amountRaised}
+              target={agent.raiseTarget}
+              notOpen
+            />
           </div>
 
           <div className="home-featured-actions">
@@ -54,4 +58,4 @@ export function HomeFeatured({ agent }: { agent: Agent }) {
     </article>
   );
 }
-
+

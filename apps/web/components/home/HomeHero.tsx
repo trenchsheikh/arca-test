@@ -26,8 +26,8 @@ export function HomeHero() {
 
         <div className="home-hero-visual">
           <Image
-            src="/home/hero-component.png"
-            alt="Platform statistics: total market cap, protocol revenue, and buybacks"
+            src="/home/hero-img.png"
+            alt="AI agent market statistics: $4.0B+ crypto market cap, 165M+ agentic commerce transactions, and a $52.6B market projected by 2030"
             width={658}
             height={666}
             className="home-hero-visual-img"
