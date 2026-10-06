@@ -2,7 +2,9 @@ import type { PrivyClientConfig } from '@privy-io/react-auth';
 import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
 
 const solanaConnectors = toSolanaWalletConnectors({
-  shouldAutoConnect: true,
+  // Phantom's in-page channel is not ready during the first page load.
+  // Auto-connect races that setup and throws "Channel secret not available yet".
+  shouldAutoConnect: false,
 });
 
 /** External Solana wallets only. No email, social, or embedded wallet signup. */
