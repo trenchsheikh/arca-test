@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import webpack from 'webpack';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -26,7 +25,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  webpack: (config) => {
+  webpack: (config, { webpack }) => {
     config.plugins.push(
       new webpack.IgnorePlugin({
         resourceRegExp: /^@farcaster\/mini-app-solana$/,
