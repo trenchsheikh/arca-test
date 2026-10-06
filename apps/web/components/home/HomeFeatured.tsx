@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Agent } from '@/lib/mock-data';
-import { HomeAgentCardProgress } from './HomeAgentCardProgress';
 import { HomeCtaButton } from './HomeCtaButton';
 
 export function HomeFeatured({ agent }: { agent: Agent }) {
@@ -40,11 +39,7 @@ export function HomeFeatured({ agent }: { agent: Agent }) {
           </div>
 
           <div className="home-featured-progress-wrap">
-            <HomeAgentCardProgress
-              raised={agent.amountRaised}
-              target={agent.raiseTarget}
-              notOpen
-            />
+            <p className="home-featured-soon">Coming soon</p>
           </div>
 
           <div className="home-featured-actions">
