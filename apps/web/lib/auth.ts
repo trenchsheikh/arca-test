@@ -1,5 +1,3 @@
-'use client';
-
 export type AuthSession = {
   /** Short display label, usually a shortened Solana address. */
   username: string;
