@@ -118,13 +118,7 @@ export function DeployerSidebar({
           onClick={logout}
           title="Log out"
         >
-          <Image
-            src="/deployer/avatar.png"
-            alt=""
-            width={30}
-            height={30}
-            className="inv-wallet-avatar"
-          />
+          <span className="inv-wallet-avatar" aria-hidden />
           {!collapsed && (
             <span className="inv-wallet-meta">
               <span className="inv-wallet-addr">{shortenAddress(wallet) || 'Wallet'}</span>

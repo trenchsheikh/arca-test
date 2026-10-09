@@ -1,11 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useAuth } from '@/components/AuthProvider';
 
 export function DeployerTopBar({ crumb }: { crumb: string }) {
-  const { wallet } = useAuth();
-
   return (
     <div className="inv-topbar">
       <nav className="inv-breadcrumbs" aria-label="Breadcrumb">
@@ -47,14 +44,7 @@ export function DeployerTopBar({ crumb }: { crumb: string }) {
         </button>
 
         <button type="button" className="inv-icon-btn inv-icon-btn--avatar" aria-label="Account">
-          <Image
-            src="/deployer/avatar.png"
-            alt=""
-            width={30}
-            height={30}
-            className="inv-topbar-avatar"
-            title={wallet}
-          />
+          <span className="inv-topbar-avatar" aria-hidden />
           <span className="inv-corner inv-corner--tl" aria-hidden />
           <span className="inv-corner inv-corner--tr" aria-hidden />
           <span className="inv-corner inv-corner--bl" aria-hidden />
