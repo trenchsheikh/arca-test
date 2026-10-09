@@ -48,6 +48,7 @@ export type WalletRow = {
   id: string;
   wallet: string;
   role: string;
+  telegram: string;
   joined: string;
   total: string;
   status: string;
@@ -101,23 +102,48 @@ export function useAdminData() {
   const [applications, setApplications] = useState<AppRow[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
+  const [wallets, setWallets] = useState<WalletRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [appsRes, agentsRes, analyticsRes] = await Promise.all([
+      const [appsRes, agentsRes, analyticsRes, accountsRes] = await Promise.all([
         fetch('/api/applications'),
         fetch('/api/agents'),
         fetch('/api/admin/analytics'),
+        fetch('/api/accounts'),
       ]);
       const appsJson = await appsRes.json();
       const agentsJson = await agentsRes.json();
       const analyticsJson = await analyticsRes.json();
+      const accountsJson = accountsRes.ok ? await accountsRes.json() : { accounts: [] };
       setApplications(appsJson.applications || []);
       setAgents(agentsJson.agents || []);
       setAnalytics(analyticsJson.analytics || analyticsJson);
+      setWallets(
+        (accountsJson.accounts || []).map(
+          (account: {
+            id: string;
+            wallet: string;
+            role: string;
+            telegram: string | null;
+            joined: string;
+            totalContributed: number;
+            agentsBacked: number;
+          }) => ({
+            id: account.id,
+            wallet: account.wallet,
+            role: account.role,
+            telegram: account.telegram ? `@${account.telegram}` : '—',
+            joined: formatSubmitted(account.joined),
+            total: formatUsd(Number(account.totalContributed) || 0),
+            status: 'Active',
+            agentsBacked: Number(account.agentsBacked) || 0,
+          }),
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -280,7 +306,7 @@ export function useAdminData() {
     icoAgents,
     agents,
     analytics,
-    wallets: [] as WalletRow[],
+    wallets,
     raiseRows,
     buybackRows,
     transactions: [] as TxRow[],

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { saveWaitlistEmail } from '@/lib/account-db';
 import { addToWaitlist, getWaitlist } from '@/lib/store';
 
 export async function POST(request: NextRequest) {
@@ -21,8 +22,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    await saveWaitlistEmail(email);
     addToWaitlist(email);
-    console.log('Waitlist signup:', email);
 
     return NextResponse.json(
       { message: 'Successfully joined waitlist' },

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAgentBySlug, refundContribution } from '@/lib/store';
+import { saveUserRecord } from '@/lib/account-db';
+import { getAgentBySlug, refundContribution, getInvestorTransactions } from '@/lib/store';
 
 export async function POST(
   request: NextRequest,
@@ -33,6 +34,22 @@ export async function POST(
         { error: 'No refundable position found' },
         { status: 404 }
       );
+    }
+
+    const transaction = getInvestorTransactions(wallet)[0];
+    await saveUserRecord({
+      wallet,
+      kind: 'position',
+      ref: agent.id,
+      payload: position,
+    });
+    if (transaction) {
+      await saveUserRecord({
+        wallet,
+        kind: 'transaction',
+        ref: transaction.id,
+        payload: transaction,
+      });
     }
 
     return NextResponse.json({

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { saveTelegramSignup } from '@/lib/account-db';
 import { addNotifySignup } from '@/lib/store';
 
 const TELEGRAM_HANDLE = /^[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
@@ -17,8 +18,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const wallet = typeof body?.wallet === 'string' ? body.wallet.trim() : '';
+    await saveTelegramSignup({
+      telegram,
+      agent,
+      wallet: wallet || null,
+    });
     addNotifySignup(agent, telegram);
-    console.log('Notify signup:', agent, `@${telegram}`);
 
     return NextResponse.json(
       { message: 'You will be notified' },

@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getInvestorPositions, getInvestorTransactions, getBuybackEvents } from '@/lib/store';
+import { listUserRecords } from '@/lib/account-db';
+import {
+  getInvestorPositions,
+  getInvestorTransactions,
+  getBuybackEvents,
+  type InvestorPosition,
+  type InvestorTransaction,
+} from '@/lib/store';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,8 +20,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const positions = getInvestorPositions(wallet);
-    const transactions = getInvestorTransactions(wallet);
+    const storedPositions = await listUserRecords<InvestorPosition>(wallet, 'position');
+    const storedTransactions = await listUserRecords<InvestorTransaction>(wallet, 'transaction');
+    const positions = storedPositions.length ? storedPositions : getInvestorPositions(wallet);
+    const transactions = storedTransactions.length
+      ? storedTransactions
+      : getInvestorTransactions(wallet);
     
     // Get buybacks relevant to this investor's holdings
     const agentIds = [...new Set(positions.map(p => p.agentId))];

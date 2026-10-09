@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ['postgres'],
   transpilePackages: ['@arca/shared', '@material/web', '@lit/react', '@privy-io/react-auth'],
   eslint: {
     ignoreDuringBuilds: true,

@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApplicationById, updateApplication, approveApplication } from '@/lib/store';
+import { saveUserRecord } from '@/lib/account-db';
+import { getApplicationById, updateApplication, approveApplication, type Application } from '@/lib/store';
+
+async function persistApplication(application: Application | undefined) {
+  if (!application?.ownerWallet) return;
+  await saveUserRecord({
+    wallet: application.ownerWallet,
+    kind: 'application',
+    ref: application.id,
+    role: 'deployer',
+    payload: application,
+  });
+}
 
 export async function GET(
   request: NextRequest,
@@ -43,6 +55,7 @@ export async function PATCH(
           { status: 404 }
         );
       }
+      await persistApplication(result.application);
       return NextResponse.json(result);
     }
     
@@ -54,6 +67,7 @@ export async function PATCH(
           { status: 404 }
         );
       }
+      await persistApplication(application);
       return NextResponse.json({ application });
     }
     
@@ -65,6 +79,7 @@ export async function PATCH(
           { status: 404 }
         );
       }
+      await persistApplication(application);
       return NextResponse.json({ application });
     }
     
@@ -75,7 +90,8 @@ export async function PATCH(
         { status: 404 }
       );
     }
-    
+    await persistApplication(application);
+
     return NextResponse.json({ application });
   } catch (error) {
     console.error('Application PATCH error:', error);

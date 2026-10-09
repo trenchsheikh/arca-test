@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useId, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Agent } from '@/lib/mock-data';
+import { useAuth } from '@/components/AuthProvider';
 import { HomeCtaButton } from './HomeCtaButton';
 
 export function HomeFeatured({ agent }: { agent: Agent }) {
@@ -14,6 +15,7 @@ export function HomeFeatured({ agent }: { agent: Agent }) {
   const [telegram, setTelegram] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState('');
+  const { wallet } = useAuth();
 
   useEffect(() => {
     if (!open) return;
@@ -42,7 +44,7 @@ export function HomeFeatured({ agent }: { agent: Agent }) {
       const res = await fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ telegram, agent: agent.slug }),
+        body: JSON.stringify({ telegram, agent: agent.slug, wallet }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);

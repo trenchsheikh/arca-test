@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAgentBySlug, addContribution } from '@/lib/store';
+import { saveUserRecord } from '@/lib/account-db';
+import {
+  getAgentBySlug,
+  addContribution,
+  getInvestorPositions,
+  getInvestorTransactions,
+} from '@/lib/store';
 
 export async function POST(
   request: NextRequest,
@@ -34,6 +40,24 @@ export async function POST(
     }
 
     const result = addContribution(agent.id, wallet, amount);
+    const position = getInvestorPositions(wallet).find((row) => row.agentId === agent.id);
+    const transaction = getInvestorTransactions(wallet)[0];
+    if (position) {
+      await saveUserRecord({
+        wallet,
+        kind: 'position',
+        ref: agent.id,
+        payload: position,
+      });
+    }
+    if (transaction) {
+      await saveUserRecord({
+        wallet,
+        kind: 'transaction',
+        ref: transaction.id,
+        payload: transaction,
+      });
+    }
 
     return NextResponse.json({
       success: true,

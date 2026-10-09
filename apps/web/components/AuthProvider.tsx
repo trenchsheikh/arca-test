@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   type ReactNode,
 } from 'react';
@@ -68,6 +69,17 @@ export function PrivyAuthProvider({ children }: { children: ReactNode }) {
       },
     };
   }, [isAuthenticated, login, logout, ready, user?.createdAt, wallet]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !wallet) return;
+    void fetch('/api/account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wallet }),
+    }).catch(() => {
+      // Login still works if the account save fails.
+    });
+  }, [isAuthenticated, wallet]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

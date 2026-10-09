@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuth } from '@/components/AuthProvider';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -47,6 +48,7 @@ function Field({
 }
 
 export function LaunchAgentWizard() {
+  const { wallet } = useAuth();
   const [currentStep, setCurrentStep] = useState<LaunchStep>('profile');
   const [form, setForm] = useState<LaunchFormState>(initialLaunchForm);
   const [logoFileName, setLogoFileName] = useState('');
@@ -156,6 +158,7 @@ export function LaunchAgentWizard() {
           docs: form.docs || undefined,
           twitter: form.twitter || undefined,
           logoUrl: form.logoUrl || undefined,
+          ownerWallet: wallet || undefined,
         }),
       });
 

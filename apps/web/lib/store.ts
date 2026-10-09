@@ -57,6 +57,9 @@ export interface Application {
   tier?: 'Seed' | 'Core' | 'Pro' | null;
   riskRating?: 'Low' | 'Medium' | 'High';
   
+  // Connected account that submitted the application
+  ownerWallet?: string;
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
@@ -247,6 +250,7 @@ export function createApplication(
     vestingCliffDays: Number(data.vestingCliffDays ?? 30),
     vestingDurationDays: Number(data.vestingDurationDays ?? 365),
     documentsMeta: data.documentsMeta || (data as { documents?: Application['documentsMeta'] }).documents || [],
+    ownerWallet: data.ownerWallet,
     tier: null,
     createdAt: new Date(),
     updatedAt: new Date(),

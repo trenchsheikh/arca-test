@@ -35,6 +35,7 @@ function UsersView() {
               <tr>
                 <th>Wallet</th>
                 <th>Role</th>
+                <th>Telegram</th>
                 <th>Joined</th>
                 <th>
                   <SortHeader label="Total" />
@@ -50,6 +51,7 @@ function UsersView() {
                 <tr key={row.id}>
                   <td className="inv-cell-mono">{row.wallet}</td>
                   <td className="inv-cell-mono">{row.role}</td>
+                  <td className="inv-cell-mono">{row.telegram}</td>
                   <td>{row.joined}</td>
                   <td>{row.total}</td>
                   <td>
