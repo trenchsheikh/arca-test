@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { DashboardPopovers } from '@/components/dashboard/DashboardPopovers';
 
 export function DeployerTopBar({ crumb }: { crumb: string }) {
   return (
@@ -27,21 +28,10 @@ export function DeployerTopBar({ crumb }: { crumb: string }) {
           <span className="inv-corner inv-corner--br" aria-hidden />
         </label>
 
-        <button type="button" className="inv-icon-btn" aria-label="Messages">
-          <Image src="/deployer/icon-mail.svg" alt="" width={20} height={20} />
-          <span className="inv-corner inv-corner--tl" aria-hidden />
-          <span className="inv-corner inv-corner--tr" aria-hidden />
-          <span className="inv-corner inv-corner--bl" aria-hidden />
-          <span className="inv-corner inv-corner--br" aria-hidden />
-        </button>
-
-        <button type="button" className="inv-icon-btn" aria-label="Notifications">
-          <Image src="/deployer/icon-bell.svg" alt="" width={20} height={20} />
-          <span className="inv-corner inv-corner--tl" aria-hidden />
-          <span className="inv-corner inv-corner--tr" aria-hidden />
-          <span className="inv-corner inv-corner--bl" aria-hidden />
-          <span className="inv-corner inv-corner--br" aria-hidden />
-        </button>
+        <DashboardPopovers
+          mailIcon="/deployer/icon-mail.svg"
+          bellIcon="/deployer/icon-bell.svg"
+        />
       </div>
     </div>
   );
