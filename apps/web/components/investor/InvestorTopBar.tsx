@@ -42,14 +42,6 @@ export function InvestorTopBar({ crumb }: { crumb: string }) {
           <span className="inv-corner inv-corner--bl" aria-hidden />
           <span className="inv-corner inv-corner--br" aria-hidden />
         </button>
-
-        <button type="button" className="inv-icon-btn inv-icon-btn--avatar" aria-label="Account">
-          <span className="inv-topbar-avatar" aria-hidden />
-          <span className="inv-corner inv-corner--tl" aria-hidden />
-          <span className="inv-corner inv-corner--tr" aria-hidden />
-          <span className="inv-corner inv-corner--bl" aria-hidden />
-          <span className="inv-corner inv-corner--br" aria-hidden />
-        </button>
       </div>
     </div>
   );

@@ -140,7 +140,6 @@ export function AdminSidebar({
           onClick={logout}
           title="Log out"
         >
-          <span className="inv-wallet-avatar" aria-hidden />
           {!collapsed && (
             <span className="inv-wallet-meta">
               <span className="inv-wallet-addr">{displayName}</span>
