@@ -4895,10 +4895,6 @@
     box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.5);
   }
 
-  .inv-btn-deposit-icon {
-    transform: rotate(180deg);
-  }
-
   .inv-stat-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
