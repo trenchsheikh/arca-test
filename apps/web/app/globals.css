@@ -4292,12 +4292,109 @@
     border-radius: 0;
     background: rgba(93, 116, 230, 0.8);
     color: #ffffff;
+    font-family: inherit;
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: -0.04em;
     text-decoration: none;
+    cursor: pointer;
     box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.5);
     transition: filter 140ms ease, transform 100ms ease;
+  }
+
+  .home-cta-btn:disabled {
+    cursor: wait;
+    filter: brightness(0.85);
+  }
+
+  .notify-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    background: rgba(0, 0, 0, 0.62);
+  }
+
+  .notify-dialog {
+    position: relative;
+    width: min(100%, 26rem);
+    padding: 1.5rem 1.35rem 1.35rem;
+    background: #06070c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  .notify-close {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.65rem;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .notify-close:hover {
+    color: #ffffff;
+  }
+
+  .notify-title {
+    margin: 0 0 0.4rem;
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+
+  .notify-copy {
+    margin: 0 0 1rem;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.95rem;
+    letter-spacing: -0.03em;
+    line-height: 1.4;
+  }
+
+  .notify-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    letter-spacing: -0.02em;
+  }
+
+  .notify-input {
+    width: 100%;
+    margin-bottom: 0.85rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #0b0c12;
+    color: #ffffff;
+    font: inherit;
+    font-size: 1rem;
+    letter-spacing: -0.03em;
+  }
+
+  .notify-input:focus {
+    outline: 2px solid #7b8deb;
+    outline-offset: 1px;
+  }
+
+  .notify-error {
+    margin: -0.35rem 0 0.85rem;
+    color: #ffb4ab;
+    font-size: 0.85rem;
+  }
+
+  .notify-submit {
+    width: 100%;
+  }
+
+  .notify-thanks .home-cta-btn {
+    width: 100%;
   }
 
   .home-cta-btn:hover {

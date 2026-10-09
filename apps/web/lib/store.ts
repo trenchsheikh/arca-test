@@ -103,6 +103,7 @@ export interface InvestorTransaction {
 // Module-level state (survive Next.js HMR via globalThis)
 type StoreShape = {
   waitlist: Set<string>;
+  notifySignups: Set<string>;
   applications: Application[];
   agents: Agent[];
   icoSessions: Map<string, IcoSession>;
@@ -115,6 +116,7 @@ const globalStore = globalThis as typeof globalThis & { __arcaStore?: StoreShape
 function createInitialStore(): StoreShape {
   return {
     waitlist: new Set<string>(),
+    notifySignups: new Set<string>(),
     applications: [] as Application[],
     agents: [...mockAgents] as Agent[],
     icoSessions: new Map<string, IcoSession>(),
@@ -124,6 +126,7 @@ function createInitialStore(): StoreShape {
 }
 
 const store: StoreShape = globalStore.__arcaStore ?? createInitialStore();
+if (!store.notifySignups) store.notifySignups = new Set<string>();
 globalStore.__arcaStore = store;
 
 /** Keep catalog agents in sync with mock-data across HMR (preserve app-created agents). */
@@ -179,6 +182,10 @@ export function addToWaitlist(email: string): void {
 
 export function getWaitlist(): string[] {
   return Array.from(store.waitlist);
+}
+
+export function addNotifySignup(agent: string, telegram: string): void {
+  store.notifySignups.add(`${agent.toLowerCase()}:${telegram.toLowerCase()}`);
 }
 
 // Application IDs: ARCA-XXXXXX (6 chars, no 0/O/1/I)
