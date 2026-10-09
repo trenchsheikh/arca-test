@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
+import { WalletMenu } from '@/components/dashboard/WalletMenu';
 import { shortenAddress } from '@/lib/auth';
 
 const reviewNav = [
@@ -134,28 +135,13 @@ export function AdminSidebar({
       </div>
 
       <div className="inv-sidebar-footer">
-        <button
-          type="button"
-          className="inv-wallet-card"
-          onClick={logout}
-          title="Log out"
-        >
-          {!collapsed && (
-            <span className="inv-wallet-meta">
-              <span className="inv-wallet-addr">{displayName}</span>
-              <span className="inv-wallet-role">Admin</span>
-            </span>
-          )}
-          {!collapsed && (
-            <Image
-              src="/admin/icon-chevron-right.svg"
-              alt=""
-              width={12}
-              height={12}
-              className="inv-wallet-chevron"
-            />
-          )}
-        </button>
+        <WalletMenu
+          address={displayName}
+          role="Admin"
+          chevronIcon="/admin/icon-chevron-right.svg"
+          collapsed={collapsed}
+          onLogout={logout}
+        />
       </div>
     </aside>
   );
